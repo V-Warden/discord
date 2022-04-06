@@ -1,0 +1,45 @@
+{
+  "name": "VVarden",
+  "version": "1.2.1",
+  "main": ".prettierrc.js",
+  "repository": "https://github.com/t3xtm3/VVarden.git",
+  "author": "mk3ext#6044",
+  "license": "MIT",
+  "scripts": {
+    "lint": "gts lint",
+    "clean": "gts clean",
+    "fix": "gts fix",
+    "generate": "npx prisma generate",
+    "migrate": "npx prisma migrate deploy",
+    "dev": "npx nodemon --exec ts-node src/entry.bot.ts",
+    "build": "tsc",
+    "start": "tsc && node build/entry.bot.js",
+    "release": "standard-version",
+    "release:minor": "standard-version --release-as minor",
+    "release:patch": "standard-version --release-as patch",
+    "release:major": "standard-version --release-as major"
+  },
+  "dependencies": {
+    "@prisma/client": "^3.10.0",
+    "discord.js": "^13.6.0",
+    "dotenv": "^16.0.0",
+    "glob": "^7.2.0",
+    "lodash": "^4.17.21",
+    "node-cron": "^3.0.0",
+    "simple-git": "^3.4.0",
+    "winston": "^3.6.0",
+    "winston-daily-rotate-file": "^4.6.1"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.2.0",
+    "@types/lodash": "^4.14.179",
+    "@types/node": "^14.0.1",
+    "@types/node-cron": "^3.0.1",
+    "gts": "^3.1.0",
+    "husky": "^7.0.0",
+    "prisma": "^3.10.0",
+    "standard-version": "^9.3.2",
+    "ts-node": "^10.6.0",
+    "typescript": "^4.6.2"
+  }
+}

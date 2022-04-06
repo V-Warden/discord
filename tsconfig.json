@@ -1,0 +1,30 @@
+{
+    "extends": "./node_modules/gts/tsconfig-google.json",
+    "compilerOptions": {
+      "outDir": "build",
+      "lib": [
+        "ES2021",
+        "DOM"
+      ],
+      "strict": true,
+      "strictNullChecks": false,
+      "esModuleInterop": true,
+      "moduleResolution": "node",
+      "target": "es2020",
+      "module": "commonjs",
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true,
+      "sourceMap": false,
+      "declaration": false,
+      "resolveJsonModule": true,
+      "typeRoots": [
+        "src/@types/*"
+      ]
+    },
+    "include": [
+      "src/**/*.ts",
+    ],
+    "exclude": [
+      "node_modules"
+    ]
+  }
