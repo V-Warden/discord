@@ -184,7 +184,9 @@ https://discord.gg/jeFeDRasfs`,
                         );
                     }
 
-                    client.logger.warn(`punishUser ${guildInfo.name}: ${oldUser.id} - ${e}`);
+                    client.logger.warn(
+                        `punishUser ${guildInfo.name}: ${oldUser.id} - ${e} - ${realType}`
+                    );
                 });
         }
         return false;
