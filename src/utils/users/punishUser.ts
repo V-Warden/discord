@@ -56,7 +56,7 @@ export async function punishUser({
             .then(chan => {
                 chan.send({
                     content: `:shield: Warden
-You are being automodded by ${guildInfo.name} for being associated with ${count} leaking or cheating discord servers.
+You are being automodded by ${guildInfo.name} for being associated with ${count} leaking, cheating or reselling discord servers.
 You may attempt to appeal this via the Official Warden Discord:
 https://discord.gg/jeFeDRasfs`,
                 }).catch(e => {
