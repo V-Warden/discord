@@ -66,7 +66,15 @@ export default class ConfigCommand extends SlashCommand {
                             type: 3,
                             name: 'type',
                             description: 'Type of punishment',
-                            choices: [...mainChoices],
+                            choices: [
+                                ...mainChoices,
+                                ...[
+                                    {
+                                        name: 'WARN',
+                                        value: 'WARN',
+                                    },
+                                ],
+                            ],
                             required: true,
                         },
                     ],
@@ -174,7 +182,7 @@ export default class ConfigCommand extends SlashCommand {
                                 inline: false,
                             },
                             {
-                                name: 'punsupp - Punish Supporters [kick/ban]',
+                                name: 'punsupp - Punish Supporters [warn/kick/ban]',
                                 value: `I am set to **${guildInfo.punsupp}** Leak and Cheat Server Supporters\nThese are Nitro Boosters, Customers, or other types of Donators.`,
                                 inline: false,
                             },
