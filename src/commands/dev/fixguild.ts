@@ -1,4 +1,3 @@
-import { Guild } from '@prisma/client';
 import { BaseCommandInteraction, Snowflake, TextChannel } from 'discord.js';
 import { Colours } from '../../@types';
 import { Bot, SlashCommand } from '../../classes';
@@ -35,14 +34,15 @@ export default class FixGuildCommand extends SlashCommand {
                     .filter(chan => chan.isText())
                     .first()) as TextChannel;
 
-                createGuild({ client, guild, logchan: channel.id }).then(g => {
-                    const created = g as Guild;
+                createGuild({ client, guild, logchan: channel.id }).then(() => {
                     sendEmbed({
                         interaction,
                         embed: {
-                            description: `\`🟢\` Successfully create guild ${
-                                created.name
-                            } with: \`\`\`${JSON.stringify({ guild, logchan: channel.id }, null, 2)}`,
+                            description: `\`🟢\` Successfully create guild: \`\`\`${JSON.stringify(
+                                { name: guild.name, owner: guild.ownerId, logchan: channel.id },
+                                null,
+                                2
+                            )}`,
                             color: Colours.GREEN,
                         },
                     });
