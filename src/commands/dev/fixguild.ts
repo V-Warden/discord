@@ -42,7 +42,7 @@ export default class FixGuildCommand extends SlashCommand {
                         embed: {
                             description: `\`🟢\` Successfully create guild ${
                                 created.name
-                            } with: \`\`\`${{ guild, logchan: channel.id }}`,
+                            } with: \`\`\`${JSON.stringify({ guild, logchan: channel.id }, null, 2)}`,
                             color: Colours.GREEN,
                         },
                     });
