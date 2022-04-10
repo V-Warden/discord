@@ -16,6 +16,6 @@ export async function sendEmbed({ interaction, channel, content, embed, componen
         }
     } catch (e) {
         console.log(`sendEmbed: Unknown interaction ${interaction}`);
-        return Promise.reject();
+        return null;
     }
 }
