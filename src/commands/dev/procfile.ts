@@ -78,7 +78,7 @@ export default class ProcfileCommand extends SlashCommand {
                     status = UserStatus.BLACKLIST;
                 }
                 if (found.status !== UserStatus.WHITELIST) {
-                    await client.db.users
+                    client.db.users
                         .update({
                             where: { id: user.id },
                             data: {
@@ -95,7 +95,7 @@ export default class ProcfileCommand extends SlashCommand {
                         });
                 }
             } else {
-                await client.db.users
+                client.db.users
                     .create({
                         data: user,
                     })
