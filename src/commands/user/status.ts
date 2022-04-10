@@ -39,7 +39,7 @@ export default class StatusCommand extends SlashCommand {
                     },
                     {
                         name: 'Blacklisted Accounts',
-                        value: `I am blocking ${blacklistedUsers} discord accounts`,
+                        value: `I am blocking ${blacklistedUsers.toLocaleString()} discord accounts`,
                         inline: false,
                     },
                     {
