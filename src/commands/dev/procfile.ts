@@ -153,6 +153,14 @@ export default class ProcfileCommand extends SlashCommand {
             `globalFindCheck: Finished actioning on all ${client.guilds.cache.size} guilds`
         );
 
+        sendEmbed({
+            channel: chan as TextBasedChannel,
+            embed: {
+                description: `Finished actioning on ${client.guilds.cache.size} guilds`,
+                color: Colours.GREEN,
+            },
+        });
+
         process.reset();
         return true;
     }
