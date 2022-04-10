@@ -77,7 +77,10 @@ export default class CheckUserCommand extends SlashCommand {
                                 },
                                 {
                                     name: `Added Type: ${user.filter_type.replace('_', '-')}`,
-                                    value: `**Date Added**: ${user.updatedAt}`,
+                                    value: `**Date Added**: ${user.createdAt
+                                        .toISOString()
+                                        .replace(/T/, ' ')
+                                        .replace(/\..+/, '')}`,
                                 },
                             ],
                             footer: {

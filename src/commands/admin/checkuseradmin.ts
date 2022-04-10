@@ -103,6 +103,9 @@ export default class CheckUserAdminCommand extends SlashCommand {
                                 value: `**Date Added**: ${user.createdAt
                                     .toISOString()
                                     .replace(/T/, ' ')
+                                    .replace(/\..+/, '')}\n**Updated At**: ${user.updatedAt
+                                    .toISOString()
+                                    .replace(/T/, ' ')
                                     .replace(/\..+/, '')}`,
                                 inline: false,
                             },
