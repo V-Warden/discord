@@ -8,6 +8,7 @@ import * as cron from 'node-cron';
 
 import glob from 'glob';
 import { promisify } from 'util';
+import _ from 'lodash';
 const globPromise = promisify(glob);
 
 /**
@@ -115,6 +116,18 @@ class Bot extends Client {
         this.noPerms.set(guild, current);
     }
 
+    randomStatus() {
+        const status = _.sample(['discord.gg/warden', 'mk3ext#6044', '{guilds} guilds']).replace(
+            '{guilds}',
+            `${this.guilds.cache.size}`
+        );
+
+        this.user.setActivity({
+            type: 'WATCHING',
+            name: status,
+        });
+    }
+
     resetNoPerms() {
         this.noPerms.clear();
         this.logger.debug('Cleared noPerms cache');
@@ -123,6 +136,7 @@ class Bot extends Client {
     startTimers() {
         cron.schedule('*/5 * * * *', async () => {
             this.resetNoPerms();
+            this.randomStatus();
         });
 
         this.logger.debug('Started timer');
