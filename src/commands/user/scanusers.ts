@@ -63,6 +63,7 @@ export default class ScanUsers extends SlashCommand {
                     },
                 },
             });
+
             await Promise.all(
                 users.map(async user => {
                     punishUser({
@@ -77,14 +78,14 @@ export default class ScanUsers extends SlashCommand {
             sendEmbed({
                 channel: interaction.channel,
                 embed: {
-                    description: `Scanning completed, ${users.length} have been actioned`,
+                    description: `Scanning completed, ${users.length - 1} have been actioned`,
                     color: Colours.GREEN,
                 },
             }).catch(e => console.log(e));
 
             const end = Date.now();
             client.logger.info(
-                `scanUsers ${interaction.guild.name}: actioned ${users.length} users, took ${
+                `scanUsers ${interaction.guild.name}: actioned ${users.length - 1} users, took ${
                     (end - begin) / 1000
                 }s`
             );
