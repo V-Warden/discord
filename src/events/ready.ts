@@ -12,7 +12,7 @@ export default async function (client: Bot) {
     client.application.commands.fetch().then(async commands => {
         await commands.reduce(async (a, command) => {
             await a;
-            if (command.name === 'badserver') {
+            if (command.name === 'badserver' || command.name === 'reload') {
                 client.application.commands.delete(command.id);
                 client.logger.info(`Deleting command ${command.name} - ${command.id}`);
             }
