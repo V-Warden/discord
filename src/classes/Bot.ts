@@ -9,6 +9,7 @@ import * as cron from 'node-cron';
 import glob from 'glob';
 import { promisify } from 'util';
 import _ from 'lodash';
+import { PunishUser } from './PunishUser';
 const globPromise = promisify(glob);
 
 /**
@@ -17,6 +18,7 @@ const globPromise = promisify(glob);
 class Bot extends Client {
     logger: Logger;
     processing: Processing;
+    punish: PunishUser;
     db: PrismaClient;
 
     /**
@@ -55,6 +57,7 @@ class Bot extends Client {
         this.noPerms = new Collection();
         this.logger = logger;
         this.processing = processing;
+        this.punish = new PunishUser(this);
         this.db = db;
     }
 
@@ -131,6 +134,11 @@ class Bot extends Client {
     resetNoPerms() {
         this.noPerms.clear();
         this.logger.debug('Cleared noPerms cache');
+    }
+
+    resetLogChans() {
+        this.logger.debug(`Removed ${this.logChans.size} from cached logged channels`);
+        this.logChans.clear();
     }
 
     startTimers() {

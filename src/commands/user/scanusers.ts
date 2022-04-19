@@ -4,7 +4,6 @@ import { Colours } from '../../@types';
 import { Bot, SlashCommand } from '../../classes';
 import { getGuild } from '../../utils/guild';
 import { sendEmbed } from '../../utils/messages';
-import { punishUser } from '../../utils/users/punishUser';
 
 export default class ScanUsers extends SlashCommand {
     constructor(client: Bot) {
@@ -66,13 +65,19 @@ export default class ScanUsers extends SlashCommand {
 
             await Promise.all(
                 users.map(async user => {
-                    punishUser({
-                        client,
-                        member: interaction.guild.members.cache.get(user.id),
-                        guildInfo: settings,
-                        oldUser: user,
-                        toDM: false,
-                    }).catch(e => console.log(e));
+                    client.punish.actionUser(
+                        user,
+                        settings,
+                        interaction.guild.members.cache.get(user.id),
+                        false
+                    );
+                    // punishUser({
+                    //     client,
+                    //     member: interaction.guild.members.cache.get(user.id),
+                    //     guildInfo: settings,
+                    //     oldUser: user,
+                    //     toDM: false,
+                    // }).catch(e => console.log(e));
                 })
             );
             sendEmbed({

@@ -3,7 +3,6 @@ import { Colours } from '../../@types';
 import { Bot, SlashCommand } from '../../classes';
 import { sendEmbed } from '../../utils/messages';
 import data from '../../config.json';
-import { punishUser } from '../../utils/users/punishUser';
 
 export default class GlobalCheckCommand extends SlashCommand {
     constructor(client: Bot) {
@@ -19,6 +18,8 @@ export default class GlobalCheckCommand extends SlashCommand {
     }
 
     public async run(client: Bot, interaction: BaseCommandInteraction): Promise<boolean> {
+        await interaction.editReply({ content: 'Now global checking..' });
+
         // Reduce database calls
         const guilds = await client.db.guild.findMany({});
 
@@ -26,7 +27,7 @@ export default class GlobalCheckCommand extends SlashCommand {
         const realGuilds = await client.guilds.cache.map(x => x);
 
         for await (const guild of realGuilds) {
-            guild.members
+            await guild.members
                 .fetch()
                 .then(async members => {
                     const memberMap = members.map(x => x.id);
@@ -45,13 +46,7 @@ export default class GlobalCheckCommand extends SlashCommand {
                             client.logger.debug(
                                 `globalCheck ${guild.name}: Actioning ${realMember.user.username}#${realMember.user.discriminator} (${member.id})`
                             );
-                            punishUser({
-                                client,
-                                member: realMember,
-                                oldUser: member,
-                                guildInfo: settings,
-                                toDM: false,
-                            });
+                            client.punish.actionUser(member, settings, realMember, false);
                             await new Promise(resolve => setTimeout(resolve, 50));
                         }, Promise.resolve());
                         client.logger.debug(`globalCheck ${guild.name}: Finished actioning`);
@@ -66,7 +61,13 @@ export default class GlobalCheckCommand extends SlashCommand {
                     return;
                 });
         }
-        client.logger.info(`globalCheck: Finished actioning on all ${client.guilds.cache.size} guilds`);
+        client.logger.info(
+            `globalCheck: Finished actioning on all ${
+                client.guilds.cache.size
+            } guilds,\nSuccessful: ${JSON.stringify(client.punish.success)}\nFailed: ${JSON.stringify(
+                client.punish.failed
+            )}\nSkipped ${client.punish.skipGuilds.length} guilds, log channel was invalid`
+        );
 
         const chan: TextChannel = ((await client.channels.cache.get(data.CHANNEL_LOG)) ??
             (await client.channels.fetch(data.CHANNEL_LOG))) as TextChannel;
@@ -78,6 +79,8 @@ export default class GlobalCheckCommand extends SlashCommand {
                 color: Colours.GREEN,
             },
         });
+
+        client.punish.reset();
 
         return true;
     }
