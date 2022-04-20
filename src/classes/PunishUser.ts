@@ -46,6 +46,7 @@ export class PunishUser {
     }
 
     async actionUser(user: Users, guildInfo: Guild, member: GuildMember, toDM: boolean) {
+        if (member.user.bot) return;
         if (this.skipGuilds.includes(guildInfo.id)) return;
 
         let channel: TextChannel;
