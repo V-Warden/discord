@@ -17,6 +17,8 @@ export default async function (client: Bot, member: GuildMember) {
         return false;
     }
 
+    if (member.user.bot) return false;
+
     const user = await getUser({ client, id: member.id });
     if (!user) {
         return false;
