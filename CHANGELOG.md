@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.3.0 (2022-04-20)
+
+
+### Features
+
+* **Bot:** implement random status ([e00cae1](https://github.com/V-Warden/discord/commit/e00cae17109281ebc6ce09d01d74742696dda90e))
+* **globalcheck:** ability to manually check all guilds ([68fe50d](https://github.com/V-Warden/discord/commit/68fe50df5b5d550b7f77c13246c0c79a27344e66))
+* **procfile:** implement actioning message finish ([0f4bffb](https://github.com/V-Warden/discord/commit/0f4bffb247c6356216a5a19f6a90df502aa26ca2))
+* **PunishUser:** moved to class and optimise ([fb813fb](https://github.com/V-Warden/discord/commit/fb813fb415fba55a5cf8298363b53d97480cfc6f))
+* **punsupp:** add warning as an option ([c43687c](https://github.com/V-Warden/discord/commit/c43687cf9c37308c112d6be786c0ddb5d5054342))
+* **repo:** setup new repo ([1368e5d](https://github.com/V-Warden/discord/commit/1368e5de0ace4ec8b84c1786b622bd09dfd511bd))
+
+
+### Bug Fixes
+
+* **fixguild:** remove unneeded data ([2957899](https://github.com/V-Warden/discord/commit/295789988a366f5b5231f2f3726ef9397a4b7fe8))
+* **fixguild:** stringify object ([10f35d2](https://github.com/V-Warden/discord/commit/10f35d244193127db9fb65d24e92a09302b0dfb5))
+* **globalcheck:** skip guilds with no settings ([f4748b3](https://github.com/V-Warden/discord/commit/f4748b3d3e1ccf6d843610d1a5e24ca3094c6939))
+* **guildMemberAdd:** failsafe ([b55298d](https://github.com/V-Warden/discord/commit/b55298d9a61fde0a18c064d515fbada835fa6261))
+* **PunishUser:** add another bot failsafe ([626985d](https://github.com/V-Warden/discord/commit/626985d26fb12aa585663e2b7d031b5722bc4083))
+* **ready:** remove reload ([93db5ee](https://github.com/V-Warden/discord/commit/93db5eea09e34c31f0b14d750ecb28197fe4b11e))
+* **scanusers:** correct user count ([4140ebe](https://github.com/V-Warden/discord/commit/4140ebee7886a4fa46985c8496e3628c517f7dda))
+* **status:** human readable number for blacklisted accounts ([1696b04](https://github.com/V-Warden/discord/commit/1696b0448efdaf865aba13ad2d48a6550f8b9cf1))
+
+
+### Chores
+
+* **about:** update repo link ([e863def](https://github.com/V-Warden/discord/commit/e863def9c4195eced45320b3cf7ee31685df404e))
+* **cua/cu:** fix dates and add updated on cua ([b0f4766](https://github.com/V-Warden/discord/commit/b0f476662c95d6ddbe06b9d5168db82e96149943))
+* **globalcheck:** throttle ([4635b54](https://github.com/V-Warden/discord/commit/4635b54b081aedc3eee3437381aa7779497163e7))
+* **procfile:** remove unneeded await ([55342cb](https://github.com/V-Warden/discord/commit/55342cb5d3371691af8f4fbcb51689f44266e66e))
+* **punishUser:** add type to missing permissions ([10f4b3c](https://github.com/V-Warden/discord/commit/10f4b3c97704f12a7a12bfe4d6382f0d62fcf954))
+* **punishUser:** update message to include reselling ([a9234b0](https://github.com/V-Warden/discord/commit/a9234b0f429c2b14860d8d730080544c504ac7df))
+* **sendEmbed:** return null on promise failure ([fb3280c](https://github.com/V-Warden/discord/commit/fb3280c5a296c8d6f55c3c9cfdf68a59ecfaab85))
+
 ### [1.2.1](https://github.com/t3xtm3/VVarden/compare/v1.2.0...v1.2.1) (2022-04-03)
 
 
