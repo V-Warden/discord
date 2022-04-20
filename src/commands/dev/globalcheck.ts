@@ -3,7 +3,6 @@ import { Colours } from '../../@types';
 import { Bot, SlashCommand } from '../../classes';
 import { sendEmbed } from '../../utils/messages';
 import data from '../../config.json';
-import { createGuild } from '../../utils/guild';
 
 export default class GlobalCheckCommand extends SlashCommand {
     constructor(client: Bot) {
