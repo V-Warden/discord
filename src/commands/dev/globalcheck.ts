@@ -3,6 +3,7 @@ import { Colours } from '../../@types';
 import { Bot, SlashCommand } from '../../classes';
 import { sendEmbed } from '../../utils/messages';
 import data from '../../config.json';
+import { createGuild } from '../../utils/guild';
 
 export default class GlobalCheckCommand extends SlashCommand {
     constructor(client: Bot) {
@@ -39,6 +40,13 @@ export default class GlobalCheckCommand extends SlashCommand {
                     });
                     if (toAction.length >= 1) {
                         const settings = guilds.find(g => g.id === guild.id);
+                        if (!settings) {
+                            client.logger.warn(
+                                `globalCheck ${guild.name}: Invalid guild ${guild.id} - Owner ${guild.ownerId}`
+                            );
+                            return;
+                        }
+
                         await toAction.reduce(async (a, member) => {
                             await a;
                             const realMember = members.get(member.id);
