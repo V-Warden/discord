@@ -93,7 +93,7 @@ export default class AppealCommand extends SlashCommand {
                 });
                 await abGuilds.reduce(async (a, guild) => {
                     await a;
-                    client.guilds
+                    await client.guilds
                         .fetch(guild.id)
                         .then(g => {
                             g.bans
