@@ -18,8 +18,8 @@ export default async function (client: Bot, interaction: BaseCommandInteraction)
             );
             return false;
         }
-        let has;
-        let message;
+        let has = false;
+        let message = '';
         if (slashCommand.staffRole) {
             const staff = await getStaffMember({ client, id: interaction.user.id });
             if (staff && staff[slashCommand.staffRole as keyof typeof staff]) has = true;
