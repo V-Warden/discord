@@ -94,18 +94,24 @@ export default class AppealCommand extends SlashCommand {
                 await abGuilds.reduce(async (a, guild) => {
                     await a;
                     const g = await client.guilds.fetch(guild.id);
+                    client.logger.debug(`appeal ${id}: Checking ${guild.name}`);
                     g.bans
                         .fetch(id)
                         .then(b => {
                             if (b.reason.includes('Warden')) {
                                 g.bans
                                     .remove(id)
+                                    .then(() =>
+                                        client.logger.debug(`apeal ${id}: ${guild.name} - Unbanned`)
+                                    )
                                     .catch(() =>
-                                        client.logger.warn(`appeal ${guild.name}: Unable to unban ${id}`)
+                                        client.logger.warn(
+                                            `appeal ${id}: ${guild.name} - Unable to unban`
+                                        )
                                     );
                             }
                         })
-                        .catch(() => client.logger.warn(`appeal ${guild.name}: Invalid ban`));
+                        .catch(() => client.logger.warn(`appeal ${id}: ${guild.name} - Invalid ban`));
                 }, Promise.resolve());
 
                 client.logger.debug(`appeal ${id}: Finished`);
