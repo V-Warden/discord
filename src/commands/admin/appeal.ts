@@ -91,13 +91,11 @@ export default class AppealCommand extends SlashCommand {
                         },
                     },
                 });
-                console.log(abGuilds);
                 await abGuilds.reduce(async (a, guild) => {
                     await a;
                     client.guilds
                         .fetch(guild.id)
                         .then(g => {
-                            client.logger.debug(`appeal ${id}: Checking ${guild.name}`);
                             g.bans
                                 .fetch(id)
                                 .then(b => {
@@ -116,9 +114,7 @@ export default class AppealCommand extends SlashCommand {
                                             );
                                     }
                                 })
-                                .catch(() =>
-                                    client.logger.warn(`appeal ${id}: ${guild.name} - Invalid ban`)
-                                );
+                                .catch();
                         })
                         .catch(() => client.logger.warn(`appeal ${id}: Bot not in guild ${guild.id}`));
                 }, Promise.resolve());
