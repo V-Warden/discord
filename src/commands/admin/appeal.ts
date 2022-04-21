@@ -115,7 +115,7 @@ export default class AppealCommand extends SlashCommand {
                                     }
                                 })
                                 .catch(() =>
-                                    client.logger.debug(`appeal ${id}: ${guild.name} - Not banned`)
+                                    client.logger.warn(`appeal ${id}: ${guild.name} - Invalid ban`)
                                 );
                         })
                         .catch(() => client.logger.warn(`appeal ${id}: Bot not in guild ${guild.id}`));
