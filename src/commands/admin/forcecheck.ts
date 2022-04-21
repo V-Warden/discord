@@ -72,7 +72,9 @@ export default class ForceCheckCommand extends SlashCommand {
 
                     client.logger.debug(`forceCheck ${id}: Finished actioning ${guild.name}`);
                 })
-                .catch();
+                .catch(() =>
+                    client.logger.debug(`forceCheck ${id}: Skipping ${guild.name} not in guild`)
+                );
         }, Promise.resolve());
 
         const end = Date.now();
