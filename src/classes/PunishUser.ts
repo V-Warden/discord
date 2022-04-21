@@ -45,7 +45,13 @@ export class PunishUser {
         return (this.bot.channels.cache.get(logchan) || this.bot.channels.fetch(logchan)) as TextChannel;
     }
 
-    async actionUser(user: Users, guildInfo: Guild, member: GuildMember, toDM: boolean) {
+    async actionUser(
+        user: Users,
+        guildInfo: Guild,
+        member: GuildMember,
+        toDM: boolean,
+        process: boolean
+    ) {
         if (member.user.bot) return;
         if (this.skipGuilds.includes(guildInfo.id)) return;
 
@@ -132,22 +138,22 @@ export class PunishUser {
                     );
                 });
             } else {
-                this.failed.warnings += 1;
+                if (process) this.failed.warnings += 1;
             }
             this.bot.logger.info(
                 `punishUser ${guildInfo.name}: ${user.last_username} (${user.id}) - ${toDo}`
             );
-            this.success.warnings += 1;
+            if (process) this.success.warnings += 1;
         } else {
             const realType = toDo === 'BAN' ? noServerPerms.BAN : noServerPerms.KICK;
             if (!this.bot.hasNoPerms(guildInfo.id, realType)) {
                 let action;
                 if (toDo === 'BAN') {
                     action = member.ban({ reason: `Warden - User Type ${user.user_type}` });
-                    this.success.bans += 1;
+                    if (process) this.success.bans += 1;
                 } else {
                     action = member.kick(`Warden - User Type ${user.user_type}`);
-                    this.success.kicks += 1;
+                    if (process) this.success.kicks += 1;
                 }
                 action
                     .then(() => {
@@ -178,9 +184,9 @@ export class PunishUser {
                     .catch(e => {
                         this.bot.addNoPerms(guildInfo.id, realType);
                         if (toDo === 'BAN') {
-                            this.failed.bans += 1;
+                            if (process) this.failed.bans += 1;
                         } else {
-                            this.failed.kicks += 1;
+                            if (process) this.failed.kicks += 1;
                         }
 
                         if (!this.bot.hasNoPerms(guildInfo.id, noServerPerms.SEND_MESSAGE)) {
@@ -204,9 +210,9 @@ export class PunishUser {
                     });
             } else {
                 if (toDo === 'BAN') {
-                    this.failed.bans += 1;
+                    if (process) this.failed.bans += 1;
                 } else {
-                    this.failed.kicks += 1;
+                    if (process) this.failed.kicks += 1;
                 }
             }
         }

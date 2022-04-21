@@ -3,7 +3,6 @@ import { Colours } from '../../@types';
 import { Bot, SlashCommand } from '../../classes';
 import { sendEmbed } from '../../utils/messages';
 import { getUser } from '../../utils/users';
-import { punishUser } from '../../utils/users/punishUser';
 
 export default class ForceCheckCommand extends SlashCommand {
     constructor(client: Bot) {
@@ -69,13 +68,8 @@ export default class ForceCheckCommand extends SlashCommand {
                 .fetch(id)
                 .then(async member => {
                     const settings = guilds.find(g => g.id === guild.id);
-                    punishUser({
-                        client,
-                        member,
-                        oldUser,
-                        guildInfo: settings,
-                        toDM: false,
-                    });
+                    client.punish.actionUser(oldUser, settings, member, false, false);
+
                     client.logger.debug(`forceCheck ${id}: Finished actioning ${guild.name}`);
                 })
                 .catch(() =>

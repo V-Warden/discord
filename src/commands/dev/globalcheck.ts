@@ -53,7 +53,7 @@ export default class GlobalCheckCommand extends SlashCommand {
                             client.logger.debug(
                                 `globalCheck ${guild.name}: Actioning ${realMember.user.username}#${realMember.user.discriminator} (${member.id})`
                             );
-                            client.punish.actionUser(member, settings, realMember, false);
+                            client.punish.actionUser(member, settings, realMember, false, false);
                             await new Promise(resolve => setTimeout(resolve, 100));
                         }, Promise.resolve());
                         client.logger.debug(`globalCheck ${guild.name}: Finished actioning`);

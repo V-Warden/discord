@@ -5,7 +5,6 @@ import { sendEmbed } from '../../utils/messages';
 import data from '../../config.json';
 import { Colours } from '../../@types';
 import { UserStatus } from '@prisma/client';
-import { punishUser } from '../../utils/users/punishUser';
 
 export default class ProcfileCommand extends SlashCommand {
     constructor(client: Bot) {
@@ -128,13 +127,9 @@ export default class ProcfileCommand extends SlashCommand {
                             client.logger.debug(
                                 `globalFindCheck ${guild.name}: Actioning ${member.user.username}#${member.user.discriminator} (${member.id})`
                             );
-                            punishUser({
-                                client,
-                                member,
-                                oldUser: currentUsers.find(u => u.id === member.id),
-                                guildInfo: settings,
-                                toDM: false,
-                            });
+
+                            const user = currentUsers.find(u => u.id === member.id);
+                            client.punish.actionUser(user, settings, member, true, true);
                             await new Promise(resolve => setTimeout(resolve, 50));
                         }, Promise.resolve());
                         client.logger.debug(`globalFindCheck ${guild.name}: Finished actioning`);

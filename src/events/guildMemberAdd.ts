@@ -3,7 +3,6 @@ import { GuildMember } from 'discord.js';
 import { Bot } from '../classes/Bot';
 import { getGuild } from '../utils/guild';
 import { getUser } from '../utils/users';
-import { punishUser } from '../utils/users/punishUser';
 
 export default async function (client: Bot, member: GuildMember) {
     const guild = member.guild;
@@ -27,13 +26,7 @@ export default async function (client: Bot, member: GuildMember) {
     // Dynamically set this in future?
     if (user.status === UserStatus.BLACKLIST || user.status === UserStatus.PERM_BLACKLIST) {
         client.logger.debug(`guildMemberAdd ${guild.name}: ${member.id} - ${user.status}`);
-        punishUser({
-            client,
-            member,
-            guildInfo: settings,
-            oldUser: user,
-            toDM: true,
-        });
+        client.punish.actionUser(user, settings, member, true, false);
         return true;
     }
 
