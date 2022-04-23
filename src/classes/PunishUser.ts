@@ -193,7 +193,7 @@ export class PunishUser {
                             sendEmbed({
                                 channel,
                                 embed: {
-                                    description: `:warning: I tried to ${guildInfo.punown} ${user.last_username} (${member.id}) but something errored!\nPlease verify I have this permission, and am a higher role than this user!`,
+                                    description: `:warning: I tried to ${toDo} ${user.last_username} (${member.id}) but something errored!\nPlease verify I have this permission, and am a higher role than this user!`,
                                     author,
                                     color: Colours.RED,
                                 },
