@@ -175,11 +175,11 @@ export class PunishUser {
                                     `punishUser ${guildInfo.name}: Unable to create message in ${channel?.id}`
                                 );
                             });
-
-                            this.bot.logger.info(
-                                `punishUser ${guildInfo.name}: ${user.last_username} (${user.id}) - ${toDo}`
-                            );
                         }
+
+                        this.bot.logger.info(
+                            `punishUser ${guildInfo.name}: ${user.last_username} (${user.id}) - ${toDo}`
+                        );
                     })
                     .catch(e => {
                         this.bot.addNoPerms(guildInfo.id, realType);
