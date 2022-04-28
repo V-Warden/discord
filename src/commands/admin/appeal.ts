@@ -26,7 +26,7 @@ export default class AppealCommand extends SlashCommand {
                     required: false,
                 },
             ],
-            defaultPermission: true,
+            defaultPermission: false,
             staffRole: 'admin',
         });
     }

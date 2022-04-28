@@ -39,7 +39,7 @@ export default class AdminCommand extends SlashCommand {
                     ],
                 },
             ],
-            defaultPermission: true,
+            defaultPermission: false,
             staffRole: 'dev',
         });
     }

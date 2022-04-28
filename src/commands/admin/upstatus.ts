@@ -65,7 +65,7 @@ export default class UpstatusCommand extends SlashCommand {
                     required: false,
                 },
             ],
-            defaultPermission: true,
+            defaultPermission: false,
             staffRole: 'admin',
         });
     }

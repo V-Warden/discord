@@ -13,7 +13,7 @@ export default class ScanUsers extends SlashCommand {
             description: 'Scans your discord users and punishes them if blacklisted',
             type: 'CHAT_INPUT',
             options: [],
-            defaultPermission: true,
+            defaultPermission: false,
             permission: 'ADMINISTRATOR',
             cooldown: 3600,
         });

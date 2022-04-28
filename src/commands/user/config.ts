@@ -147,7 +147,7 @@ export default class ConfigCommand extends SlashCommand {
                     ],
                 },
             ],
-            defaultPermission: true,
+            defaultPermission: false,
             permission: 'ADMINISTRATOR',
         });
     }

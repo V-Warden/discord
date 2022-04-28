@@ -78,7 +78,7 @@ export default class BadServerManagementCommand extends SlashCommand {
                     ],
                 },
             ],
-            defaultPermission: true,
+            defaultPermission: false,
             staffRole: 'dev',
         });
     }

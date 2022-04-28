@@ -12,7 +12,7 @@ export default class GlobalCheckCommand extends SlashCommand {
             description: 'Global check on all guilds (Dev)',
             type: 'CHAT_INPUT',
             options: [],
-            defaultPermission: true,
+            defaultPermission: false,
             staffRole: 'dev',
         });
     }

@@ -26,7 +26,7 @@ export default class CheckUserAdminCommand extends SlashCommand {
                     required: false,
                 },
             ],
-            defaultPermission: true,
+            defaultPermission: false,
             staffRole: 'admin',
         });
     }

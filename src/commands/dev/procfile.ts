@@ -14,7 +14,7 @@ export default class ProcfileCommand extends SlashCommand {
             description: 'Process and Import User files (Dev)',
             type: 'CHAT_INPUT',
             options: [],
-            defaultPermission: true,
+            defaultPermission: false,
             staffRole: 'dev',
         });
     }

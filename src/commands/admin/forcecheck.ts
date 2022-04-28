@@ -25,7 +25,7 @@ export default class ForceCheckCommand extends SlashCommand {
                     required: false,
                 },
             ],
-            defaultPermission: true,
+            defaultPermission: false,
             staffRole: 'admin',
         });
     }

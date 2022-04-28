@@ -19,7 +19,7 @@ export default class FixGuildCommand extends SlashCommand {
                     required: true,
                 },
             ],
-            defaultPermission: true,
+            defaultPermission: false,
             staffRole: 'dev',
         });
     }

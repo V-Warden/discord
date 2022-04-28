@@ -58,7 +58,7 @@ export default class AddUserCommand extends SlashCommand {
                     required: false,
                 },
             ],
-            defaultPermission: true,
+            defaultPermission: false,
             staffRole: 'dev',
         });
     }
