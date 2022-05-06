@@ -85,7 +85,7 @@ export default async function (client: Bot, interaction: ButtonInteraction): Pro
             });
 
             const filter = (i: SelectMenuInteraction) => {
-                return i.user.id === interaction.user.id;
+                return i.user.id === interaction.user.id && i.memberPermissions.has('ADMINISTRATOR');
             };
 
             let logChannel;
