@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/V-Warden/discord/compare/v1.3.0...v2.0.0) (2022-05-06)
+
+
+### Features
+
+* **config:** new configuration menu ([afcc5bc](https://github.com/V-Warden/discord/commit/afcc5bc6b55f79bdafaf1df82bebac2ec6493e2c))
+* **permissions:** dev/admin commands only in main guild ([43fb61d](https://github.com/V-Warden/discord/commit/43fb61d4ba665a92be401d109790bca0fde42f94))
+* **PunishUser:** convert all ([b74a496](https://github.com/V-Warden/discord/commit/b74a4965023e8e42fa9e7c442586b0c0b931c9fb))
+
+
+### Bug Fixes
+
+* **appeal/forcecheck:** catch ([421b624](https://github.com/V-Warden/discord/commit/421b624e0e2fa22c9ca838e0b8bf98c8a9de15b8))
+* **appeal:** fetch guild if not cached ([73dd265](https://github.com/V-Warden/discord/commit/73dd2655fa71ca52073b96ef99e9847f45306b11))
+* **appeal:** keep going if bot not in guild ([bc33e2a](https://github.com/V-Warden/discord/commit/bc33e2a8a70989e2ef2a95b4a6f3c61ac0747d9c))
+* **config:** require interaction user to have admin perms ([16e1a5f](https://github.com/V-Warden/discord/commit/16e1a5f8192e998a7d5ab08037ea8f824554e4d2))
+* **interactionCreate:** set default value ([6b9523f](https://github.com/V-Warden/discord/commit/6b9523fae783958ad6a8bd97c8ca0d30982f4e06))
+* **PunishUser:** fix logging ([cc15887](https://github.com/V-Warden/discord/commit/cc1588760710e708f9e8f3fbae3a816bb82b0897))
+* **PunishUser:** visual bug ([e8f6033](https://github.com/V-Warden/discord/commit/e8f603346ac2fc2ab246befeb5bf5ec7100e4502))
+* **scanusers:** add false processing ([b69aa73](https://github.com/V-Warden/discord/commit/b69aa733245ef577241c3e1f02a5a7b9a602cc81))
+
+
+### Chores
+
+* **appeal:** add more debugging ([8538cf9](https://github.com/V-Warden/discord/commit/8538cf93d4473af9d94bafcdbce84740be5c3906))
+* **appeal:** remove debug ([cfa11fb](https://github.com/V-Warden/discord/commit/cfa11fb8e0808b65ddff018f82b9d9281eae1058))
+* **appeal:** revert ([b20abeb](https://github.com/V-Warden/discord/commit/b20abeb0502a48926380498935803e4b42550291))
+* **appeal:** throttle ([87de289](https://github.com/V-Warden/discord/commit/87de2896e3babce6c0a6e208abcaf23216b5ad74))
+* **forcecheck:** remove debug ([c4f4ba4](https://github.com/V-Warden/discord/commit/c4f4ba4b36624e4ff37718dbd59c838e5f675e9f))
+* **globalcheck:** remove unneeded import ([ca3e688](https://github.com/V-Warden/discord/commit/ca3e6888502468c41d9064b65ca36dea18c2da1d))
+
 ## 1.3.0 (2022-04-20)
 
 
