@@ -13,11 +13,15 @@ export async function sendEmbed({
         components,
     };
 
-    if (content) options.content = content;
-    if (channel) return await channel.send(options);
-    else {
-        if (interaction.deferred || interaction.replied)
-            return await interaction.editReply({ ...options, ...{ ephemeral: hidden } });
-        else return await interaction.reply({ ...options, ...{ ephemeral: hidden } });
+    try {
+        if (content) options.content = content;
+        if (channel) return await channel.send(options);
+        else {
+            if (interaction.deferred || interaction.replied)
+                return await interaction.editReply({ ...options, ...{ ephemeral: hidden } });
+            else return await interaction.reply({ ...options, ...{ ephemeral: hidden } });
+        }
+    } catch {
+        return null;
     }
 }
