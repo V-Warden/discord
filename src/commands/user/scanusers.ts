@@ -25,20 +25,36 @@ export default class ScanUsers extends SlashCommand {
             return false;
         }
 
-        client.logger.debug(`scanUsers ${interaction.guild.name}: Initiated by ${interaction.user.id}`);
-
         const begin = Date.now();
         interaction.guild.members.fetch().then(async () => {
             const settings = await getGuild({
                 client,
                 id: interaction.guildId,
             });
+
             if (!settings) {
                 client.logger.error(
                     `guildMemberAdd ${interaction.guild.name}: Unknown guild - Owner is: ${interaction.guild.ownerId}`
                 );
                 return false;
             }
+
+            if (!settings.enabled) {
+                sendEmbed({
+                    interaction,
+                    embed: {
+                        description:
+                            '`🔴` Actioning is disabled on this server, you can enable it using `/config`',
+                        color: Colours.RED,
+                    },
+                });
+                return false;
+            }
+
+            client.logger.debug(
+                `scanUsers ${interaction.guild.name}: Initiated by ${interaction.user.id}`
+            );
+
             sendEmbed({
                 interaction,
                 embed: {

@@ -17,4 +17,6 @@ export interface EmbedOptions {
     embed: MessageEmbed | MessageEmbedOptions;
 
     components?: (MessageActionRow | MessageActionRowOptions)[] | undefined;
+
+    hidden?: boolean;
 }

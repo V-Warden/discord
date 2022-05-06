@@ -1,3 +1,8 @@
+import { BaseCommandInteraction, MessageActionRow } from 'discord.js';
+import { Colours } from '../@types';
+import { Bot } from '../classes';
+import { sendEmbed } from './messages';
+
 export function combineRoles(oldRoles: string, newRoles: string) {
     // Takes a delimited role string and combines it, removing dupes
     const wipOldArr = oldRoles.split(';');

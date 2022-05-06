@@ -10,6 +10,7 @@ import glob from 'glob';
 import { promisify } from 'util';
 import _ from 'lodash';
 import { PunishUser } from './PunishUser';
+import { Config } from './Config';
 const globPromise = promisify(glob);
 
 /**
@@ -20,6 +21,7 @@ class Bot extends Client {
     processing: Processing;
     punish: PunishUser;
     db: PrismaClient;
+    config: Config;
 
     /**
      * Collection for bot commands
@@ -58,6 +60,7 @@ class Bot extends Client {
         this.logger = logger;
         this.processing = processing;
         this.punish = new PunishUser(this);
+        this.config = new Config(this);
         this.db = db;
     }
 

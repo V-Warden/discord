@@ -52,6 +52,12 @@ export class PunishUser {
         toDM: boolean,
         process: boolean
     ) {
+        if (!guildInfo.enabled) {
+            this.bot.logger.warn(
+                `PunishUser ${guildInfo.name}: Skipping due to actioning being disabled`
+            );
+            return;
+        }
         if (member.user.bot) return;
         if (this.skipGuilds.includes(guildInfo.id)) return;
 

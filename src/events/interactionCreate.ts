@@ -1,5 +1,12 @@
 // import { ChannelType, LogType } from '@prisma/client';
-import { BaseCommandInteraction } from 'discord.js';
+import { Punish, UserType } from '@prisma/client';
+import {
+    BaseCommandInteraction,
+    ButtonInteraction,
+    MessageActionRow,
+    MessageSelectOptionData,
+    SelectMenuInteraction,
+} from 'discord.js';
 import { Colours } from '../@types';
 import { Bot } from '../classes/Bot';
 import { sendEmbed } from '../utils/messages';
@@ -67,6 +74,154 @@ export default async function (client: Bot, interaction: BaseCommandInteraction)
                 },
             }).catch();
         }
+    } else {
+        if (interaction.isButton()) {
+            const bInt = interaction as ButtonInteraction;
+
+            if (bInt.customId.includes('CONFIG_')) {
+                client.emit('configMenu', bInt);
+                return false;
+            } else if (bInt.customId === 'PUNISHMENT_PANEL') {
+                await interaction.reply({
+                    embeds: [
+                        {
+                            author: {
+                                name: 'Punishment Menu!',
+                                iconURL: client.user.defaultAvatarURL,
+                            },
+                            description: 'Select the type to update',
+                            color: Colours.GREEN,
+                        },
+                    ],
+                    components: [
+                        new MessageActionRow().addComponents([
+                            {
+                                type: 'SELECT_MENU',
+                                customId: 'TYPE_OF_PUNISHMENT',
+                                placeholder: 'Nothing selected',
+                                options: [
+                                    {
+                                        label: 'Leaker',
+                                        value: UserType.LEAKER,
+                                    },
+                                    {
+                                        label: 'Cheater',
+                                        value: UserType.CHEATER,
+                                    },
+                                    {
+                                        label: 'Supporter',
+                                        value: UserType.SUPPORTER,
+                                    },
+                                    {
+                                        label: 'Owner',
+                                        value: UserType.OWNER,
+                                    },
+                                ],
+                            },
+                        ]),
+                    ],
+                });
+
+                const filter = (i: SelectMenuInteraction) => {
+                    return i.user.id === interaction.user.id;
+                };
+
+                let userType;
+                await interaction.channel
+                    .awaitMessageComponent({ filter, componentType: 'SELECT_MENU', time: 60000 })
+                    .then(async i => {
+                        userType = i.values[0];
+                        const message = await i.channel.messages.fetch(i.message.id);
+                        message.delete();
+                    })
+                    .catch(err => console.log(err));
+
+                const punishment = await sendPunish(client, bInt, userType);
+
+                switch (userType) {
+                    case 'LEAKER': {
+                        await client.db.guild.update({
+                            where: { id: interaction.guildId },
+                            data: { punleak: punishment as Punish },
+                        });
+                        break;
+                    }
+                    case 'CHEATER': {
+                        await client.db.guild.update({
+                            where: { id: interaction.guildId },
+                            data: { puncheat: punishment as Punish },
+                        });
+                        break;
+                    }
+                    case 'SUPPORTER': {
+                        await client.db.guild.update({
+                            where: { id: interaction.guildId },
+                            data: { punsupp: punishment as Punish },
+                        });
+                        break;
+                    }
+                    case 'OWNER': {
+                        await client.db.guild.update({
+                            where: { id: interaction.guildId },
+                            data: { punown: punishment as Punish },
+                        });
+                        break;
+                    }
+                }
+
+                client.config.sendConfigMenu(interaction);
+            }
+        }
     }
     return true;
+}
+
+async function sendPunish(client: Bot, interaction: ButtonInteraction, type: string): Promise<string> {
+    const punishments: MessageSelectOptionData[] = Object.keys(Punish)
+        .map(x => {
+            return <MessageSelectOptionData>{ label: `${x}`, value: x };
+        })
+        .filter(x => {
+            if (Object.keys(x).length === 0) return false;
+            else return true;
+        });
+
+    await interaction.channel.send({
+        embeds: [
+            {
+                author: {
+                    name: 'Punishment Menu!',
+                    iconURL: client.user.defaultAvatarURL,
+                },
+                description: `Update the punishment type for people with type of \`${type}\``,
+                color: Colours.GREEN,
+            },
+        ],
+        components: [
+            new MessageActionRow().addComponents([
+                {
+                    type: 'SELECT_MENU',
+                    customId: 'CONFIG_PUNISHMENTS',
+                    placeholder: 'Nothing selected',
+                    options: punishments,
+                },
+            ]),
+        ],
+    });
+
+    const filter = (i: SelectMenuInteraction) => {
+        return i.user.id === interaction.user.id;
+    };
+
+    let punishment;
+    await interaction.channel
+        .awaitMessageComponent({ filter, componentType: 'SELECT_MENU', time: 60000 })
+        .then(async i => {
+            punishment = i.values[0];
+            const message = await i.channel.messages.fetch(i.message.id);
+            message.delete();
+        })
+        .catch(err => console.log(err));
+
+    return punishment;
 }
