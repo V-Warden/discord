@@ -61,47 +61,60 @@ export default async function (client: Bot, interaction: ButtonInteraction): Pro
                     else return true;
                 });
 
-            await interaction.reply({
-                embeds: [
-                    {
-                        author: {
-                            name: 'Log Channel!',
-                            iconURL: client.user.defaultAvatarURL,
-                        },
-                        description: '**Select a channel from the menu to send all Warden Logs to!**',
-                        color: Colours.GREEN,
-                    },
-                ],
-                components: [
-                    new MessageActionRow().addComponents([
+            try {
+                await interaction.reply({
+                    embeds: [
                         {
-                            type: 'SELECT_MENU',
-                            customId: 'CONFIG_LOG_CHANNEL',
-                            placeholder: 'Nothing selected',
-                            options: channels,
+                            author: {
+                                name: 'Log Channel!',
+                                iconURL: client.user.defaultAvatarURL,
+                            },
+                            description:
+                                '**Select a channel from the menu to send all Warden Logs to!**',
+                            color: Colours.GREEN,
                         },
-                    ]),
-                ],
-            });
+                    ],
+                    components: [
+                        new MessageActionRow().addComponents([
+                            {
+                                type: 'SELECT_MENU',
+                                customId: 'CONFIG_LOG_CHANNEL',
+                                placeholder: 'Nothing selected',
+                                options: channels,
+                            },
+                        ]),
+                    ],
+                });
 
-            const filter = (i: SelectMenuInteraction) => {
-                return i.user.id === interaction.user.id && i.memberPermissions.has('ADMINISTRATOR');
-            };
+                const filter = (i: SelectMenuInteraction) => {
+                    return i.user.id === interaction.user.id && i.memberPermissions.has('ADMINISTRATOR');
+                };
 
-            let logChannel;
-            await interaction.channel
-                .awaitMessageComponent({ filter, componentType: 'SELECT_MENU', time: 60000 })
-                .then(async i => {
-                    logChannel = i.values[0];
-                    const message = await i.channel.messages.fetch(i.message.id);
-                    message.delete();
-                })
-                .catch(err => console.log(err));
+                let logChannel;
+                await interaction.channel
+                    .awaitMessageComponent({ filter, componentType: 'SELECT_MENU', time: 60000 })
+                    .then(async i => {
+                        logChannel = i.values[0];
+                        const message = await i.channel.messages.fetch(i.message.id);
+                        message.delete();
+                    })
+                    .catch(err => console.log(err));
 
-            await client.db.guild.update({
-                where: { id: message.guildId },
-                data: { logchan: logChannel },
-            });
+                await client.db.guild.update({
+                    where: { id: message.guildId },
+                    data: { logchan: logChannel },
+                });
+            } catch {
+                await interaction.reply({
+                    embeds: [
+                        {
+                            description:
+                                'This interaction has failed, please make sure you have channels, if you do report this in the Warden Discord',
+                            color: Colours.RED,
+                        },
+                    ],
+                });
+            }
             break;
         }
     }
