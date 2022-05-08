@@ -27,6 +27,7 @@ export class Config {
         }
         if (this.guildMessageIDs.has(interaction.guildId)) {
             const message = this.guildMessageIDs.get(interaction.guildId);
+            await message.channel.fetch(); // fix channel not in cache
 
             await message.edit({
                 embeds: [
