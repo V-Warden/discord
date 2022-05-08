@@ -80,7 +80,9 @@ export default async function (client: Bot, interaction: ButtonInteraction): Pro
                     .awaitMessages({ filter, time: 60000, max: 1 })
                     .then(async m => {
                         const mentions = m.first().mentions.channels;
-                        m.first().delete();
+                        m.first()
+                            .delete()
+                            .catch(() => console.log('unable to delete message'));
                         if (mentions.size === 1) {
                             await client.db.guild.update({
                                 where: { id: message.guildId },
