@@ -50,7 +50,7 @@ export default async function (client: Bot, interaction: ButtonInteraction): Pro
             break;
         }
         case 'LOG_CHANNEL': {
-            const channels: MessageSelectOptionData[] = interaction.guild.channels.cache
+            const channels: MessageSelectOptionData[] = (await interaction.guild.channels.fetch())
                 .map(channel => {
                     if (channel.type === 'GUILD_TEXT')
                         return <MessageSelectOptionData>{ label: `#${channel.name}`, value: channel.id };
