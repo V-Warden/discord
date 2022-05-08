@@ -1,10 +1,4 @@
-import {
-    BaseCommandInteraction,
-    ButtonInteraction,
-    MessageActionRow,
-    MessageSelectOptionData,
-    SelectMenuInteraction,
-} from 'discord.js';
+import { BaseCommandInteraction, ButtonInteraction, Message } from 'discord.js';
 import { Colours } from '../@types';
 import { Bot } from '../classes';
 export default async function (client: Bot, interaction: ButtonInteraction): Promise<void> {
@@ -50,17 +44,17 @@ export default async function (client: Bot, interaction: ButtonInteraction): Pro
             break;
         }
         case 'LOG_CHANNEL': {
-            const channels: MessageSelectOptionData[] = (await interaction.guild.channels.fetch())
-                .map(channel => {
-                    if (channel.type === 'GUILD_TEXT')
-                        return <MessageSelectOptionData>{ label: `#${channel.name}`, value: channel.id };
-                    else return <MessageSelectOptionData>{};
-                })
-                .filter(x => {
-                    if (Object.keys(x).length === 0) return false;
-                    else return true;
-                });
-
+            // Comment out for now until find a fix for component length max being 25
+            // const channels: MessageSelectOptionData[] = (await interaction.guild.channels.fetch())
+            //     .map(channel => {
+            //         if (channel.type === 'GUILD_TEXT')
+            //             return <MessageSelectOptionData>{ label: `#${channel.name}`, value: channel.id };
+            //         else return <MessageSelectOptionData>{};
+            //     })
+            //     .filter(x => {
+            //         if (Object.keys(x).length === 0) return false;
+            //         else return true;
+            //     });
             try {
                 await interaction.reply({
                     embeds: [
@@ -70,41 +64,34 @@ export default async function (client: Bot, interaction: ButtonInteraction): Pro
                                 iconURL: client.user.defaultAvatarURL,
                             },
                             description:
-                                '**Select a channel from the menu to send all Warden Logs to!**',
+                                '**Please respond with the channel you wish to send logs to!**\nEg; `#warden-logs`',
                             color: Colours.GREEN,
                         },
                     ],
-                    components: [
-                        new MessageActionRow().addComponents([
-                            {
-                                type: 'SELECT_MENU',
-                                customId: 'CONFIG_LOG_CHANNEL',
-                                placeholder: 'Nothing selected',
-                                options: channels,
-                            },
-                        ]),
-                    ],
                 });
 
-                const filter = (i: SelectMenuInteraction) => {
-                    return i.user.id === interaction.user.id && i.memberPermissions.has('ADMINISTRATOR');
+                const filter = (m: Message) => {
+                    return (
+                        m.author.id === interaction.user.id && m.member.permissions.has('ADMINISTRATOR')
+                    );
                 };
 
-                let logChannel;
                 await interaction.channel
-                    .awaitMessageComponent({ filter, componentType: 'SELECT_MENU', time: 60000 })
-                    .then(async i => {
-                        logChannel = i.values[0];
-                        const message = await i.channel.messages.fetch(i.message.id);
-                        message.delete();
+                    .awaitMessages({ filter, time: 60000, max: 1 })
+                    .then(async m => {
+                        const mentions = m.first().mentions.channels;
+                        m.first().delete();
+                        if (mentions.size === 1) {
+                            await client.db.guild.update({
+                                where: { id: message.guildId },
+                                data: { logchan: mentions.first().id },
+                            });
+                        }
+                        interaction.deleteReply();
                     })
                     .catch(err => console.log(err));
-
-                await client.db.guild.update({
-                    where: { id: message.guildId },
-                    data: { logchan: logChannel },
-                });
-            } catch {
+            } catch (e) {
+                console.log(e);
                 await interaction.reply({
                     embeds: [
                         {
