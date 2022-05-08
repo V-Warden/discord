@@ -14,6 +14,17 @@ export class Config {
 
     async sendConfigMenu(interaction: BaseCommandInteraction) {
         const guild = await this.bot.db.guild.findUnique({ where: { id: interaction.guildId } });
+        if (!guild) {
+            sendEmbed({
+                interaction,
+                embed: {
+                    description:
+                        'Invalid guild found, please reinvite the bot. If this does not fix the issue, please open a support ticket in the Official Warden Discord',
+                    color: Colours.RED,
+                },
+            });
+            return;
+        }
         if (this.guildMessageIDs.has(interaction.guildId)) {
             const message = this.guildMessageIDs.get(interaction.guildId);
 
