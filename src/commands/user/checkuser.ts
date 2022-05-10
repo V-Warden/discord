@@ -32,7 +32,7 @@ export default class CheckUserCommand extends SlashCommand {
     public async run(client: Bot, interaction: BaseCommandInteraction): Promise<boolean> {
         const id =
             ((interaction.options.getUser('user')?.id ||
-                interaction.options.get('userid')?.value) as Snowflake) ?? interaction.member.user.id;
+                interaction.options.get('userid')?.value) as Snowflake) ?? interaction.user.id;
 
         const isNumber = /^\d+$/.test(id);
         if (id.length !== 18 || !isNumber) {
