@@ -1,3 +1,4 @@
+import { Guild } from '@prisma/client';
 import { BaseCommandInteraction, Collection, Message, MessageActionRow, Snowflake } from 'discord.js';
 import { Colours } from '../@types';
 import { sendEmbed } from '../utils/messages';
@@ -25,36 +26,39 @@ export class Config {
             });
             return;
         }
+        const fields = this.generateFields(guild);
+        const buttons = this.generateButtons();
         if (this.guildMessageIDs.has(interaction.guildId)) {
             const message = this.guildMessageIDs.get(interaction.guildId);
             await message.channel.fetch(); // fix channel not in cache
 
-            await message.edit({
-                embeds: [
-                    {
-                        ...message.embeds[0],
-                        ...{ description: `${message.embeds[0].description}` },
-                        ...{
-                            fields: [
-                                {
-                                    name: 'Details',
-                                    inline: false,
-                                    value: `Actioning -> \`${
-                                        guild.enabled ? 'ENABLED' : 'DISABLED'
-                                    }\`\nUnban on Appeal -> \`${guild.appealunban}\`\nLog Channel -> <#${
-                                        guild.logchan
-                                    }>\n`,
-                                },
-                                {
-                                    name: 'Punishments',
-                                    inline: false,
-                                    value: `Leaker -> \`${guild.punleak}\`\nCheater -> \`${guild.puncheat}\`\nSupporter -> \`${guild.punsupp}\`\nOwner -> \`${guild.punown}\``,
-                                },
-                            ],
+            await message
+                .edit({
+                    embeds: [
+                        {
+                            ...message.embeds[0],
+                            ...{ description: `${message.embeds[0].description}` },
+                            ...{
+                                fields: fields,
+                            },
                         },
-                    },
-                ],
-            });
+                    ],
+                })
+                .catch(() => {
+                    sendEmbed({
+                        channel: interaction.channel,
+                        embed: {
+                            author: {
+                                name: 'Welcome to Warden!',
+                                iconURL: this.bot.user.defaultAvatarURL,
+                            },
+                            fields: fields,
+                            description: 'To setup the bot you will need to use the buttons below.',
+                            color: Colours.GREEN,
+                        },
+                        components: [buttons],
+                    }).then(res => this.guildMessageIDs.set(interaction.guildId, res as Message));
+                });
         } else {
             sendEmbed({
                 channel: interaction.channel,
@@ -63,58 +67,62 @@ export class Config {
                         name: 'Welcome to Warden!',
                         iconURL: this.bot.user.defaultAvatarURL,
                     },
-                    fields: [
-                        {
-                            name: 'Details',
-                            inline: false,
-                            value: `Actioning -> \`${
-                                guild.enabled ? 'ENABLED' : 'DISABLED'
-                            }\`\nUnban on Appeal -> \`${guild.appealunban}\`\nLog Channel -> <#${
-                                guild.logchan
-                            }>\n`,
-                        },
-                        {
-                            name: 'Punishments',
-                            inline: false,
-                            value: `Leaker -> \`${guild.punleak}\`\nCheater -> \`${guild.puncheat}\`\nSupporter -> \`${guild.punsupp}\`\nOwner -> \`${guild.punown}\``,
-                        },
-                    ],
+                    fields: fields,
                     description: 'To setup the bot you will need to use the buttons below.',
                     color: Colours.GREEN,
                 },
-                components: [
-                    new MessageActionRow().addComponents([
-                        {
-                            type: 'BUTTON',
-                            style: 'SECONDARY',
-                            customId: 'CONFIG_TOGGLE_ACTIONING',
-                            emoji: '🤖',
-                            label: 'Toggle Actioning',
-                        },
-                        {
-                            type: 'BUTTON',
-                            style: 'SECONDARY',
-                            customId: 'CONFIG_TOGGLE_UNBAN',
-                            emoji: '🧹',
-                            label: 'Toggle Unban',
-                        },
-                        {
-                            type: 'BUTTON',
-                            style: 'SECONDARY',
-                            customId: 'CONFIG_LOG_CHANNEL',
-                            emoji: '📜',
-                            label: 'Log Channel',
-                        },
-                        {
-                            type: 'BUTTON',
-                            style: 'SECONDARY',
-                            customId: 'PUNISHMENT_PANEL',
-                            emoji: '📕',
-                            label: 'Change Punishments',
-                        },
-                    ]),
-                ],
+                components: [buttons],
             }).then(res => this.guildMessageIDs.set(interaction.guildId, res as Message));
         }
+    }
+
+    generateFields(guild: Guild) {
+        return [
+            {
+                name: 'Details',
+                inline: false,
+                value: `Actioning -> \`${
+                    guild.enabled ? 'ENABLED' : 'DISABLED'
+                }\`\nUnban on Appeal -> \`${guild.appealunban}\`\nLog Channel -> <#${guild.logchan}>\n`,
+            },
+            {
+                name: 'Punishments',
+                inline: false,
+                value: `Leaker -> \`${guild.punleak}\`\nCheater -> \`${guild.puncheat}\`\nSupporter -> \`${guild.punsupp}\`\nOwner -> \`${guild.punown}\``,
+            },
+        ];
+    }
+
+    generateButtons() {
+        return new MessageActionRow().addComponents([
+            {
+                type: 'BUTTON',
+                style: 'SECONDARY',
+                customId: 'CONFIG_TOGGLE_ACTIONING',
+                emoji: '🤖',
+                label: 'Toggle Actioning',
+            },
+            {
+                type: 'BUTTON',
+                style: 'SECONDARY',
+                customId: 'CONFIG_TOGGLE_UNBAN',
+                emoji: '🧹',
+                label: 'Toggle Unban',
+            },
+            {
+                type: 'BUTTON',
+                style: 'SECONDARY',
+                customId: 'CONFIG_LOG_CHANNEL',
+                emoji: '📜',
+                label: 'Log Channel',
+            },
+            {
+                type: 'BUTTON',
+                style: 'SECONDARY',
+                customId: 'PUNISHMENT_PANEL',
+                emoji: '📕',
+                label: 'Change Punishments',
+            },
+        ]);
     }
 }
