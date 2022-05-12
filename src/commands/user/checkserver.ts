@@ -74,47 +74,59 @@ export default class CheckServerCommand extends SlashCommand {
 
         if (sid || invite) {
             let id;
-            if (invite) {
-                const inv = await client.fetchInvite(invite);
-                id = inv.guild.id;
-            } else {
-                id = sid;
-            }
-            client.db.badServers
-                .findFirst({ where: { id: id } })
-                .then(server => {
-                    const addedBy = /^\d+$/.test(server.addedBy)
-                        ? `<@${server.addedBy}>`
-                        : server.addedBy;
-                    sendEmbed({
-                        interaction,
-                        embed: {
-                            title: ':shield: Server Blacklisted',
-                            color: Colours.RED,
-                            fields: [
-                                {
-                                    name: 'Server Information',
-                                    value: `**ID**: ${server.id} / **Name**: ${server.name}\n
+            try {
+                if (invite) {
+                    const inv = await client.fetchInvite(invite);
+                    id = inv.guild.id;
+                } else {
+                    id = sid;
+                }
+                client.db.badServers
+                    .findFirst({ where: { id: id } })
+                    .then(server => {
+                        const addedBy = /^\d+$/.test(server.addedBy)
+                            ? `<@${server.addedBy}>`
+                            : server.addedBy;
+                        sendEmbed({
+                            interaction,
+                            embed: {
+                                title: ':shield: Server Blacklisted',
+                                color: Colours.RED,
+                                fields: [
+                                    {
+                                        name: 'Server Information',
+                                        value: `**ID**: ${server.id} / **Name**: ${server.name}\n
                                 **Details**: ${server.type.toLowerCase()}\n
                                 **Date Added**: ${server.createdAt
                                     .toISOString()
                                     .replace(/T/, ' ')
                                     .replace(/\..+/, '')}\n
                                 **Added By**: ${addedBy}`,
-                                },
-                            ],
-                        },
+                                    },
+                                ],
+                            },
+                        });
+                    })
+                    .catch(() => {
+                        sendEmbed({
+                            interaction,
+                            embed: {
+                                description: '`🟢` Server ID not found in the database',
+                                color: Colours.GREEN,
+                            },
+                        });
                     });
-                })
-                .catch(() => {
-                    sendEmbed({
-                        interaction,
-                        embed: {
-                            description: '`🟢` Server ID not found in the database',
-                            color: Colours.GREEN,
-                        },
-                    });
+            } catch {
+                sendEmbed({
+                    interaction,
+                    hidden: true,
+                    embed: {
+                        description: 'Invalid invite or invite has expired',
+                        color: Colours.RED,
+                    },
                 });
+                return false;
+            }
         } else {
             client.db.badServers
                 .findFirst({
