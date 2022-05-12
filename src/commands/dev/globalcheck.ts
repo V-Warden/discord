@@ -28,8 +28,8 @@ export default class GlobalCheckCommand extends SlashCommand {
 
         for await (const guild of realGuilds) {
             const settings = guilds.find(g => g.id === guild.id);
-            const isDisabled = !settings.enabled ?? false;
-            if (isDisabled) {
+            const isEnabled = settings?.enabled ?? true;
+            if (!isEnabled) {
                 client.logger.warn(
                     `globalCheck ${guild.name}: Skipping due to actioning being disabled`
                 );
