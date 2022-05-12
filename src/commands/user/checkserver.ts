@@ -23,6 +23,12 @@ export default class CheckServerCommand extends SlashCommand {
                     description: 'Server Name to check',
                     required: false,
                 },
+                {
+                    type: 3,
+                    name: 'invite',
+                    description: 'Server Invite to check',
+                    required: false,
+                },
             ],
             defaultPermission: true,
         });
@@ -31,12 +37,13 @@ export default class CheckServerCommand extends SlashCommand {
     public async run(client: Bot, interaction: BaseCommandInteraction): Promise<boolean> {
         const sid = interaction.options.get('id')?.value as Snowflake;
         const sname = interaction.options.get('name')?.value as string;
+        const invite = interaction.options.get('invite')?.value as string;
 
-        if (!sid && !sname) {
+        if (!sid && !sname && !invite) {
             sendEmbed({
                 interaction,
                 embed: {
-                    description: '`🟡` You must provide either a name or id to check',
+                    description: '`🟡` You must provide either a name, id or invite to check',
                     color: Colours.YELLOW,
                 },
             });
@@ -65,9 +72,16 @@ export default class CheckServerCommand extends SlashCommand {
             return false;
         }
 
-        if (sid) {
+        if (sid || invite) {
+            let id;
+            if (invite) {
+                const inv = await client.fetchInvite(invite);
+                id = inv.guild.id;
+            } else {
+                id = sid;
+            }
             client.db.badServers
-                .findFirst({ where: { id: sid } })
+                .findFirst({ where: { id: id } })
                 .then(server => {
                     const addedBy = /^\d+$/.test(server.addedBy)
                         ? `<@${server.addedBy}>`
