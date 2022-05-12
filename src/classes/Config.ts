@@ -30,14 +30,21 @@ export class Config {
         const buttons = this.generateButtons();
         if (this.guildMessageIDs.has(interaction.guildId)) {
             const message = this.guildMessageIDs.get(interaction.guildId);
-            await message.channel.fetch(); // fix channel not in cache
+
+            try {
+                await message.channel.fetch(); // fix channel not in cache
+            } catch {
+                this.guildMessageIDs.delete(interaction.guildId);
+                this.sendConfigMenu(interaction);
+                return;
+            }
 
             await message
                 .edit({
                     embeds: [
                         {
                             ...message.embeds[0],
-                            ...{ description: `${message.embeds[0].description}` },
+                            ...{ description: `${message.embeds[0].description ?? ''}` },
                             ...{
                                 fields: fields,
                             },
