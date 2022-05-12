@@ -88,26 +88,20 @@ export default class ScanUsers extends SlashCommand {
                         false,
                         false
                     );
-                    // punishUser({
-                    //     client,
-                    //     member: interaction.guild.members.cache.get(user.id),
-                    //     guildInfo: settings,
-                    //     oldUser: user,
-                    //     toDM: false,
-                    // }).catch(e => console.log(e));
                 })
             );
+            const actioned = users.length === 0 ? 0 : users.length - 1;
             sendEmbed({
                 channel: interaction.channel,
                 embed: {
-                    description: `Scanning completed, ${users.length - 1} have been actioned`,
+                    description: `Scanning completed, \`${actioned} users\` have been actioned`,
                     color: Colours.GREEN,
                 },
             }).catch(e => console.log(e));
 
             const end = Date.now();
             client.logger.info(
-                `scanUsers ${interaction.guild.name}: actioned ${users.length - 1} users, took ${
+                `scanUsers ${interaction.guild.name}: actioned ${actioned} users, took ${
                     (end - begin) / 1000
                 }s`
             );
