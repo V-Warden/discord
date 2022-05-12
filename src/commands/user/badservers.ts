@@ -36,7 +36,7 @@ export default class BadServersCommand extends SlashCommand {
                 })
             );
         });
-        sendPagination(interaction, pages, 60000);
+        sendPagination(client, interaction, pages, 60000);
         return true;
     }
 }
