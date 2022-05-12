@@ -125,6 +125,8 @@ export class PunishUser {
         }
 
         if (toDo === 'WARN') {
+            // Stop warning messages on main discord
+            if (guildInfo.id === '860760302227161118') return;
             if (!this.bot.hasNoPerms(guildInfo.id, noServerPerms.SEND_MESSAGE)) {
                 sendEmbed({
                     channel,
