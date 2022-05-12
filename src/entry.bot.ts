@@ -41,6 +41,8 @@ const client = new Bot(logger, processing, db, {
     await client.login(process.env.TOKEN);
 })();
 
+Error['stackTraceLimit'] = 20;
+
 process.on('unhandledRejection', (reason, p) => {
     console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
 });
