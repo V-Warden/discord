@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0](https://github.com/V-Warden/discord/compare/v2.0.0...v2.1.0) (2022-05-12)
+
+
+### Features
+
+* **checkself:** view which discords you were scanned in ([3afbc58](https://github.com/V-Warden/discord/commit/3afbc585c2da1f5c9e9c62acccf6b06ba655f378))
+* **checkserver:** implement checking invite ([e66aeea](https://github.com/V-Warden/discord/commit/e66aeea1c527cc9733c1f0682a4d475ccf36f439))
+* **upstatus:** add logging ([1df2bab](https://github.com/V-Warden/discord/commit/1df2babacf47d8bc2f8ca2b593d8c9cb2e09e333))
+
+
+### Bug Fixes
+
+* **badservers:** api fixes ([6014a81](https://github.com/V-Warden/discord/commit/6014a8178678427015742be195c63b93189cc4e7))
+* **checkuser:** fix default user id ([d48603a](https://github.com/V-Warden/discord/commit/d48603af6497fab005adeb3bd0b007fa835aafc4))
+* **classes/config:** add catch ([3c03203](https://github.com/V-Warden/discord/commit/3c0320366b4e362ee666bc8583e6f62680351365))
+* **config:** add catch ([c2c6343](https://github.com/V-Warden/discord/commit/c2c634306e9f32795bbbd0e37b225ab0eb827c46))
+* **Config:** api fixes ([270117b](https://github.com/V-Warden/discord/commit/270117b1f90bd684f6bfccedd5959674c0ea8e60))
+* **Config:** if invalid guild, throw error ([ce6a801](https://github.com/V-Warden/discord/commit/ce6a801d0446856658943b67eb5e803887373df9))
+* **configMenu:** add catch ([39054ef](https://github.com/V-Warden/discord/commit/39054ef16c04cccc6d9a51fc2040cf83c02c41ac))
+* **configMenu:** fetch channel incase not cached ([343a56d](https://github.com/V-Warden/discord/commit/343a56d1da108cb50408b3f23960e3e8c63d0848))
+* **configMenu:** should fix log channel ([4d99508](https://github.com/V-Warden/discord/commit/4d99508fcb76ecb7105d95a7336863023d8342d4))
+* **configMenu:** should fix log channel ([0132c77](https://github.com/V-Warden/discord/commit/0132c772d255b0a2e5c917c6a6096fcfc8a641d5))
+* **config:** send as ephermeral ([f653cb2](https://github.com/V-Warden/discord/commit/f653cb2d535813938c89f795136e4e1ff9c92105))
+* **entry:** fixes ([ba73aec](https://github.com/V-Warden/discord/commit/ba73aec0527924c8bbca648d900b9d8e63c917d1))
+* **entry:** fixes ([3b02796](https://github.com/V-Warden/discord/commit/3b027968ab0fa7d1133f6cd2d78c2c12d159d667))
+* **globalcheck:** fix if undefined ([3dc2788](https://github.com/V-Warden/discord/commit/3dc27885ea88e2228e61d3eb96e30604a84ec57a))
+* **globalcheck:** fix if undefined ([3ca0100](https://github.com/V-Warden/discord/commit/3ca01005f5a66ba738ea01ccd52dec188bd70ead))
+* **interactionCreate:** add catch ([50f5fe9](https://github.com/V-Warden/discord/commit/50f5fe9e2b2cb8e5d8a3b485b2669a09f51fc109))
+* **interactionCreate:** allow embeds to be sent as ephermerals ([5f1e793](https://github.com/V-Warden/discord/commit/5f1e7937d3f55c14ff190aeb92913c314baa4b6d))
+* **interactionCreate:** api fixes ([50c7f2a](https://github.com/V-Warden/discord/commit/50c7f2ab62b25bab36c6a98c2fa7fe6d5db87a15))
+* **PunishUser:** stop warning in main guild ([48c44c1](https://github.com/V-Warden/discord/commit/48c44c1985dbca6ffd9764e80644879ee48b35a2))
+* **sendPagination:** various api fixes ([57f76d4](https://github.com/V-Warden/discord/commit/57f76d43c63d80743a9af39d969fe82226add38d))
+
 ## [2.0.0](https://github.com/V-Warden/discord/compare/v1.3.0...v2.0.0) (2022-05-06)
 
 
