@@ -1,6 +1,6 @@
 import { UserStatus, UserType } from '@prisma/client';
 import { BaseCommandInteraction, Snowflake } from 'discord.js';
-import { Colours } from '../../@types';
+import { Colours, LogTypes } from '../../@types';
 import { Bot, SlashCommand } from '../../classes';
 import { enumToMap } from '../../utils/helpers';
 import { sendEmbed } from '../../utils/messages';
@@ -132,13 +132,15 @@ export default class UpstatusCommand extends SlashCommand {
                         color: Colours.GREEN,
                     },
                 });
+
+                const info = { status, user_type, reason };
                 client.emit('logAction', {
-                    type: 'STATUS_UPDATE',
+                    type: LogTypes.APPEALED,
                     author: interaction.user,
-                    details: `${interaction.user.username}#${interaction.user.discriminator} updated status for ${u.last_username} (${id})
-                    User Status: ${status}
-                    User Type: ${user_type}
-                    Reason: ${reason}`,
+                    message: `${interaction.user.username}#${
+                        interaction.user.discriminator
+                    } updated status for ${u.last_username} (${id})
+                    \`\`\`${JSON.stringify(info, null, 4)}\`\`\``,
                 });
             })
             .catch(() => {
