@@ -16,7 +16,7 @@ export default class ConfigCommand extends SlashCommand {
 
     public async run(client: Bot, interaction: BaseCommandInteraction): Promise<boolean> {
         client.config.sendConfigMenu(interaction);
-        await interaction.deleteReply().catch(() => console.log('Invalid interaction reply'));
+        await interaction.reply({ ephemeral: true, content: 'Successfully sent configuration menu' });
         return true;
     }
 }
