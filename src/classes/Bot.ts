@@ -144,10 +144,16 @@ class Bot extends Client {
         this.logChans.clear();
     }
 
+    resetConfigIDs() {
+        this.config.clearGuildMessageIDs();
+        this.logger.debug('Cleared config guild message ids');
+    }
+
     startTimers() {
         cron.schedule('*/5 * * * *', async () => {
             this.resetNoPerms();
             this.randomStatus();
+            this.resetConfigIDs();
         });
 
         this.logger.debug('Started timer');
