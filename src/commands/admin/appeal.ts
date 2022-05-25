@@ -90,6 +90,15 @@ export default class AppealCommand extends SlashCommand {
             },
         });
 
+        await client.db.staff.update({
+            where: {
+                id: interaction.user.id,
+            },
+            data: {
+                appeals: { increment: 1 },
+            },
+        });
+
         createAuditLog(client, {
             executedBy: interaction.user.id,
             action: 'user_appealed',
