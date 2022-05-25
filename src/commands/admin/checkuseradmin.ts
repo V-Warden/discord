@@ -90,13 +90,24 @@ export default class CheckUserAdminCommand extends SlashCommand {
 
         if (imports[0].roles.includes('"servers":')) {
             const parsed = JSON.parse(imports[0].roles);
+            const servers = parsed['servers'].split(';');
+
+            const badServers = await client.db.badServers.findMany({
+                where: { id: { in: servers } },
+                select: { name: true },
+            });
+
+            const names = badServers.map(x => x.name);
+            const roles = parsed['roles'].split(';');
+            const newData = [{ names, roles }];
+
             const formData = new FormData();
 
             formData.append('lang', 'json');
             formData.append('expire', '1h');
             formData.append('password', '');
             formData.append('title', '');
-            formData.append('text', JSON.stringify(parsed, null, 4));
+            formData.append('text', JSON.stringify(newData, null, 4));
 
             const response = await axios.request({
                 url: data.POST_URL,
