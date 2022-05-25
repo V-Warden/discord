@@ -74,11 +74,11 @@ export default class CheckUserAdminCommand extends SlashCommand {
         }
 
         if (imports.length === 0) {
+            //TODO: Show past history
             sendEmbed({
                 interaction,
                 embed: {
-                    description:
-                        '`🟢` User has no outstanding servers to be appealed for\n//TODO: Show past history',
+                    description: '`🟢` User has no outstanding servers to be appealed for',
                     color: Colours.GREEN,
                 },
             });
