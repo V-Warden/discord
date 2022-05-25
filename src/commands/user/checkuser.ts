@@ -75,7 +75,7 @@ export default class CheckUserCommand extends SlashCommand {
                             name: 'User Information',
                             value: `> ID: ${user.id}\n> Name: ${
                                 user.last_username
-                            }\n> Type: ${capitalize(highest)}`,
+                            }\n> Status: ${capitalize(user.status)}\n> Type: ${capitalize(highest)}`,
                         },
                     ],
                 },
