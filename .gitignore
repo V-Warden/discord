@@ -12,3 +12,4 @@ yarn.lock
 .prettierrc.js
 prisma/
 package-lock.json
+src/config.json
