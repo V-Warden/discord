@@ -30,10 +30,4 @@ export default async function (client: Bot) {
             `Successfully set ${staffcmds.map(c => c.name).join(', ')} to ${data.MAIN_GUILD}`
         );
     });
-
-    await (await client.guilds.fetch('860760302227161118')).commands.set(staffcmds).then(() => {
-        client.logger.info(
-            `Successfully set ${staffcmds.map(c => c.name).join(', ')} to 860760302227161118`
-        );
-    });
 }
