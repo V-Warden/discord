@@ -24,6 +24,7 @@ export class ActionUser {
         toDM: boolean,
         process: boolean
     ) {
+        if (member.user.bot) return;
         let toDo: Punish;
         switch (user.type) {
             case UserType.OWNER:
