@@ -66,7 +66,7 @@ export default class ScanUsers extends SlashCommand {
             // Reduce database calls from one per member to one
             // Bulk grab all blacklisted then check if exists
             // Rather than checking database per member
-            const ids = interaction.guild.members.cache.map(u => u.id);
+            const ids = interaction.guild.members.cache.filter(u => !u.user.bot).map(u => u.id);
             const users = await client.db.users.findMany({
                 where: {
                     status: {
