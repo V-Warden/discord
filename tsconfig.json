@@ -17,6 +17,7 @@
         "skipLibCheck": true,
         "allowSyntheticDefaultImports": true,
         "resolveJsonModule": true,
+        "declaration": false,
         "forceConsistentCasingInFileNames": true,
         "removeComments": true,
         "strictNullChecks": false,
