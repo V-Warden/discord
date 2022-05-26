@@ -10,6 +10,5 @@ yarn.lock
 .eslintignore
 .eslintrc.json
 .prettierrc.js
-prisma/
 package-lock.json
 src/config.json
