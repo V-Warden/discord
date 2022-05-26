@@ -106,7 +106,7 @@ export default class AddUserCommand extends SlashCommand {
                     appealed: false,
                 },
             });
-            await client.db.users.update({ where: { id }, data: { reason } });
+            await client.db.users.update({ where: { id }, data: { status, type, reason } });
         } else {
             await client.db.users.create({
                 data: {
