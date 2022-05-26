@@ -40,6 +40,12 @@ export default class AddUserCommand extends SlashCommand {
                     description: 'Linked Server',
                     required: true,
                 },
+                {
+                    type: 'STRING',
+                    name: 'reason',
+                    description: 'Reason',
+                    required: true,
+                },
             ],
             defaultPermission: false,
             staffRole: 'DEV',
@@ -51,6 +57,7 @@ export default class AddUserCommand extends SlashCommand {
         const status = interaction.options.get('status')?.value as UserStatus;
         const type = interaction.options.get('type')?.value as UserType;
         const server = interaction.options.get('server')?.value as string;
+        const reason = interaction.options.get('reason')?.value as string;
 
         if (id.length !== 18) {
             sendEmbed({
@@ -58,20 +65,6 @@ export default class AddUserCommand extends SlashCommand {
                 hidden: true,
                 embed: {
                     description: '`🔴` Invalid ID provided',
-                    color: Colours.RED,
-                },
-            });
-            return false;
-        }
-
-        const count = await client.db.users.count({ where: { id } });
-
-        if (count === 1) {
-            sendEmbed({
-                interaction,
-                hidden: true,
-                embed: {
-                    description: '`🔴` User already in database',
                     color: Colours.RED,
                 },
             });
@@ -93,37 +86,61 @@ export default class AddUserCommand extends SlashCommand {
             return false;
         }
 
-        await client.db.users.create({
-            data: {
-                id,
-                last_username: user?.username
-                    ? `${user.username}#${user.discriminator}`
-                    : 'unknown#0000',
-                avatar: user.avatarURL() ?? 'https://cdn.mk3ext.dev/yuva7/HaXeYOBA30.png',
-                type,
-                status,
-                servers: {
-                    connectOrCreate: {
-                        where: {
-                            id_server: {
-                                id,
-                                server,
-                            },
+        const count = await client.db.users.count({ where: { id } });
+
+        if (count === 1) {
+            await client.db.imports.create({
+                data: {
+                    User: {
+                        connect: {
+                            id: id,
                         },
-                        create: {
-                            BadServer: {
-                                connect: {
-                                    id: server,
+                    },
+                    BadServer: {
+                        connect: {
+                            id: server,
+                        },
+                    },
+                    type,
+                    roles: 'Undefined',
+                    appealed: false,
+                },
+            });
+            await client.db.users.update({ where: { id }, data: { reason } });
+        } else {
+            await client.db.users.create({
+                data: {
+                    id,
+                    last_username: user?.username
+                        ? `${user.username}#${user.discriminator}`
+                        : 'unknown#0000',
+                    avatar: user.avatarURL() ?? 'https://cdn.mk3ext.dev/yuva7/HaXeYOBA30.png',
+                    type,
+                    status,
+                    reason,
+                    servers: {
+                        connectOrCreate: {
+                            where: {
+                                id_server: {
+                                    id,
+                                    server,
                                 },
                             },
-                            roles: 'Undefined',
-                            type,
-                            appealed: false,
+                            create: {
+                                BadServer: {
+                                    connect: {
+                                        id: server,
+                                    },
+                                },
+                                roles: 'Undefined',
+                                type,
+                                appealed: false,
+                            },
                         },
                     },
                 },
-            },
-        });
+            });
+        }
 
         createAuditLog(client, {
             executedBy: interaction.user.id,

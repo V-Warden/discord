@@ -34,6 +34,12 @@ export default class UpStatusCommand extends SlashCommand {
                     required: true,
                     choices: mapAnyType(UserStatus),
                 },
+                {
+                    type: 'STRING',
+                    name: 'reason',
+                    description: 'Reason for upstatus',
+                    required: true,
+                },
             ],
             defaultPermission: false,
             staffRole: 'ADMIN',
@@ -44,6 +50,7 @@ export default class UpStatusCommand extends SlashCommand {
         const id = interaction.options.get('id')?.value as Snowflake;
         const status = interaction.options.get('status')?.value as UserStatus;
         const type = interaction.options.get('type')?.value as UserType;
+        const reason = interaction.options.get('reason')?.value as string;
 
         if (id.length !== 18) {
             sendEmbed({
@@ -72,7 +79,7 @@ export default class UpStatusCommand extends SlashCommand {
             return false;
         }
 
-        await client.db.users.update({ where: { id }, data: { status, type } });
+        await client.db.users.update({ where: { id }, data: { status, type, reason } });
 
         sendEmbed({
             interaction,
@@ -88,6 +95,7 @@ export default class UpStatusCommand extends SlashCommand {
             message: JSON.stringify({
                 status: `${user.status} -> ${status}`,
                 type: `${user.type} -> ${type}`,
+                reason,
             }),
         });
 
