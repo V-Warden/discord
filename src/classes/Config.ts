@@ -13,6 +13,10 @@ export class Config {
         this.guildMessageIDs = new Collection();
     }
 
+    clearGuildMessageIDs() {
+        this.guildMessageIDs.clear();
+    }
+
     async sendConfigMenu(interaction: BaseCommandInteraction) {
         const guild = await this.bot.db.guild.findUnique({
             where: { id: interaction.guildId },

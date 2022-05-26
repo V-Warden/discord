@@ -7,6 +7,7 @@ import { noServerPerms } from '../@types';
 import _ from 'lodash';
 import { Config } from './Config';
 import { ActionUser } from './Actioning';
+import * as cron from 'node-cron';
 
 /**
  * Custom bot class
@@ -144,6 +145,20 @@ class Bot extends Client {
     resetLogChans() {
         this.logger.debug(`Removed ${this.logChans.size} from cached logged channels`);
         this.logChans.clear();
+    }
+
+    resetConfigIDs() {
+        this.config.clearGuildMessageIDs();
+        this.logger.debug('Cleared config guild message ids');
+    }
+
+    startTimers() {
+        cron.schedule('*/5 * * * *', async () => {
+            this.resetNoPerms();
+            this.randomStatus();
+        });
+
+        this.logger.debug('Started timer');
     }
 
     capitalize(s: string) {

@@ -18,6 +18,8 @@ const client = new Bot(logger, db, {
     await client.loadEvents(__dirname + '/events');
     await client.loadCommands(__dirname + '/commands');
     await client.login(process.env.TOKEN);
+    client.startTimers();
+    client.randomStatus();
 })();
 
 Error['stackTraceLimit'] = 20;
