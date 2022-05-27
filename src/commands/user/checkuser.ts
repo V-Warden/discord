@@ -53,7 +53,7 @@ export default class CheckUserCommand extends SlashCommand {
             where: { id, appealed: false },
         });
 
-        if (imports.length > 0) {
+        if (imports.length > 0 && user.status !== 'WHITELISTED') {
             // is bad person
             const types: UserType[] = imports.map(x => x.type);
             const highest = findHighestType(types);
