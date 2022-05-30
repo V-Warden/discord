@@ -10,7 +10,7 @@ const logger = new Logger();
 const db = new PrismaClient();
 
 const client = new Bot(logger, db, {
-    intents: new Intents(515),
+    intents: new Intents(33303),
     partials: ['CHANNEL', 'USER', 'GUILD_MEMBER'],
 });
 
