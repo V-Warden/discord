@@ -9,7 +9,7 @@ export default async function (client: Bot, interaction: ButtonInteraction): Pro
     const message = await interaction.channel.messages.fetch(interaction.message.id);
 
     const guild = await client.db.guild.findUnique({
-        where: { id: message.guildId },
+        where: { id: message.guild.id },
         select: { punishments: true },
     });
 
@@ -17,17 +17,17 @@ export default async function (client: Bot, interaction: ButtonInteraction): Pro
     switch (customId) {
         case 'TOGGLE_ACTIONING': {
             if (guild.punishments.enabled) {
-                await updateGuildPunishment(client, message.guildId, { enabled: false });
+                await updateGuildPunishment(client, message.guild.id, { enabled: false });
             } else {
-                await updateGuildPunishment(client, message.guildId, { enabled: true });
+                await updateGuildPunishment(client, message.guild.id, { enabled: true });
             }
             break;
         }
         case 'TOGGLE_UNBAN': {
             if (guild.punishments.unban) {
-                await updateGuildPunishment(client, message.guildId, { unban: false });
+                await updateGuildPunishment(client, message.guild.id, { unban: false });
             } else {
-                await updateGuildPunishment(client, message.guildId, { unban: true });
+                await updateGuildPunishment(client, message.guild.id, { unban: true });
             }
             break;
         }
@@ -62,7 +62,7 @@ export default async function (client: Bot, interaction: ButtonInteraction): Pro
                             .catch(() => console.log('unable to delete message'));
                         if (mentions.size === 1) {
                             await client.db.guild.update({
-                                where: { id: message.guildId },
+                                where: { id: message.guild.id },
                                 data: { logChannel: mentions.first().id },
                             });
                         }

@@ -19,7 +19,7 @@ export class Config {
 
     async sendConfigMenu(interaction: BaseCommandInteraction) {
         const guild = await this.bot.db.guild.findUnique({
-            where: { id: interaction.guildId },
+            where: { id: interaction.guild.id },
             select: { id: true, logChannel: true, punishments: true },
         });
 
@@ -37,13 +37,13 @@ export class Config {
 
         const fields = this.generateFields(guild.logChannel, guild.punishments);
         const buttons = this.generateButtons();
-        if (this.guildMessageIDs.has(interaction.guildId)) {
-            const message = this.guildMessageIDs.get(interaction.guildId);
+        if (this.guildMessageIDs.has(interaction.guild.id)) {
+            const message = this.guildMessageIDs.get(interaction.guild.id);
 
             try {
                 await message.channel.fetch(); // fix channel not in cache
             } catch {
-                this.guildMessageIDs.delete(interaction.guildId);
+                this.guildMessageIDs.delete(interaction.guild.id);
                 this.sendConfigMenu(interaction);
                 return;
             }
@@ -73,7 +73,7 @@ export class Config {
                             color: Colours.GREEN,
                         },
                         components: [buttons],
-                    }).then(res => this.guildMessageIDs.set(interaction.guildId, res as Message));
+                    }).then(res => this.guildMessageIDs.set(interaction.guild.id, res as Message));
                 });
         } else {
             sendEmbed({
@@ -88,7 +88,7 @@ export class Config {
                     color: Colours.GREEN,
                 },
                 components: [buttons],
-            }).then(res => this.guildMessageIDs.set(interaction.guildId, res as Message));
+            }).then(res => this.guildMessageIDs.set(interaction.guild.id, res as Message));
         }
     }
 

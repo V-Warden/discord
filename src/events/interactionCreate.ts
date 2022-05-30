@@ -127,31 +127,31 @@ export default async function (client: Bot, interaction: BaseCommandInteraction)
 
                         switch (userType) {
                             case 'OTHER': {
-                                await updateGuildPunishment(client, interaction.guildId, {
+                                await updateGuildPunishment(client, interaction.guild.id, {
                                     other: punishment,
                                 });
                                 break;
                             }
                             case 'LEAKER': {
-                                await updateGuildPunishment(client, interaction.guildId, {
+                                await updateGuildPunishment(client, interaction.guild.id, {
                                     leaker: punishment,
                                 });
                                 break;
                             }
                             case 'CHEATER': {
-                                await updateGuildPunishment(client, interaction.guildId, {
+                                await updateGuildPunishment(client, interaction.guild.id, {
                                     cheater: punishment,
                                 });
                                 break;
                             }
                             case 'SUPPORTER': {
-                                await updateGuildPunishment(client, interaction.guildId, {
+                                await updateGuildPunishment(client, interaction.guild.id, {
                                     supporter: punishment,
                                 });
                                 break;
                             }
                             case 'OWNER': {
-                                await updateGuildPunishment(client, interaction.guildId, {
+                                await updateGuildPunishment(client, interaction.guild.id, {
                                     owner: punishment,
                                 });
                                 break;
