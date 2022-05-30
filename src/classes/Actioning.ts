@@ -55,17 +55,23 @@ export class ActionUser {
         const count = await this.client.db.imports.count({ where: { id: user.id, appealed: false } });
         let realCount = 0;
 
-        if (count === 1) {
-            const toParse = (await this.client.db.imports.findFirst({ where: { id: user.id } })).roles;
-            if (toParse.includes('"servers":')) {
-                const parsed = JSON.parse(toParse);
-                const servers: string[] = parsed['servers'].split(';');
-                realCount = servers.length;
+        try {
+            if (count === 1) {
+                const toParse = (await this.client.db.imports.findFirst({ where: { id: user.id } }))
+                    .roles;
+                if (toParse.includes('"servers":')) {
+                    const parsed = JSON.parse(toParse);
+                    const servers: string[] = parsed['servers'].split(';');
+                    realCount = servers.length;
+                } else {
+                    realCount = 1;
+                }
             } else {
-                realCount = 1;
+                realCount = count;
             }
-        } else {
-            realCount = count;
+        } catch (e) {
+            this.client.logger.error(`ERROR - Actioning: Look into ${user.id} - ${e}`);
+            return;
         }
 
         const author = {
