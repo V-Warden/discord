@@ -142,8 +142,10 @@ https://discord.gg/jeFeDRasfs`,
                 let action;
                 if (toDo === 'BAN') {
                     action = member.ban({ reason: `Warden - User Type ${user.type}` });
-                } else {
+                } else if (toDo === 'KICK') {
                     action = member.kick(`Warden - User Type ${user.type}`);
+                } else {
+                    action = null;
                 }
                 action
                     .then(() => {
