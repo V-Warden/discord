@@ -78,7 +78,7 @@ export default class GlobalScan extends SlashCommand {
                                 db.punishments,
                                 realMember,
                                 false,
-                                false
+                                true
                             );
                             await new Promise(resolve => setTimeout(resolve, 100));
                         }, Promise.resolve());

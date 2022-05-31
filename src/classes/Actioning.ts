@@ -119,29 +119,30 @@ https://discord.gg/jeFeDRasfs`,
                         author,
                         color: Colours.GREEN,
                     },
-                }).catch(() => {
-                    this.client.addNoPerms(punishments.id, noServerPerms.SEND_MESSAGE);
-                    this.client.logger.warn(
-                        `${this.constructor.name}: ${member.guild.name} - Unable to send warning embed, no permissions?`
-                    );
-                });
+                })
+                    .then(() => {
+                        if (process) this.success.warnings += 1;
+                    })
+                    .catch(() => {
+                        this.client.addNoPerms(punishments.id, noServerPerms.SEND_MESSAGE);
+                        this.client.logger.warn(
+                            `${this.constructor.name}: ${member.guild.name} - Unable to send warning embed, no permissions?`
+                        );
+                    });
             } else {
                 if (process) this.failed.warnings += 1;
             }
             this.client.logger.debug(
                 `${this.constructor.name}: ${member.guild.name} - ${user.last_username} (${user.id}) - ${toDo}`
             );
-            if (process) this.success.warnings += 1;
         } else {
             const realType = toDo === 'BAN' ? noServerPerms.BAN : noServerPerms.KICK;
             if (!this.client.hasNoPerms(punishments.id, realType)) {
                 let action;
                 if (toDo === 'BAN') {
                     action = member.ban({ reason: `Warden - User Type ${user.type}` });
-                    if (process) this.success.bans += 1;
                 } else {
                     action = member.kick(`Warden - User Type ${user.type}`);
-                    if (process) this.success.kicks += 1;
                 }
                 action
                     .then(() => {
@@ -155,12 +156,20 @@ https://discord.gg/jeFeDRasfs`,
                                     author,
                                     color: Colours.GREEN,
                                 },
-                            }).catch(() => {
-                                this.client.addNoPerms(punishments.id, noServerPerms.SEND_MESSAGE);
-                                this.client.logger.warn(
-                                    `${this.constructor.name}: ${member.guild.name} - Unable to create message in ${channel?.id}`
-                                );
-                            });
+                            })
+                                .then(() => {
+                                    if (toDo === 'BAN') {
+                                        if (process) this.success.bans += 1;
+                                    } else {
+                                        if (process) this.success.kicks += 1;
+                                    }
+                                })
+                                .catch(() => {
+                                    this.client.addNoPerms(punishments.id, noServerPerms.SEND_MESSAGE);
+                                    this.client.logger.warn(
+                                        `${this.constructor.name}: ${member.guild.name} - Unable to create message in ${channel?.id}`
+                                    );
+                                });
                         }
 
                         this.client.logger.debug(
