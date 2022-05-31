@@ -1,4 +1,4 @@
-import { BaseCommandInteraction, ButtonInteraction, Message } from 'discord.js';
+import { ButtonInteraction, Message } from 'discord.js';
 import { Colours } from '../@types';
 import { Bot } from '../classes';
 import { updateGuildPunishment } from '../utils/db';
@@ -85,7 +85,7 @@ export default async function (client: Bot, interaction: ButtonInteraction): Pro
         }
     }
 
-    client.config.sendConfigMenu(interaction as unknown as BaseCommandInteraction);
+    client.config.sendConfigMenu(interaction, interaction.guild.id);
 
     if (!interaction.deferred && !interaction.replied) return await interaction.deferUpdate();
     else return;

@@ -158,7 +158,7 @@ export default async function (client: Bot, interaction: BaseCommandInteraction)
                             }
                         }
 
-                        client.config.sendConfigMenu(interaction);
+                        client.config.sendConfigMenu(interaction, interaction.guild.id);
                     })
                     .catch((e: string) => console.log(e));
             }

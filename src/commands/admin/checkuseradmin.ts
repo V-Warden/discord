@@ -171,14 +171,14 @@ export default class CheckUserAdminCommand extends SlashCommand {
     }
 }
 
-async function uploadData(data: any) {
+async function uploadData(form: any) {
     const formData = new FormData();
 
     formData.append('lang', 'json');
     formData.append('expire', '1h');
     formData.append('password', '');
     formData.append('title', '');
-    formData.append('text', JSON.stringify(data, null, 4));
+    formData.append('text', JSON.stringify(form, null, 4));
 
     const response = await axios.request({
         url: data.POST_URL,

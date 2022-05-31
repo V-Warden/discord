@@ -1,5 +1,5 @@
 import { Punishments } from '@prisma/client';
-import { BaseCommandInteraction, Collection, Message, MessageActionRow, Snowflake } from 'discord.js';
+import { ButtonInteraction, Collection, Message, MessageActionRow, Snowflake } from 'discord.js';
 import { Colours } from '../@types';
 import { sendEmbed } from '../utils/messages';
 import { Bot } from './Bot';
@@ -17,15 +17,15 @@ export class Config {
         this.guildMessageIDs.clear();
     }
 
-    async sendConfigMenu(interaction: BaseCommandInteraction) {
+    async sendConfigMenu(interaction: ButtonInteraction, guildID: Snowflake) {
         const guild = await this.bot.db.guild.findUnique({
-            where: { id: interaction.guild.id },
+            where: { id: guildID },
             select: { id: true, logChannel: true, punishments: true },
         });
 
         if (!guild) {
             sendEmbed({
-                interaction,
+                channel: interaction.channel,
                 embed: {
                     description:
                         'Invalid guild found, please reinvite the bot. If this does not fix the issue, please open a support ticket in the Official Warden Discord',
@@ -37,14 +37,14 @@ export class Config {
 
         const fields = this.generateFields(guild.logChannel, guild.punishments);
         const buttons = this.generateButtons();
-        if (this.guildMessageIDs.has(interaction.guild.id)) {
-            const message = this.guildMessageIDs.get(interaction.guild.id);
+        if (this.guildMessageIDs.has(guildID)) {
+            const message = this.guildMessageIDs.get(guildID);
 
             try {
                 await message.channel.fetch(); // fix channel not in cache
             } catch {
-                this.guildMessageIDs.delete(interaction.guild.id);
-                this.sendConfigMenu(interaction);
+                this.guildMessageIDs.delete(guildID);
+                this.sendConfigMenu(interaction, guildID);
                 return;
             }
 
@@ -73,7 +73,7 @@ export class Config {
                             color: Colours.GREEN,
                         },
                         components: [buttons],
-                    }).then(res => this.guildMessageIDs.set(interaction.guild.id, res as Message));
+                    }).then(res => this.guildMessageIDs.set(guildID, res as Message));
                 });
         } else {
             sendEmbed({
@@ -88,7 +88,7 @@ export class Config {
                     color: Colours.GREEN,
                 },
                 components: [buttons],
-            }).then(res => this.guildMessageIDs.set(interaction.guild.id, res as Message));
+            }).then(res => this.guildMessageIDs.set(guildID, res as Message));
         }
     }
 
