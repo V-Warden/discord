@@ -1,4 +1,4 @@
-import { BaseCommandInteraction } from 'discord.js';
+import { BaseCommandInteraction, Guild } from 'discord.js';
 import { Bot, SlashCommand } from '../../classes';
 import { createAuditLog } from '../../utils/db';
 
@@ -33,12 +33,15 @@ export default class GlobalScan extends SlashCommand {
         });
 
         await client.guilds.fetch();
-        const realGuilds = client.guilds.cache.map(x => x);
+        const realGuilds: Guild[] = client.guilds.cache.map(x => x);
 
         for (let i = 0; i < guilds.length; i++) {
             const x = guilds[i];
             const guild = realGuilds.find(a => a.id === x.punishments.id);
-
+            if (!guild.members) {
+                client.logger.debug(`${this.constructor.name}: ${guild.name} - Look into ${guild.id}`);
+                continue;
+            }
             await guild.members
                 .fetch()
                 .then(async members => {
