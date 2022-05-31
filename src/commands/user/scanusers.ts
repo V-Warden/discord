@@ -88,6 +88,7 @@ export default class ScanUsers extends SlashCommand {
                             settings.punishments,
                             interaction.guild.members.cache.get(user.id),
                             false,
+                            false,
                             false
                         );
                     })

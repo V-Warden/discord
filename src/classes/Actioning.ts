@@ -22,7 +22,8 @@ export class ActionUser {
         punishments: Punishments,
         member: GuildMember,
         toDM: boolean,
-        process: boolean
+        process: boolean,
+        rescan: boolean
     ) {
         if (member.user.bot) return;
         let toDo: Punish;
@@ -106,7 +107,7 @@ https://discord.gg/jeFeDRasfs`,
                 });
         }
 
-        if (toDo === 'WARN') {
+        if (toDo === 'WARN' && !rescan) {
             // Stop warning messages on main discord
             if (punishments.id === '860760302227161118') return;
             if (!this.client.hasNoPerms(punishments.id, noServerPerms.SEND_MESSAGE)) {

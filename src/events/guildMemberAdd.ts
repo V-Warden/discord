@@ -23,7 +23,15 @@ export default async function (client: Bot, member: GuildMember) {
     }
     if (user.status === 'BLACKLISTED' || user.status === 'PERM_BLACKLISTED') {
         client.logger.debug(`guildMemberAdd ${guild.name}: ${member.id} - ${user.status}`);
-        client.actioning.doAction(user, settings.logChannel, settings.punishments, member, true, false);
+        client.actioning.doAction(
+            user,
+            settings.logChannel,
+            settings.punishments,
+            member,
+            true,
+            false,
+            false
+        );
         return true;
     }
 

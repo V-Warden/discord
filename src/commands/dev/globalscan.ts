@@ -9,7 +9,14 @@ export default class GlobalScan extends SlashCommand {
             name: 'globalscan',
             description: 'Scan all guilds',
             type: 'CHAT_INPUT',
-            options: [],
+            options: [
+                {
+                    type: 'BOOLEAN',
+                    name: 'rescan',
+                    description: 'Rescan (does not warn)',
+                    required: false,
+                },
+            ],
             defaultPermission: false,
             staffRole: 'DEV',
         });
@@ -17,6 +24,7 @@ export default class GlobalScan extends SlashCommand {
 
     public async run(client: Bot, interaction: BaseCommandInteraction): Promise<boolean> {
         client.actioning.reset();
+        const rescan = (interaction.options.get('rescan').value as boolean) ?? false;
 
         await interaction.reply({ content: 'Now global checking..' });
         const start = process.hrtime.bigint();
@@ -78,7 +86,8 @@ export default class GlobalScan extends SlashCommand {
                                 db.punishments,
                                 realMember,
                                 false,
-                                true
+                                true,
+                                rescan
                             );
                             await new Promise(resolve => setTimeout(resolve, 100));
                         }, Promise.resolve());

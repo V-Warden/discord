@@ -80,6 +80,7 @@ export default class ForceCheckCommand extends SlashCommand {
                         settings.punishments,
                         member,
                         false,
+                        false,
                         false
                     );
 
