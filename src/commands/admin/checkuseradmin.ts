@@ -87,6 +87,7 @@ export default class CheckUserAdminCommand extends SlashCommand {
 
         const fields: EmbedFieldData[] = [];
         const value = [];
+        let realCount = 0;
 
         if (imports[0].roles.includes('"servers":')) {
             const parsed = JSON.parse(imports[0].roles);
@@ -102,6 +103,7 @@ export default class CheckUserAdminCommand extends SlashCommand {
             const newData = [{ names, roles }];
 
             const response = await uploadData(newData);
+            realCount = servers.length;
 
             fields.push({
                 name: 'Legacy Data',
@@ -118,6 +120,7 @@ export default class CheckUserAdminCommand extends SlashCommand {
                         where: { id: { in: servers } },
                         select: { name: true },
                     });
+                    realCount += servers.length;
 
                     const names = badServers.map(x => x.name);
                     const roles = parsed['roles'].split(';');
@@ -127,6 +130,7 @@ export default class CheckUserAdminCommand extends SlashCommand {
 
                     value.push(`Legacy Data\n> View data: <${response.request.res.responseUrl}>\n`);
                 } else {
+                    realCount += 1;
                     value.push(
                         `${x.BadServer.name}\n> Type: ${x.type} \n> Roles: ${x.roles
                             .split(';')
@@ -143,7 +147,7 @@ export default class CheckUserAdminCommand extends SlashCommand {
             interaction,
             embed: {
                 title: ':shield: User In Database',
-                description: `<@${user.id}> has been seen in ${imports.length} bad Discord servers.`,
+                description: `<@${user.id}> has been seen in ${realCount} bad Discord servers.`,
                 author: {
                     name: user.last_username,
                     icon_url: user.avatar,
