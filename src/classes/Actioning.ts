@@ -25,6 +25,7 @@ export class ActionUser {
         process: boolean,
         rescan: boolean
     ) {
+        if (!punishments.enabled) return;
         if (member.user.bot) return;
         let toDo: Punish;
         switch (user.type) {
