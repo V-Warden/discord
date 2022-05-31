@@ -107,10 +107,13 @@ https://discord.gg/jeFeDRasfs`,
                 });
         }
 
-        if (toDo === 'WARN' && !rescan) {
+        if (toDo === 'WARN') {
             // Stop warning messages on main discord
             if (punishments.id === '860760302227161118') return;
-            if (!this.client.hasNoPerms(punishments.id, noServerPerms.SEND_MESSAGE)) {
+            if (!this.client.hasNoPerms(punishments.id, noServerPerms.SEND_MESSAGE) && !rescan) {
+                this.client.logger.debug(
+                    `${this.constructor.name}: ${member.guild.name} - ${user.last_username} (${user.id}) - ${toDo}`
+                );
                 sendEmbed({
                     channel,
                     embed: {
@@ -133,9 +136,6 @@ https://discord.gg/jeFeDRasfs`,
             } else {
                 if (process) this.failed.warnings += 1;
             }
-            this.client.logger.debug(
-                `${this.constructor.name}: ${member.guild.name} - ${user.last_username} (${user.id}) - ${toDo}`
-            );
         } else {
             const realType = toDo === 'BAN' ? noServerPerms.BAN : noServerPerms.KICK;
             if (!this.client.hasNoPerms(punishments.id, realType)) {
