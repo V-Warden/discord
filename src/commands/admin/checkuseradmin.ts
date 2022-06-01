@@ -177,7 +177,7 @@ export default class CheckUserAdminCommand extends SlashCommand {
                 fields: [
                     {
                         name: 'User Information',
-                        value: `> ID: ${user.id}\n> Status ${capitalize(
+                        value: `> ID: ${user.id}\n> Status: ${capitalize(
                             user.status
                         )}\n> Type: ${capitalize(
                             user.type
