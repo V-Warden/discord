@@ -133,6 +133,12 @@ export default class CheckUserAdminCommand extends SlashCommand {
             name: 'New Servers',
             value: value.join('\n'),
         });
+        let avatar = user.avatar;
+
+        if (avatar === user.last_username) {
+            avatar = client.user.defaultAvatarURL;
+        }
+
         sendEmbed({
             interaction,
             embed: {
@@ -140,9 +146,9 @@ export default class CheckUserAdminCommand extends SlashCommand {
                 description: `<@${user.id}> has been seen in ${realCount} bad Discord servers.`,
                 author: {
                     name: user.last_username,
-                    icon_url: user.avatar,
+                    icon_url: avatar,
                 },
-                thumbnail: { url: user.avatar },
+                thumbnail: { url: avatar },
                 color: Colours.RED,
                 fields: [
                     {
