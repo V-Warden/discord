@@ -89,60 +89,50 @@ export default class CheckUserAdminCommand extends SlashCommand {
         const value = [];
         let realCount = 0;
 
-        if (imports[0].roles.includes('"servers":')) {
-            const parsed = JSON.parse(imports[0].roles);
-            const servers = parsed['servers'].split(';');
+        for (let i = 0, l = imports.length; i < l; ++i) {
+            const x = imports[i];
+            if (x.roles.includes('"servers":')) {
+                const parsed = JSON.parse(x.roles);
+                const servers = parsed['servers'].split(';');
 
-            const badServers = await client.db.badServers.findMany({
-                where: { id: { in: servers } },
-                select: { name: true },
-            });
+                const badServers = await client.db.badServers.findMany({
+                    where: { id: { in: servers } },
+                    select: { name: true },
+                });
+                realCount += servers.length;
 
-            const names = badServers.map(x => x.name);
-            const roles = parsed['roles'].split(';');
-            const newData = [{ names, roles }];
+                const names = badServers.map(x => x.name);
+                const roles = parsed['roles'].split(';');
+                const newData = [{ names, roles }];
+                const formData = new FormData();
 
-            const response = await uploadData(newData);
-            realCount = servers.length;
+                formData.append('lang', 'json');
+                formData.append('expire', '1h');
+                formData.append('password', '');
+                formData.append('title', '');
+                formData.append('text', JSON.stringify(newData, null, 4));
 
-            fields.push({
-                name: 'Legacy Data',
-                value: `> View data: <${response.request.res.responseUrl}>`,
-            });
-        } else {
-            for (let i = 0, l = imports.length; i < l; ++i) {
-                const x = imports[i];
-                if (x.roles.includes('"servers":')) {
-                    const parsed = JSON.parse(x.roles);
-                    const servers = parsed['servers'].split(';');
+                const response = await axios.request({
+                    url: data.POST_URL,
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    data: formData,
+                });
 
-                    const badServers = await client.db.badServers.findMany({
-                        where: { id: { in: servers } },
-                        select: { name: true },
-                    });
-                    realCount += servers.length;
-
-                    const names = badServers.map(x => x.name);
-                    const roles = parsed['roles'].split(';');
-                    const newData = [{ names, roles }];
-
-                    const response = await uploadData(newData);
-
-                    value.push(`Legacy Data\n> View data: <${response.request.res.responseUrl}>\n`);
-                } else {
-                    realCount += 1;
-                    value.push(
-                        `${x.BadServer.name}\n> Type: ${x.type} \n> Roles: ${x.roles
-                            .split(';')
-                            .join(', ')}\n`
-                    );
-                }
+                value.push(`Legacy Data\n> View data: <${response.request.res.responseUrl}>\n`);
+            } else {
+                realCount += 1;
+                value.push(
+                    `${x.BadServer.name}\n> Type: ${x.type} \n> Roles: ${x.roles
+                        .split(';')
+                        .join(', ')}\n`
+                );
             }
-            fields.push({
-                name: 'New Servers',
-                value: value.join('\n'),
-            });
         }
+        fields.push({
+            name: 'New Servers',
+            value: value.join('\n'),
+        });
         sendEmbed({
             interaction,
             embed: {
@@ -169,23 +159,4 @@ export default class CheckUserAdminCommand extends SlashCommand {
 
         return true;
     }
-}
-
-async function uploadData(form: any) {
-    const formData = new FormData();
-
-    formData.append('lang', 'json');
-    formData.append('expire', '1h');
-    formData.append('password', '');
-    formData.append('title', '');
-    formData.append('text', JSON.stringify(form, null, 4));
-
-    const response = await axios.request({
-        url: data.POST_URL,
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        data: formData,
-    });
-
-    return response;
 }
