@@ -37,6 +37,8 @@ export default class AppealCommand extends SlashCommand {
             return false;
         }
 
+        await interaction.deferReply();
+
         const id = (interaction.options.getUser('user')?.id ||
             interaction.options.get('id')?.value) as Snowflake;
 
