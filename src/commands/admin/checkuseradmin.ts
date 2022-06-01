@@ -155,7 +155,7 @@ export default class CheckUserAdminCommand extends SlashCommand {
                     ...fields,
                 ],
             },
-        });
+        }).catch(e => console.log(e));
 
         return true;
     }
