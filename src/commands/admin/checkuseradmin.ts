@@ -48,6 +48,37 @@ export default class CheckUserAdminCommand extends SlashCommand {
             return false;
         }
 
+        const dbHistory = await client.db.imports.findMany({
+            where: { id, appealed: true },
+            select: {
+                BadServer: { select: { name: true, oldNames: true, id: true } },
+                type: true,
+                roles: true,
+            },
+        });
+
+        const history = [];
+        for (let i = 0; i < dbHistory.length; i++) {
+            const x = dbHistory[i];
+
+            if (x.roles.includes('"servers":')) {
+                const parsed = JSON.parse(x.roles);
+                const servers = parsed['servers'].split(';');
+
+                const badServers = await client.db.badServers.findMany({
+                    where: { id: { in: servers } },
+                    select: { name: true },
+                });
+
+                const names = badServers.map(x => x.name);
+                const roles = parsed['roles'].split(';');
+
+                history.push({ name: 'Legacy Data', servers: names, roles });
+            } else {
+                history.push({ name: x.BadServer.name, roles: x.roles, type: x.type });
+            }
+        }
+
         const imports = await client.db.imports.findMany({
             where: { id, appealed: false },
             select: {
@@ -73,12 +104,17 @@ export default class CheckUserAdminCommand extends SlashCommand {
             return false;
         }
 
+        let historyResponse;
+        if (history.length === 0) {
+            historyResponse = 'No prior history';
+        } else {
+            historyResponse = await upload(history);
+        }
         if (imports.length === 0) {
-            //TODO: Show past history
             sendEmbed({
                 interaction,
                 embed: {
-                    description: '`🟢` User has no outstanding servers to be appealed for',
+                    description: `\`🟢\` User has no outstanding servers to be appealed for\n\n> History: <${historyResponse}>`,
                     color: Colours.GREEN,
                 },
             });
@@ -104,22 +140,10 @@ export default class CheckUserAdminCommand extends SlashCommand {
                 const names = badServers.map(x => x.name);
                 const roles = parsed['roles'].split(';');
                 const newData = [{ names, roles }];
-                const formData = new FormData();
 
-                formData.append('lang', 'json');
-                formData.append('expire', '1h');
-                formData.append('password', '');
-                formData.append('title', '');
-                formData.append('text', JSON.stringify(newData, null, 4));
+                const response = await upload(newData);
 
-                const response = await axios.request({
-                    url: data.POST_URL,
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    data: formData,
-                });
-
-                value.push(`Legacy Data\n> View data: <${response.request.res.responseUrl}>\n`);
+                value.push(`Legacy Data\n> View data: <${response}>\n`);
             } else {
                 realCount += 1;
                 value.push(
@@ -155,7 +179,9 @@ export default class CheckUserAdminCommand extends SlashCommand {
                         name: 'User Information',
                         value: `> ID: ${user.id}\n> Status ${capitalize(
                             user.status
-                        )}\n> Type: ${capitalize(user.type)}\n> Appeals: ${user.appeals}`,
+                        )}\n> Type: ${capitalize(
+                            user.type
+                        )}\n> History: ${historyResponse}\n> Appeals: ${user.appeals}`,
                         inline: false,
                     },
                     ...fields,
@@ -165,4 +191,23 @@ export default class CheckUserAdminCommand extends SlashCommand {
 
         return true;
     }
+}
+
+async function upload(json: any) {
+    const formData = new FormData();
+
+    formData.append('lang', 'json');
+    formData.append('expire', '1h');
+    formData.append('password', '');
+    formData.append('title', '');
+    formData.append('text', JSON.stringify(json, null, 4));
+
+    const response = await axios.request({
+        url: data.POST_URL,
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        data: formData,
+    });
+
+    return response.request.res.responseUrl;
 }
