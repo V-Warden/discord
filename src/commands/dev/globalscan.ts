@@ -37,6 +37,12 @@ export default class GlobalScan extends SlashCommand {
 
         // Reduce database calls
         const guilds = await client.db.guild.findMany({
+            where: {
+                punishments: {
+                    enabled: true,
+                    globalCheck: true,
+                },
+            },
             select: { punishments: true, logChannel: true },
         });
 
@@ -65,12 +71,6 @@ export default class GlobalScan extends SlashCommand {
                             return;
                         }
 
-                        if (!settings.punishments.enabled) {
-                            client.logger.debug(
-                                `${this.constructor.name}: ${guild.name} - Skipping due to actioning being disabled`
-                            );
-                            return;
-                        }
                         client.logger.info(
                             `${this.constructor.name}: ${guild.name} - Actioning ${toAction.length} users`
                         );
