@@ -71,90 +71,104 @@ export default class AddUserCommand extends SlashCommand {
             return false;
         }
 
-        const user = await client.users.fetch(id);
-        const isBadServer = await client.db.badServers.count({ where: { id: server } });
+        client.users
+            .fetch(id)
+            .then(async user => {
+                const isBadServer = await client.db.badServers.count({ where: { id: server } });
 
-        if (isBadServer === 0) {
-            sendEmbed({
-                interaction,
-                hidden: true,
-                embed: {
-                    description: '`🔴` That server is not blacklisted',
-                    color: Colours.RED,
-                },
-            });
-            return false;
-        }
-
-        const count = await client.db.users.count({ where: { id } });
-
-        if (count === 1) {
-            await client.db.imports.create({
-                data: {
-                    User: {
-                        connect: {
-                            id: id,
+                if (isBadServer === 0) {
+                    sendEmbed({
+                        interaction,
+                        hidden: true,
+                        embed: {
+                            description: '`🔴` That server is not blacklisted',
+                            color: Colours.RED,
                         },
-                    },
-                    BadServer: {
-                        connect: {
-                            id: server,
-                        },
-                    },
-                    type,
-                    roles: 'Undefined',
-                    appealed: false,
-                },
-            });
-            await client.db.users.update({ where: { id }, data: { status, type, reason } });
-        } else {
-            await client.db.users.create({
-                data: {
-                    id,
-                    last_username: user?.username
-                        ? `${user.username}#${user.discriminator}`
-                        : 'unknown#0000',
-                    avatar: user.avatarURL() ?? 'https://cdn.mk3ext.dev/yuva7/HaXeYOBA30.png',
-                    type,
-                    status,
-                    reason,
-                    servers: {
-                        connectOrCreate: {
-                            where: {
-                                id_server: {
-                                    id,
-                                    server,
+                    });
+                    return false;
+                }
+
+                const count = await client.db.users.count({ where: { id } });
+
+                if (count === 1) {
+                    await client.db.imports.create({
+                        data: {
+                            User: {
+                                connect: {
+                                    id: id,
                                 },
                             },
-                            create: {
-                                BadServer: {
-                                    connect: {
-                                        id: server,
+                            BadServer: {
+                                connect: {
+                                    id: server,
+                                },
+                            },
+                            type,
+                            roles: 'Undefined',
+                            appealed: false,
+                        },
+                    });
+                    await client.db.users.update({ where: { id }, data: { status, type, reason } });
+                } else {
+                    await client.db.users.create({
+                        data: {
+                            id,
+                            last_username: user?.username
+                                ? `${user.username}#${user.discriminator}`
+                                : 'unknown#0000',
+                            avatar: user.avatarURL() ?? 'https://cdn.mk3ext.dev/yuva7/HaXeYOBA30.png',
+                            type,
+                            status,
+                            reason,
+                            servers: {
+                                connectOrCreate: {
+                                    where: {
+                                        id_server: {
+                                            id,
+                                            server,
+                                        },
+                                    },
+                                    create: {
+                                        BadServer: {
+                                            connect: {
+                                                id: server,
+                                            },
+                                        },
+                                        roles: 'Undefined',
+                                        type,
+                                        appealed: false,
                                     },
                                 },
-                                roles: 'Undefined',
-                                type,
-                                appealed: false,
                             },
                         },
+                    });
+                }
+
+                createAuditLog(client, {
+                    executedBy: interaction.user.id,
+                    action: 'user_created',
+                    message: JSON.stringify({ id, type, status, server }),
+                });
+
+                sendEmbed({
+                    interaction,
+                    embed: {
+                        description: `\`🟢\` Successfully created user ${user.username}#${user.discriminator} (${id})`,
+                        color: Colours.GREEN,
                     },
-                },
-            });
-        }
+                });
 
-        createAuditLog(client, {
-            executedBy: interaction.user.id,
-            action: 'user_created',
-            message: JSON.stringify({ id, type, status, server }),
-        });
-
-        sendEmbed({
-            interaction,
-            embed: {
-                description: `\`🟢\` Successfully created user ${user.username}#${user.discriminator} (${id})`,
-                color: Colours.GREEN,
-            },
-        });
+                return true;
+            })
+            .catch(() =>
+                sendEmbed({
+                    interaction,
+                    embed: {
+                        description: '`🔴` Could not retrieve this user from Discords API',
+                        color: Colours.RED,
+                    },
+                })
+            );
 
         return true;
     }
