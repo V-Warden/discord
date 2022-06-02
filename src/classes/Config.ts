@@ -118,7 +118,7 @@ export class Config {
                 }\`\n> This will automatically unban a user when appealed, if they are banned via Warden`,
             },
             {
-                name: 'Global Check',
+                name: 'Global Scan',
                 value: `Status: \`${
                     punishments.globalCheck ? 'Enabled' : 'Disabled'
                 }\`\n> You can opt in or out of global scanning, you will have to use scanusers if this is disabled`,
@@ -145,7 +145,7 @@ export class Config {
                 style: 'SECONDARY',
                 customId: 'CONFIG_TOGGLE_GLOBAL',
                 emoji: '📖',
-                label: 'Toggle GlobalCheck',
+                label: 'Toggle GlobalScan',
             },
             {
                 type: 'BUTTON',
