@@ -1,5 +1,12 @@
 import { Punishments } from '@prisma/client';
-import { ButtonInteraction, Collection, Message, MessageActionRow, Snowflake } from 'discord.js';
+import {
+    BaseCommandInteraction,
+    ButtonInteraction,
+    Collection,
+    Message,
+    MessageActionRow,
+    Snowflake,
+} from 'discord.js';
 import { Colours } from '../@types';
 import { sendEmbed } from '../utils/messages';
 import { Bot } from './Bot';
@@ -17,7 +24,7 @@ export class Config {
         this.guildMessageIDs.clear();
     }
 
-    async sendConfigMenu(interaction: ButtonInteraction, guildID: Snowflake) {
+    async sendConfigMenu(interaction: ButtonInteraction | BaseCommandInteraction, guildID: Snowflake) {
         const guild = await this.bot.db.guild.findUnique({
             where: { id: guildID },
             select: { id: true, logChannel: true, punishments: true },
@@ -95,11 +102,26 @@ export class Config {
     generateFields(logchan: string, punishments: Punishments) {
         return [
             {
-                name: 'Details',
-                inline: false,
-                value: `Actioning -> \`${
-                    punishments.enabled ? 'ENABLED' : 'DISABLED'
-                }\`\nUnban on Appeal -> \`${punishments.unban}\`\nLog Channel -> <#${logchan}>\n`,
+                name: 'Actioning',
+                value: `Status: \`${
+                    punishments.enabled ? 'Enabled' : 'Disabled'
+                }\`\n> This determins if the bot will have functionality on this guild`,
+            },
+            {
+                name: 'Log Channel',
+                value: `Channel: <#${logchan}>\n> A text channel where all bot logs are sent to`,
+            },
+            {
+                name: 'Unban',
+                value: `Status: \`${
+                    punishments.unban ? 'Enabled' : 'Disabled'
+                }\`\n> This will automatically unban a user when appealed, if they are banned via Warden`,
+            },
+            {
+                name: 'Global Check',
+                value: `Status: \`${
+                    punishments.globalCheck ? 'Enabled' : 'Disabled'
+                }\`\n> You can opt in or out of global scanning, you will have to use scanusers if this is disabled`,
             },
             {
                 name: 'Punishments',
@@ -121,6 +143,13 @@ export class Config {
             {
                 type: 'BUTTON',
                 style: 'SECONDARY',
+                customId: 'CONFIG_TOGGLE_GLOBAL',
+                emoji: '📖',
+                label: 'Toggle GlobalCheck',
+            },
+            {
+                type: 'BUTTON',
+                style: 'SECONDARY',
                 customId: 'CONFIG_TOGGLE_UNBAN',
                 emoji: '🧹',
                 label: 'Toggle Unban',
@@ -137,7 +166,7 @@ export class Config {
                 style: 'SECONDARY',
                 customId: 'PUNISHMENT_PANEL',
                 emoji: '📕',
-                label: 'Change Punishments',
+                label: 'Punishments',
             },
         ]);
     }

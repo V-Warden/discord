@@ -15,6 +15,7 @@ export async function updateGuildPunishment(
         other,
         unban,
         enabled,
+        globalCheck,
     }: {
         owner?: Punish;
         supporter?: Punish;
@@ -23,6 +24,7 @@ export async function updateGuildPunishment(
         other?: Punish;
         unban?: boolean;
         enabled?: boolean;
+        globalCheck?: boolean;
     }
 ) {
     return await client.db.guild.update({
@@ -39,6 +41,7 @@ export async function updateGuildPunishment(
                     cheater,
                     leaker,
                     other,
+                    globalCheck,
                 },
             },
         },

@@ -1,4 +1,4 @@
-import { BaseCommandInteraction, ButtonInteraction } from 'discord.js';
+import { BaseCommandInteraction } from 'discord.js';
 import { Bot, SlashCommand } from '../../classes';
 
 export default class ConfigCommand extends SlashCommand {
@@ -15,7 +15,8 @@ export default class ConfigCommand extends SlashCommand {
     }
 
     public async run(client: Bot, interaction: BaseCommandInteraction): Promise<boolean> {
-        client.config.sendConfigMenu(interaction as unknown as ButtonInteraction, interaction.guild.id);
+        await interaction.reply({ ephemeral: true, content: 'Sent configuration menu' });
+        client.config.sendConfigMenu(interaction, interaction.guild.id);
         return true;
     }
 }

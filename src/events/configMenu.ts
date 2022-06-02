@@ -23,6 +23,14 @@ export default async function (client: Bot, interaction: ButtonInteraction): Pro
             }
             break;
         }
+        case 'TOGGLE_GLOBAL': {
+            if (guild.punishments.globalCheck) {
+                await updateGuildPunishment(client, message.guild.id, { globalCheck: false });
+            } else {
+                await updateGuildPunishment(client, message.guild.id, { globalCheck: true });
+            }
+            break;
+        }
         case 'TOGGLE_UNBAN': {
             if (guild.punishments.unban) {
                 await updateGuildPunishment(client, message.guild.id, { unban: false });
