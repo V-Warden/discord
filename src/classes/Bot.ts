@@ -10,6 +10,7 @@ import { ActionUser } from './Actioning';
 import * as cron from 'node-cron';
 import axios from 'axios';
 import data from '../config.json';
+import FormData from 'form-data';
 
 /**
  * Custom bot class
