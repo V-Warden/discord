@@ -105,7 +105,7 @@ export default class CheckUserAdminCommand extends SlashCommand {
         if (history.length === 0) {
             historyResponse = 'No prior history';
         } else {
-            historyResponse = await client.uploadText(JSON.stringify(history, null, 4), '1hr');
+            historyResponse = await client.uploadText(JSON.stringify(history, null, 4), '1h');
         }
 
         const noteCount = await client.db.notes.count({ where: { id } });
@@ -141,7 +141,7 @@ export default class CheckUserAdminCommand extends SlashCommand {
                 const roles = parsed['roles'].split(';');
                 const newData = [{ names, roles }];
 
-                const response = await client.uploadText(JSON.stringify(newData, null, 4), '1hr');
+                const response = await client.uploadText(JSON.stringify(newData, null, 4), '1h');
 
                 value.push(`Legacy Data\n> View data: <${response}>\n`);
             } else {
