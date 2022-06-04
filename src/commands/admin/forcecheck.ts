@@ -26,7 +26,7 @@ export default class ForceCheckCommand extends SlashCommand {
     public async run(client: Bot, interaction: BaseCommandInteraction): Promise<boolean> {
         const id = interaction.options.get('id').value as Snowflake;
 
-        if (id.length !== 18) {
+        if (id?.length < 17) {
             sendEmbed({
                 interaction,
                 hidden: true,

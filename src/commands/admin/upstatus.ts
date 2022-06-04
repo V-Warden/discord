@@ -52,7 +52,7 @@ export default class UpStatusCommand extends SlashCommand {
         const type = interaction.options.get('type')?.value as UserType;
         const reason = interaction.options.get('reason')?.value as string;
 
-        if (id.length !== 18) {
+        if (id?.length < 17) {
             sendEmbed({
                 interaction,
                 hidden: true,

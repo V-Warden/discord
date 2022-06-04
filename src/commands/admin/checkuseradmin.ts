@@ -34,7 +34,7 @@ export default class CheckUserAdminCommand extends SlashCommand {
         const id = (interaction.options.getUser('user')?.id ||
             interaction.options.get('id')?.value) as Snowflake;
 
-        if (id?.length !== 18) {
+        if (id?.length < 17) {
             sendEmbed({
                 interaction,
                 embed: {

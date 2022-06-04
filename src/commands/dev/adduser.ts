@@ -59,7 +59,7 @@ export default class AddUserCommand extends SlashCommand {
         const server = interaction.options.get('server')?.value as string;
         const reason = interaction.options.get('reason')?.value as string;
 
-        if (id.length !== 18) {
+        if (id?.length < 17) {
             sendEmbed({
                 interaction,
                 hidden: true,
