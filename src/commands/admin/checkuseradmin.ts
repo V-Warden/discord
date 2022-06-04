@@ -1,10 +1,7 @@
-import FormData from 'form-data';
 import { capitalize } from 'lodash';
 import { Colours } from '../../@types';
 import { Bot, SlashCommand } from '../../classes';
 import { sendEmbed } from '../../utils/messages';
-import data from '../../config.json';
-import axios from 'axios';
 import { BaseCommandInteraction, EmbedFieldData, Snowflake } from 'discord.js';
 
 export default class CheckUserAdminCommand extends SlashCommand {
@@ -108,7 +105,7 @@ export default class CheckUserAdminCommand extends SlashCommand {
         if (history.length === 0) {
             historyResponse = 'No prior history';
         } else {
-            historyResponse = await upload(history);
+            historyResponse = await client.uploadText(JSON.stringify(history, null, 4), '1hr');
         }
 
         const noteCount = await client.db.notes.count({ where: { id } });
@@ -144,7 +141,7 @@ export default class CheckUserAdminCommand extends SlashCommand {
                 const roles = parsed['roles'].split(';');
                 const newData = [{ names, roles }];
 
-                const response = await upload(newData);
+                const response = await client.uploadText(JSON.stringify(newData, null, 4), '1hr');
 
                 value.push(`Legacy Data\n> View data: <${response}>\n`);
             } else {
@@ -196,23 +193,4 @@ export default class CheckUserAdminCommand extends SlashCommand {
 
         return true;
     }
-}
-
-async function upload(json: any) {
-    const formData = new FormData();
-
-    formData.append('lang', 'json');
-    formData.append('expire', '1h');
-    formData.append('password', '');
-    formData.append('title', '');
-    formData.append('text', JSON.stringify(json, null, 4));
-
-    const response = await axios.request({
-        url: data.POST_URL,
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        data: formData,
-    });
-
-    return response.request.res.responseUrl;
 }

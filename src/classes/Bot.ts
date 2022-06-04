@@ -8,6 +8,8 @@ import _ from 'lodash';
 import { Config } from './Config';
 import { ActionUser } from './Actioning';
 import * as cron from 'node-cron';
+import axios from 'axios';
+import data from '../config.json';
 
 /**
  * Custom bot class
@@ -164,6 +166,26 @@ class Bot extends Client {
     capitalize(s: string) {
         return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
     }
+
+    async uploadText(text: string, time: string) {
+        const formData = new FormData();
+
+        formData.append('lang', 'json');
+        formData.append('expire', time);
+        formData.append('password', '');
+        formData.append('title', '');
+        formData.append('text', text);
+
+        const response = await axios.request({
+            url: data.POST_URL,
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            data: formData,
+        });
+
+        return response.request.res.responseUrl;
+    }
+
     /**
      * Retrieves channel by id from cache, if set otherwise set
      */
