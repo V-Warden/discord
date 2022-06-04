@@ -110,11 +110,14 @@ export default class CheckUserAdminCommand extends SlashCommand {
         } else {
             historyResponse = await upload(history);
         }
+
+        const noteCount = await client.db.notes.count({ where: { id } });
+
         if (imports.length === 0) {
             sendEmbed({
                 interaction,
                 embed: {
-                    description: `\`🟢\` User has no outstanding servers to be appealed for\n\n> History: <${historyResponse}>`,
+                    description: `\`🟢\` User has no outstanding servers to be appealed for\n\n> History: <${historyResponse}>\n> Notes: ${noteCount}`,
                     color: Colours.GREEN,
                 },
             });
@@ -181,7 +184,9 @@ export default class CheckUserAdminCommand extends SlashCommand {
                             user.status
                         )}\n> Type: ${capitalize(
                             user.type
-                        )}\n> History: ${historyResponse}\n> Appeals: ${user.appeals}`,
+                        )}\n> History: ${historyResponse}\n> Notes: ${noteCount}\n> Appeals: ${
+                            user.appeals
+                        }`,
                         inline: false,
                     },
                     ...fields,
