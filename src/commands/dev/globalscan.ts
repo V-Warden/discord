@@ -24,7 +24,7 @@ export default class GlobalScan extends SlashCommand {
 
     public async run(client: Bot, interaction: BaseCommandInteraction): Promise<boolean> {
         client.actioning.reset();
-        const rescan = (interaction.options.get('rescan').value as boolean) ?? false;
+        const rescan = (interaction.options.get('rescan')?.value as boolean) ?? false;
 
         await interaction.reply({ content: 'Now global checking..' });
         const start = process.hrtime.bigint();
@@ -47,11 +47,11 @@ export default class GlobalScan extends SlashCommand {
         });
 
         await client.guilds.fetch();
-        const realGuilds: Guild[] = client.guilds.cache.map(x => x);
 
-        for (let i = 0; i < realGuilds.length; i++) {
-            const guild = realGuilds[i];
-            const db = guilds.find(a => a.punishments.id === guild.id);
+        for (let i = 0; i < guilds.length; i++) {
+            const guild = client.guilds.cache.get(guilds[i].punishments.id);
+
+            if (!guild) continue;
 
             await guild?.members
                 .fetch()
