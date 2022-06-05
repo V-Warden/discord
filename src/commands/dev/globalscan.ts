@@ -49,6 +49,7 @@ export default class GlobalScan extends SlashCommand {
         await client.guilds.fetch();
 
         for (let i = 0; i < guilds.length; i++) {
+            const db = guilds[i];
             const guild = client.guilds.cache.get(guilds[i].punishments.id);
 
             if (!guild) continue;
