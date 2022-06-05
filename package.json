@@ -1,6 +1,6 @@
 {
   "name": "wardenv2",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "main": ".prettierrc.json",
   "repository": "https://github.com/V-Warden/discord",
   "author": "mk3ext#6044",
