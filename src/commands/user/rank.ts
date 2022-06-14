@@ -1,4 +1,4 @@
-import { BaseCommandInteraction } from 'discord.js';
+import { CommandInteraction } from 'discord.js';
 import { capitalize } from 'lodash';
 import { Colours } from '../../@types';
 import { Bot, SlashCommand } from '../../classes';
@@ -16,7 +16,7 @@ export default class RankCommand extends SlashCommand {
         });
     }
 
-    public async run(client: Bot, interaction: BaseCommandInteraction): Promise<boolean> {
+    public async run(client: Bot, interaction: CommandInteraction): Promise<boolean> {
         const staff = await client.db.staff.findUnique({ where: { id: interaction.user.id } });
 
         const embed = {

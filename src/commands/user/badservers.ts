@@ -1,4 +1,4 @@
-import { BaseCommandInteraction, MessageEmbed } from 'discord.js';
+import { CommandInteraction, MessageEmbed } from 'discord.js';
 import _ from 'lodash';
 import { Colours } from '../../@types';
 import { Bot, SlashCommand } from '../../classes';
@@ -16,7 +16,7 @@ export default class BadServersCommand extends SlashCommand {
         });
     }
 
-    public async run(client: Bot, interaction: BaseCommandInteraction): Promise<boolean> {
+    public async run(client: Bot, interaction: CommandInteraction): Promise<boolean> {
         const badServers = await client.db.badServers.findMany({});
         const desc: string[] = [];
         badServers.forEach(server => desc.push(`${server.id} | ${server.name}`));

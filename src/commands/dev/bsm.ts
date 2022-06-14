@@ -1,5 +1,5 @@
 import { ServerType } from '@prisma/client';
-import { BaseCommandInteraction, Invite } from 'discord.js';
+import { CommandInteraction, Invite } from 'discord.js';
 import { Colours } from '../../@types';
 import { Bot, SlashCommand } from '../../classes';
 import { createAuditLog } from '../../utils/db';
@@ -69,7 +69,7 @@ export default class BadServerManagementCommand extends SlashCommand {
         });
     }
 
-    public async run(client: Bot, interaction: BaseCommandInteraction): Promise<boolean> {
+    public async run(client: Bot, interaction: CommandInteraction): Promise<boolean> {
         const name = interaction.options.data[0]?.name;
 
         if (name === 'add') {

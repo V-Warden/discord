@@ -1,5 +1,5 @@
 import {
-    BaseCommandInteraction,
+    CommandInteraction,
     MessageActionRow,
     MessageActionRowOptions,
     MessageEmbed,
@@ -8,7 +8,7 @@ import {
 } from 'discord.js';
 
 export interface EmbedOptions {
-    interaction?: BaseCommandInteraction;
+    interaction?: CommandInteraction;
 
     channel?: TextBasedChannel;
 

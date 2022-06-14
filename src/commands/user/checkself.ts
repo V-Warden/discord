@@ -1,4 +1,4 @@
-import { BaseCommandInteraction } from 'discord.js';
+import { CommandInteraction } from 'discord.js';
 import { Colours } from '../../@types';
 import { Bot, SlashCommand } from '../../classes';
 import { sendEmbed } from '../../utils/messages';
@@ -15,7 +15,7 @@ export default class CheckSelfCommand extends SlashCommand {
         });
     }
 
-    public async run(client: Bot, interaction: BaseCommandInteraction): Promise<boolean> {
+    public async run(client: Bot, interaction: CommandInteraction): Promise<boolean> {
         const imports = await client.db.imports.findMany({
             where: { id: interaction.user.id, appealed: false },
             select: { BadServer: true },

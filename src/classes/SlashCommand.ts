@@ -1,9 +1,9 @@
 import { StaffRoles } from '@prisma/client';
 import {
     ApplicationCommandOptionData,
-    BaseCommandInteraction,
     ApplicationCommandType,
     PermissionString,
+    CommandInteraction,
 } from 'discord.js';
 import { CommandOptions } from '../@types/CommandOptions';
 import { Bot } from './Bot';
@@ -34,5 +34,5 @@ export abstract class SlashCommand implements CommandOptions {
         this.permission = opts.permission;
         this.cooldown = opts.cooldown;
     }
-    public abstract run(client: Bot, interaction: BaseCommandInteraction): Promise<boolean>;
+    public abstract run(client: Bot, interaction: CommandInteraction): Promise<boolean>;
 }

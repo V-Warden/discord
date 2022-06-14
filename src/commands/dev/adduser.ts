@@ -1,5 +1,5 @@
 import { UserStatus, UserType } from '@prisma/client';
-import { BaseCommandInteraction, Snowflake } from 'discord.js';
+import { CommandInteraction, Snowflake } from 'discord.js';
 import { Colours } from '../../@types';
 import { Bot, SlashCommand } from '../../classes';
 import { createAuditLog } from '../../utils/db';
@@ -52,7 +52,7 @@ export default class AddUserCommand extends SlashCommand {
         });
     }
 
-    public async run(client: Bot, interaction: BaseCommandInteraction): Promise<boolean> {
+    public async run(client: Bot, interaction: CommandInteraction): Promise<boolean> {
         const id = interaction.options.get('id')?.value as Snowflake;
         const status = interaction.options.get('status')?.value as UserStatus;
         const type = interaction.options.get('type')?.value as UserType;

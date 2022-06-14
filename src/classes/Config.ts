@@ -1,6 +1,6 @@
 import { Punishments } from '@prisma/client';
 import {
-    BaseCommandInteraction,
+    CommandInteraction,
     ButtonInteraction,
     Collection,
     Message,
@@ -24,7 +24,7 @@ export class Config {
         this.guildMessageIDs.clear();
     }
 
-    async sendConfigMenu(interaction: ButtonInteraction | BaseCommandInteraction, guildID: Snowflake) {
+    async sendConfigMenu(interaction: ButtonInteraction | CommandInteraction, guildID: Snowflake) {
         const guild = await this.bot.db.guild.findUnique({
             where: { id: guildID },
             select: { id: true, logChannel: true, punishments: true },

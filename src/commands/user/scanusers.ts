@@ -1,5 +1,5 @@
 import { UserStatus } from '@prisma/client';
-import { BaseCommandInteraction } from 'discord.js';
+import { CommandInteraction } from 'discord.js';
 import { Colours } from '../../@types';
 import { Bot, SlashCommand } from '../../classes';
 import { sendEmbed } from '../../utils/messages';
@@ -18,7 +18,7 @@ export default class ScanUsers extends SlashCommand {
         });
     }
 
-    public async run(client: Bot, interaction: BaseCommandInteraction): Promise<boolean> {
+    public async run(client: Bot, interaction: CommandInteraction): Promise<boolean> {
         if (client.processing.isProcessing()) {
             client.processing.disabledMessage(interaction);
             return false;

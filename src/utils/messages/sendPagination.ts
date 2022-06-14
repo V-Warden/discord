@@ -1,10 +1,4 @@
-import {
-    BaseCommandInteraction,
-    Message,
-    MessageActionRow,
-    MessageButton,
-    MessageEmbed,
-} from 'discord.js';
+import { CommandInteraction, Message, MessageActionRow, MessageButton, MessageEmbed } from 'discord.js';
 import { Colours } from '../../@types';
 import { Bot } from '../../classes';
 
@@ -18,7 +12,7 @@ import { Bot } from '../../classes';
 
 export async function sendPagination(
     client: Bot,
-    interaction: BaseCommandInteraction,
+    interaction: CommandInteraction,
     pages: MessageEmbed[],
     timeout: number
 ) {

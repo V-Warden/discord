@@ -2,7 +2,7 @@
 import * as fs from 'fs';
 import { Colours, ProcessingData } from '../@types';
 import { sendEmbed } from '../utils/messages';
-import { BaseCommandInteraction, TextChannel } from 'discord.js';
+import { CommandInteraction, TextChannel } from 'discord.js';
 import { UserType } from '@prisma/client';
 import { Bot } from './Bot';
 import { createAuditLog } from '../utils/db';
@@ -163,7 +163,7 @@ export class Processing {
         return false;
     }
 
-    sendCompletionMsg(interaction: BaseCommandInteraction, chan: TextChannel) {
+    sendCompletionMsg(interaction: CommandInteraction, chan: TextChannel) {
         sendEmbed({
             channel: chan,
             embed: {
@@ -179,7 +179,7 @@ export class Processing {
         });
     }
 
-    disabledMessage(interaction: BaseCommandInteraction) {
+    disabledMessage(interaction: CommandInteraction) {
         sendEmbed({
             interaction,
             embed: {

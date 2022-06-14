@@ -1,4 +1,4 @@
-import { BaseCommandInteraction, MessageEmbed } from 'discord.js';
+import { CommandInteraction, MessageEmbed } from 'discord.js';
 import _ from 'lodash';
 import { Colours } from '../../@types';
 import { Bot, SlashCommand } from '../../classes';
@@ -64,7 +64,7 @@ export default class NoteCommand extends SlashCommand {
         });
     }
 
-    public async run(client: Bot, interaction: BaseCommandInteraction): Promise<boolean> {
+    public async run(client: Bot, interaction: CommandInteraction): Promise<boolean> {
         const name = interaction.options.data[0]?.name;
 
         if (name === 'remove') {

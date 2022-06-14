@@ -1,4 +1,4 @@
-import { BaseCommandInteraction } from 'discord.js';
+import { CommandInteraction } from 'discord.js';
 import { Bot, SlashCommand } from '../../classes';
 import { createAuditLog } from '../../utils/db';
 import { sendEmbed } from '../../utils/messages';
@@ -16,7 +16,7 @@ export default class ProcfileCommand extends SlashCommand {
         });
     }
 
-    public async run(client: Bot, interaction: BaseCommandInteraction): Promise<boolean> {
+    public async run(client: Bot, interaction: CommandInteraction): Promise<boolean> {
         if (client.processing.isProcessing()) {
             client.processing.disabledMessage(interaction);
             return false;

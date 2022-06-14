@@ -1,5 +1,5 @@
 import { UserStatus } from '@prisma/client';
-import { BaseCommandInteraction, Snowflake } from 'discord.js';
+import { CommandInteraction, Snowflake } from 'discord.js';
 import { Colours } from '../../@types';
 import { Bot, SlashCommand } from '../../classes';
 import { createAuditLog } from '../../utils/db';
@@ -31,7 +31,7 @@ export default class AppealCommand extends SlashCommand {
         });
     }
 
-    public async run(client: Bot, interaction: BaseCommandInteraction): Promise<boolean> {
+    public async run(client: Bot, interaction: CommandInteraction): Promise<boolean> {
         if (client.processing.isProcessing()) {
             client.processing.disabledMessage(interaction);
             return false;

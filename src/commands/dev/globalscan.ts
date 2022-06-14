@@ -1,4 +1,4 @@
-import { BaseCommandInteraction, Guild } from 'discord.js';
+import { CommandInteraction } from 'discord.js';
 import { Bot, SlashCommand } from '../../classes';
 import { createAuditLog } from '../../utils/db';
 
@@ -14,7 +14,7 @@ export default class GlobalScan extends SlashCommand {
                     type: 'BOOLEAN',
                     name: 'rescan',
                     description: 'Rescan (does not warn)',
-                    required: false,
+                    required: true,
                 },
             ],
             defaultPermission: false,
@@ -22,7 +22,7 @@ export default class GlobalScan extends SlashCommand {
         });
     }
 
-    public async run(client: Bot, interaction: BaseCommandInteraction): Promise<boolean> {
+    public async run(client: Bot, interaction: CommandInteraction): Promise<boolean> {
         client.actioning.reset();
         const rescan = (interaction.options.get('rescan')?.value as boolean) ?? false;
 

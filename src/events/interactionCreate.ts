@@ -1,7 +1,7 @@
 import { Punish, UserType } from '@prisma/client';
 import {
-    BaseCommandInteraction,
     ButtonInteraction,
+    Interaction,
     MessageActionRow,
     MessageSelectOptionData,
     SelectMenuInteraction,
@@ -11,7 +11,7 @@ import { Bot } from '../classes/Bot';
 import { updateGuildPunishment } from '../utils/db';
 import { sendEmbed } from '../utils/messages';
 
-export default async function (client: Bot, interaction: BaseCommandInteraction) {
+export default async function (client: Bot, interaction: Interaction) {
     if (interaction.isCommand()) {
         const slashCommand = client.commands.find(c => c.name === interaction.commandName);
         if (!slashCommand) {

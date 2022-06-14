@@ -2,7 +2,7 @@ import { capitalize } from 'lodash';
 import { Colours } from '../../@types';
 import { Bot, SlashCommand } from '../../classes';
 import { sendEmbed } from '../../utils/messages';
-import { BaseCommandInteraction, EmbedFieldData, Snowflake } from 'discord.js';
+import { CommandInteraction, EmbedFieldData, Snowflake } from 'discord.js';
 
 export default class CheckUserAdminCommand extends SlashCommand {
     constructor(client: Bot) {
@@ -30,7 +30,7 @@ export default class CheckUserAdminCommand extends SlashCommand {
         });
     }
 
-    public async run(client: Bot, interaction: BaseCommandInteraction): Promise<boolean> {
+    public async run(client: Bot, interaction: CommandInteraction): Promise<boolean> {
         const id = (interaction.options.getUser('user')?.id ||
             interaction.options.get('id')?.value) as Snowflake;
 
