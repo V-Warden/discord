@@ -26,7 +26,7 @@ export default class RankCommand extends SlashCommand {
 
         if (staff && staff.role !== 'EXSTAFF') {
             embed.description = `Your wish is my command **Bot ${capitalize(staff.role)}**`;
-        } else if (interaction.memberPermissions.has('ADMINISTRATOR')) {
+        } else if (interaction.memberPermissions?.has('ADMINISTRATOR')) {
             embed.description = 'Your wish is my command **Discord Admin**!';
         } else {
             embed.description = "You're a **Bot User**";
