@@ -82,7 +82,7 @@ export async function sendPagination(
         return curPage;
     } catch (e) {
         client.logger.error(`Error in guild ${interaction.guildId} when editing sendPagination - ${e}`);
-        await interaction.channel
+        interaction.channel
             .send({
                 embeds: [
                     {
@@ -93,7 +93,7 @@ export async function sendPagination(
                     },
                 ],
             })
-            .catch();
+            .catch(() => console.log('Unable to send bug message'));
         return null;
     }
 }
