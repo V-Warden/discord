@@ -1,8 +1,9 @@
 import { capitalize } from 'lodash';
 import { Colours } from '../../@types';
 import { Bot, SlashCommand } from '../../classes';
-import { sendEmbed } from '../../utils/messages';
-import { CommandInteraction, EmbedFieldData, Snowflake } from 'discord.js';
+import { sendEmbed, sendPagination } from '../../utils/messages';
+import { CommandInteraction, MessageEmbed, Snowflake } from 'discord.js';
+import _ from 'lodash';
 
 export default class CheckUserAdminCommand extends SlashCommand {
     constructor(client: Bot) {
@@ -101,7 +102,7 @@ export default class CheckUserAdminCommand extends SlashCommand {
             return false;
         }
 
-        let historyResponse;
+        let historyResponse: string;
         if (history.length === 0) {
             historyResponse = 'No prior history';
         } else {
@@ -121,7 +122,6 @@ export default class CheckUserAdminCommand extends SlashCommand {
             return false;
         }
 
-        const fields: EmbedFieldData[] = [];
         const value = [];
         let realCount = 0;
 
@@ -153,43 +153,75 @@ export default class CheckUserAdminCommand extends SlashCommand {
                 );
             }
         }
-        fields.push({
-            name: 'New Servers',
-            value: value.join('\n'),
-        });
+
         let avatar = user.avatar;
 
         if (avatar === user.last_username) {
             avatar = client.user.defaultAvatarURL;
         }
 
-        sendEmbed({
-            interaction,
-            embed: {
-                title: ':shield: User In Database',
-                description: `<@${user.id}> has been seen in ${realCount} bad Discord servers.`,
-                author: {
-                    name: user.last_username,
-                    icon_url: avatar,
-                },
-                thumbnail: { url: avatar },
-                color: Colours.RED,
-                fields: [
-                    {
-                        name: 'User Information',
-                        value: `> ID: ${user.id}\n> Status: ${capitalize(
-                            user.status
-                        )}\n> Type: ${capitalize(
-                            user.type
-                        )}\n> History: ${historyResponse}\n> Notes: ${noteCount}\n> Appeals: ${
-                            user.appeals
-                        }`,
-                        inline: false,
-                    },
-                    ...fields,
-                ],
+        const mainEmbed = {
+            author: {
+                name: user.last_username,
+                icon_url: avatar,
             },
-        }).catch(e => console.log(e));
+            title: ':shield: User In Database',
+            thumbnail: { url: avatar },
+            description: `<@${user.id}> has been seen in ${realCount} bad Discord servers.`,
+            color: Colours.RED,
+        };
+
+        if (value.length >= 5) {
+            const chunked = _.chunk(value, 5);
+            const pages: MessageEmbed[] = [];
+
+            chunked.forEach(chunk => {
+                pages.push(
+                    new MessageEmbed({
+                        ...mainEmbed,
+                        fields: [
+                            {
+                                name: 'User Information',
+                                value: `> ID: ${user.id}\n> Status: ${capitalize(
+                                    user.status
+                                )}\n> Type: ${capitalize(
+                                    user.type
+                                )}\n> History: ${historyResponse}\n> Notes: ${noteCount}\n> Appeals: ${
+                                    user.appeals
+                                }`,
+                                inline: false,
+                            },
+                            ...[{ name: 'New Servers', value: chunk.join('\n') }],
+                        ],
+                    })
+                );
+            });
+            sendPagination(client, interaction, pages, 180000);
+        } else {
+            sendEmbed({
+                interaction,
+                embed: {
+                    ...mainEmbed,
+                    fields: [
+                        {
+                            name: 'User Information',
+                            value: `> ID: ${user.id}\n> Status: ${capitalize(
+                                user.status
+                            )}\n> Type: ${capitalize(
+                                user.type
+                            )}\n> History: ${historyResponse}\n> Notes: ${noteCount}\n> Appeals: ${
+                                user.appeals
+                            }`,
+                            inline: false,
+                        },
+                        {
+                            name: 'New Servers',
+                            value: value.join('\n'),
+                        },
+                    ],
+                },
+            }).catch(e => console.log(e));
+        }
 
         return true;
     }
