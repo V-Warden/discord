@@ -77,7 +77,10 @@ export class ActionUser {
         }
 
         if (realCount === 0) {
-            await this.client.db.users.update({ where: { id: user.id }, data: { status: 'APPEALED' } });
+            await this.client.db.users.update({
+                where: { id: user.id },
+                data: { status: 'APPEALED', appeals: { increment: 1 } },
+            });
             return;
         }
         const author = {
