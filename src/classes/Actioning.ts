@@ -82,8 +82,9 @@ export class ActionUser {
                     where: { id: user.id },
                     data: { appealed: false },
                 });
+
+                this.doAction(user, logChannel, punishments, member, toDM, process, rescan);
             }
-            this.doAction(user, logChannel, punishments, member, toDM, process, rescan);
             return;
         }
         const author = {
