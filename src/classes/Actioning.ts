@@ -77,6 +77,13 @@ export class ActionUser {
         }
 
         if (realCount === 0) {
+            if (user.status !== 'APPEALED') {
+                await this.client.db.imports.updateMany({
+                    where: { id: user.id },
+                    data: { appealed: false },
+                });
+            }
+            this.doAction(user, logChannel, punishments, member, toDM, process, rescan);
             return;
         }
         const author = {
