@@ -76,6 +76,10 @@ export class ActionUser {
             return;
         }
 
+        if (realCount === 0) {
+            await this.client.db.users.update({ where: { id: user.id }, data: { status: 'APPEALED' } });
+            return;
+        }
         const author = {
             name: `${member.user.username}#${member.user.discriminator} / ${member.id}`,
             icon_url: member.displayAvatarURL(),
