@@ -102,6 +102,35 @@ export default class CheckUserAdminCommand extends SlashCommand {
             return false;
         }
 
+        if (imports.length === 0 && ['PERM_BLACKLISTED', 'BLACKLISTED'].includes(user.status)) {
+            await interaction.deferReply();
+            let hasAppealed = false;
+
+            for (let i = 0; i < dbHistory.length; i++) {
+                const x = dbHistory[i];
+
+                const result = await client.db.logs.findFirst({
+                    where: {
+                        AND: [
+                            { action: 'user_appealed' },
+                            { message: { contains: user.id } },
+                            { message: { contains: x.BadServer.id } },
+                        ],
+                    },
+                });
+                if (result) hasAppealed = true;
+            }
+
+            if (!hasAppealed) {
+                await client.db.imports.updateMany({
+                    where: { id: user.id },
+                    data: { appealed: false },
+                });
+                this.run(client, interaction);
+                return false;
+            }
+        }
+
         let historyResponse: string;
         if (history.length === 0) {
             historyResponse = 'No prior history';
