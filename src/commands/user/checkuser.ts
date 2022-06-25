@@ -49,6 +49,19 @@ export default class CheckUserCommand extends SlashCommand {
             return false;
         }
         const user = await client.db.users.findUnique({ where: { id } });
+
+        if (!user) {
+            sendEmbed({
+                interaction,
+                embed: {
+                    description:
+                        '`🟢` No results found for this ID.\n> They are either fine or not yet listed.',
+                    color: Colours.GREEN,
+                },
+            });
+            return false;
+        }
+
         const imports = await client.db.imports.findMany({
             where: { id, appealed: false },
             select: {
