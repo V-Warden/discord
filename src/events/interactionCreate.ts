@@ -37,17 +37,21 @@ export default async function (client: Bot, interaction: Interaction) {
             has = true;
         }
 
-        if (has) await slashCommand.run(client, interaction);
-        else {
-            sendEmbed({
-                interaction,
-                hidden: true,
-                embed: {
-                    description: `\`❌\` You must be a \`${slashCommand.staffRole}\` to use this command`,
-                    color: Colours.RED,
-                },
-            });
-            return false;
+        try {
+            if (has) await slashCommand.run(client, interaction);
+            else {
+                sendEmbed({
+                    interaction,
+                    hidden: true,
+                    embed: {
+                        description: `\`❌\` You must be a \`${slashCommand.staffRole}\` to use this command`,
+                        color: Colours.RED,
+                    },
+                });
+                return false;
+            }
+        } catch (e) {
+            client.logger.error(`Unknown interaction - ${slashCommand.name}`);
         }
     } else {
         if (interaction.isButton()) {
