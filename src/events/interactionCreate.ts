@@ -51,6 +51,7 @@ export default async function (client: Bot, interaction: Interaction) {
                 return false;
             }
         } catch (e) {
+            console.log(e);
             client.logger.error(`Unknown interaction - ${slashCommand.name}`);
         }
     } else {
