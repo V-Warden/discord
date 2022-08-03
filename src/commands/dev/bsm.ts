@@ -158,29 +158,40 @@ export default class BadServerManagementCommand extends SlashCommand {
             }
         } else if (name === 'remove') {
             const id = interaction.options.get('id')?.value as string;
-            console.log(id);
 
-            client.db.badServers
-                .delete({ where: { id } })
+            client.db.imports
+                .deleteMany({ where: { server: id } })
                 .then(() => {
-                    sendEmbed({
-                        interaction,
-                        embed: {
-                            description: `\`🟢\` Successfully removed \`${id}\` from the bad servers`,
-                            color: Colours.GREEN,
-                        },
-                    });
+                    client.db.badServers
+                        .delete({ where: { id } })
+                        .then(() => {
+                            sendEmbed({
+                                interaction,
+                                embed: {
+                                    description: `\`🟢\` Successfully removed \`${id}\` from the bad servers`,
+                                    color: Colours.GREEN,
+                                },
+                            });
 
-                    createAuditLog(client, {
-                        executedBy: interaction.user.id,
-                        action: 'bad_server_removed',
-                        message: JSON.stringify({
-                            id: id,
-                        }),
-                    });
+                            createAuditLog(client, {
+                                executedBy: interaction.user.id,
+                                action: 'bad_server_removed',
+                                message: JSON.stringify({
+                                    id: id,
+                                }),
+                            });
+                        })
+                        .catch(() => {
+                            sendEmbed({
+                                interaction,
+                                embed: {
+                                    description: '`🔴` That id is currently not listed as a bad server',
+                                    color: Colours.RED,
+                                },
+                            });
+                        });
                 })
-                .catch(e => {
-                    console.log(e);
+                .catch(() => {
                     sendEmbed({
                         interaction,
                         embed: {
