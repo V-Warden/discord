@@ -158,6 +158,7 @@ export default class BadServerManagementCommand extends SlashCommand {
             }
         } else if (name === 'remove') {
             const id = interaction.options.get('id')?.value as string;
+            console.log(id);
 
             client.db.badServers
                 .delete({ where: { id } })
@@ -169,6 +170,7 @@ export default class BadServerManagementCommand extends SlashCommand {
                             color: Colours.GREEN,
                         },
                     });
+
                     createAuditLog(client, {
                         executedBy: interaction.user.id,
                         action: 'bad_server_removed',
@@ -177,7 +179,8 @@ export default class BadServerManagementCommand extends SlashCommand {
                         }),
                     });
                 })
-                .catch(() => {
+                .catch(e => {
+                    console.log(e);
                     sendEmbed({
                         interaction,
                         embed: {
