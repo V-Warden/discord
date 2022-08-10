@@ -40,9 +40,7 @@ export default class FixGuildCommand extends SlashCommand {
             return false;
         }
 
-        const channel = (await guild.channels.fetch())
-            .filter(chan => chan.isText())
-            .first() as TextChannel;
+        const channel = (await guild.channels.fetch()).first();
 
         await client.db.guild
             .create({
