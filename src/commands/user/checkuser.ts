@@ -28,6 +28,7 @@ export default class CheckUserCommand extends SlashCommand {
                 },
             ],
             defaultPermission: true,
+            cooldown: 60,
         });
     }
 

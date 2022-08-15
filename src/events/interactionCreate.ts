@@ -38,6 +38,36 @@ export default async function (client: Bot, interaction: Interaction) {
         }
 
         try {
+            if (has && slashCommand.cooldown) {
+                const now = Date.now();
+                const timestamps = client.getCooldownTimestamps(slashCommand.name);
+                const cooldownAmount = slashCommand.cooldown ? slashCommand.cooldown * 1000 : 0;
+                if (timestamps.has(interaction.guildId)) {
+                    const currentTime = timestamps.get(interaction.guildId);
+                    if (currentTime) {
+                        const expiration = currentTime + cooldownAmount;
+
+                        if (now < expiration) {
+                            const timeLeft = (expiration - now) / 1000;
+                            has = false;
+                            sendEmbed({
+                                interaction,
+                                hidden: true,
+                                embed: {
+                                    description: `⏰ You must wait \`${Math.floor(
+                                        timeLeft
+                                    )}s\` to use this comand`,
+                                    color: Colours.YELLOW,
+                                },
+                            }).catch();
+                        }
+                    }
+                } else {
+                    timestamps.set(interaction.guildId, now);
+                    setTimeout(() => timestamps.delete(interaction.guildId), cooldownAmount);
+                }
+            }
+
             if (has) await slashCommand.run(client, interaction);
             else {
                 sendEmbed({
