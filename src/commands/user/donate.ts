@@ -21,7 +21,7 @@ export default class DonateCommand extends SlashCommand {
             embed: {
                 title: 'Donate',
                 description:
-                    "If you would like to donate to me, or the community that created Warden, you can do so via Ko-Fi.\nDonations don't get you anything except for a thank you message in the donations channel of the discord.\nDonations made will be used to upkeep the bots and offset living costs of the creators and maintainers.\n\n**Ko-Fi**: <https://ko-fi.com/synthethics>",
+                    "If you would like to donate to me, or the community that created Warden, you can do so via Ko-Fi.\nDonations don't get you anything except for a thank you message in the donations channel of the discord.\nDonations made will be used to upkeep the bots and offset living costs of the creators and maintainers.\n\n**Ko-Fi**: <https://ko-fi.com/mk3ext>",
                 color: Colours.GREEN,
             },
         });
