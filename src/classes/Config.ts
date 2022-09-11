@@ -109,7 +109,7 @@ export class Config {
             },
             {
                 name: 'Log Channel',
-                value: `Channel: <#${logchan}>\n> A text channel where all bot logs are sent to`,
+                value: `Channel: <#${logchan}>\n> A text channel where all bot logs are sent to. Please use \`/config logchan\` to change this`,
             },
             {
                 name: 'Unban',
@@ -154,13 +154,13 @@ export class Config {
                 emoji: '🧹',
                 label: 'Toggle Unban',
             },
-            {
-                type: 'BUTTON',
-                style: 'SECONDARY',
-                customId: 'CONFIG_LOG_CHANNEL',
-                emoji: '📜',
-                label: 'Log Channel',
-            },
+            // {
+            //     type: 'BUTTON',
+            //     style: 'SECONDARY',
+            //     customId: 'CONFIG_LOG_CHANNEL',
+            //     emoji: '📜',
+            //     label: 'Log Channel',
+            // },
             {
                 type: 'BUTTON',
                 style: 'SECONDARY',
