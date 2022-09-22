@@ -51,18 +51,6 @@ export default class CheckServerCommand extends SlashCommand {
             return false;
         }
 
-        if (sid) {
-            sendEmbed({
-                interaction,
-                hidden: true,
-                embed: {
-                    description: '`🔴` Invalid server id provided',
-                    color: Colours.RED,
-                },
-            });
-            return false;
-        }
-
         if (sname && sname.length <= 3) {
             sendEmbed({
                 interaction,
