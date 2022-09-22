@@ -1,4 +1,4 @@
-import { CommandInteraction, Snowflake } from 'discord.js';
+import { CommandInteraction } from 'discord.js';
 import { Colours } from '../../@types';
 import { Bot, SlashCommand } from '../../classes';
 import { sendEmbed } from '../../utils/messages';
@@ -35,7 +35,7 @@ export default class CheckServerCommand extends SlashCommand {
     }
 
     public async run(client: Bot, interaction: CommandInteraction): Promise<boolean> {
-        const sid = interaction.options.get('id')?.value as Snowflake;
+        const sid = interaction.options.get('id')?.value as string;
         const sname = interaction.options.get('name')?.value as string;
         const invite = interaction.options.get('invite')?.value as string;
 
