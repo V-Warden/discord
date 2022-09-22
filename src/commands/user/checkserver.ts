@@ -51,7 +51,7 @@ export default class CheckServerCommand extends SlashCommand {
             return false;
         }
 
-        if (sid && sid.length !== 18) {
+        if (sid) {
             sendEmbed({
                 interaction,
                 hidden: true,
