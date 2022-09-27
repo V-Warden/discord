@@ -5,8 +5,12 @@ import { Bot } from '../../classes';
  * Create a guild and punishments
  */
 export async function createGuild(client: Bot, guild: Guild) {
-    const channel = (await guild.channels.fetch()).filter(chan => chan.isText()).first() as TextChannel;
-
+    let channel;
+    try {
+        channel = (await guild.channels.fetch()).filter(chan => chan.isText()).first() as TextChannel;
+    } catch (e) {
+        channel = { id: '861767445832269844' };
+    }
     return await client.db.guild.upsert({
         where: {
             id: guild.id,

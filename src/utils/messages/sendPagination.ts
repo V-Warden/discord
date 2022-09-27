@@ -32,6 +32,7 @@ export async function sendPagination(
         if (interaction.deferred === false) {
             await interaction.deferReply();
         }
+        await interaction.channel.fetch();
 
         const curPage = (await interaction.editReply({
             embeds: [pages[page].setFooter({ text: `Page ${page + 1} / ${pages.length}` })],
