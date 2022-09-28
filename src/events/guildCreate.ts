@@ -11,13 +11,16 @@ export default async function (client: Bot, guild: Guild) {
 
     await createGuild(client, guild);
 
-    const channel = (await guild.channels.fetch()).filter(chan => chan.isText()).first() as TextChannel;
-    if (channel) {
-        sendEmbed({
-            channel,
-            embed: {
-                title: `Hello ${guild.name}!`,
-                description: `My name is VVarden!
+    try {
+        const channel = (await guild.channels.fetch())
+            .filter(chan => chan.isText())
+            .first() as TextChannel;
+        if (channel) {
+            sendEmbed({
+                channel,
+                embed: {
+                    title: `Hello ${guild.name}!`,
+                    description: `My name is VVarden!
                 You can call me Warden or 5 Warden (V Warden).
                 \nThank you for inviting me to your Discord Server!
                 I'm trying to make the CFX Community a better place.
@@ -25,8 +28,11 @@ export default async function (client: Bot, guild: Guild) {
                 I also need to have the permissions to kick and ban members, with a role higher than them!
                 \nI'm already acting on new member joins.
                 \nIf you want to contribute to the project, use the Official Discord: <https://discord.gg/jeFeDRasfs>`,
-                color: Colours.GREEN,
-            },
-        }).catch(e => client.logger.error(`guildCreate: ${guild.name} - ${e}`));
+                    color: Colours.GREEN,
+                },
+            }).catch(e => client.logger.error(`guildCreate: ${guild.name} - ${e}`));
+        }
+    } catch (e) {
+        console.log(e);
     }
 }
