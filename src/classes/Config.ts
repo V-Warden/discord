@@ -120,7 +120,7 @@ export class Config {
         name: 'Punishment Role',
         value: `Status: ${
           interaction.guild.roles.cache.find((role) => role.id === punishments.roleId) || '`Disabled`'
-        } \n> Set a role that a blacklisted user recieves`,
+        } \n> Set a role that a blacklisted user recieves (Only works with WARN)`,
       },
       {
         name: 'Punishments',
