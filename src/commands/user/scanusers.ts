@@ -92,18 +92,17 @@ export default class ScanUsers extends SlashCommand {
             );
           })
         );
-        const actioned = users.length === 0 ? 0 : users.length - 1;
         sendEmbed({
           channel: interaction.channel,
           embed: {
-            description: `Scanning completed, \`${actioned} users\` have been actioned`,
+            description: `Scanning completed, \`${users.length} user(s)\` have been actioned`,
             color: Colours.GREEN,
           },
         }).catch((e) => console.log(e));
 
         const end = Date.now();
         client.logger.info(
-          `${this.constructor.name}: ${interaction.guild.name} - actioned ${actioned} users, took ${
+          `${this.constructor.name}: ${interaction.guild.name} - actioned ${users.length} user(s), took ${
             (end - begin) / 1000
           }s`
         );
