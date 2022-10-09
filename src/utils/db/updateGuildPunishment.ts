@@ -16,6 +16,7 @@ export async function updateGuildPunishment(
     unban,
     enabled,
     globalCheck,
+    roleId,
   }: {
     owner?: Punish;
     supporter?: Punish;
@@ -25,6 +26,7 @@ export async function updateGuildPunishment(
     unban?: boolean;
     enabled?: boolean;
     globalCheck?: boolean;
+    roleId?: string | null;
   }
 ) {
   return await client.db.guild.update({
@@ -42,6 +44,7 @@ export async function updateGuildPunishment(
           leaker,
           other,
           globalCheck,
+          roleId,
         },
       },
     },

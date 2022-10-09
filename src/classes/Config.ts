@@ -35,7 +35,7 @@ export class Config {
       return;
     }
 
-    const fields = this.generateFields(guild.logChannel, guild.punishments);
+    const fields = this.generateFields(guild.logChannel, guild.punishments, interaction);
     const buttons = this.generateButtons();
     if (this.guildMessageIDs.has(guildID)) {
       const message = this.guildMessageIDs.get(guildID);
@@ -92,7 +92,7 @@ export class Config {
     }
   }
 
-  generateFields(logchan: string, punishments: Punishments) {
+  generateFields(logchan: string, punishments: Punishments, interaction: ButtonInteraction | CommandInteraction) {
     return [
       {
         name: 'Actioning',
@@ -115,6 +115,12 @@ export class Config {
         value: `Status: \`${
           punishments.globalCheck ? 'Enabled' : 'Disabled'
         }\`\n> You can opt in or out of global scanning, you will have to use scanusers if this is disabled`,
+      },
+      {
+        name: 'Punishment Role',
+        value: `Status: ${
+          interaction.guild.roles.cache.find((role) => role.id === punishments.roleId) || '`Disabled`'
+        } \n> Set a role that a blacklisted user recieves`,
       },
       {
         name: 'Punishments',
@@ -160,6 +166,13 @@ export class Config {
         customId: 'PUNISHMENT_PANEL',
         emoji: '📕',
         label: 'Punishments',
+      },
+      {
+        type: 'BUTTON',
+        style: 'SECONDARY',
+        customId: 'CONFIG_SET_ROLE',
+        emoji: '📛',
+        label: 'Punishment role',
       },
     ]);
   }
