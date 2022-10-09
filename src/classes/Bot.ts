@@ -16,186 +16,184 @@ import FormData from 'form-data';
  * Custom bot class
  */
 class Bot extends Client {
-    logger: Logger;
-    processing: Processing;
-    db: PrismaClient;
-    config: Config;
-    actioning: ActionUser;
+  logger: Logger;
+  processing: Processing;
+  db: PrismaClient;
+  config: Config;
+  actioning: ActionUser;
 
-    /**
-     * Collection for bot commands
-     */
-    commands: Collection<string, SlashCommand>;
+  /**
+   * Collection for bot commands
+   */
+  commands: Collection<string, SlashCommand>;
 
-    /**
-     * Collection for all events
-     */
-    events: Collection<string, Event>;
+  /**
+   * Collection for all events
+   */
+  events: Collection<string, Event>;
 
-    /**
-     * Collection for caching guild log channels
-     */
-    logChans: Collection<Snowflake, TextChannel>;
+  /**
+   * Collection for caching guild log channels
+   */
+  logChans: Collection<Snowflake, TextChannel>;
 
-    /**
-     * Collection for caching no permissions to avoid rate limit
-     * Cache resets every 5 minutes
-     */
-    noPerms: Collection<String, noServerPerms[]>;
+  /**
+   * Collection for caching no permissions to avoid rate limit
+   * Cache resets every 5 minutes
+   */
+  noPerms: Collection<String, noServerPerms[]>;
 
-    /**
-     * Collection for command cooldown registration.
-     */
-    cooldowns: Collection<string, Collection<string, number>>;
+  /**
+   * Collection for command cooldown registration.
+   */
+  cooldowns: Collection<string, Collection<string, number>>;
 
-    constructor(logger: Logger, db: PrismaClient, options: ClientOptions) {
-        super(options);
+  constructor(logger: Logger, db: PrismaClient, options: ClientOptions) {
+    super(options);
 
-        this.commands = new Collection();
-        this.events = new Collection();
-        this.logChans = new Collection();
-        this.cooldowns = new Collection();
-        this.noPerms = new Collection();
-        this.config = new Config(this);
-        this.processing = new Processing(this);
-        this.actioning = new ActionUser(this);
+    this.commands = new Collection();
+    this.events = new Collection();
+    this.logChans = new Collection();
+    this.cooldowns = new Collection();
+    this.noPerms = new Collection();
+    this.config = new Config(this);
+    this.processing = new Processing(this);
+    this.actioning = new ActionUser(this);
 
-        this.logger = logger;
-        this.db = db;
+    this.logger = logger;
+    this.db = db;
+  }
+
+  /**
+   * Loads all commands.
+   */
+  async loadCommands(dir: string): Promise<void> {
+    const items = await fs.readdir(dir);
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      const stat = await fs.stat(path.join(dir, item));
+
+      if (stat.isDirectory()) {
+        await this.loadCommands(path.join(dir, item));
+      } else if (stat.isFile()) {
+        delete require.cache[require.resolve(path.join(dir, item))];
+        const commandFile = require(path.join(dir, item));
+        const command = new commandFile.default(this);
+        this.commands.set(command.name, command);
+      }
     }
+  }
 
-    /**
-     * Loads all commands.
-     */
-    async loadCommands(dir: string): Promise<void> {
-        const items = await fs.readdir(dir);
+  /**
+   * Loads all events.
+   */
+  async loadEvents(dir: string): Promise<void> {
+    const items = await fs.readdir(dir);
 
-        for (let i = 0; i < items.length; i++) {
-            const item = items[i];
-            const stat = await fs.stat(path.join(dir, item));
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
 
-            if (stat.isDirectory()) {
-                await this.loadCommands(path.join(dir, item));
-            } else if (stat.isFile()) {
-                delete require.cache[require.resolve(path.join(dir, item))];
-                const commandFile = require(path.join(dir, item));
-                const command = new commandFile.default(this);
-                this.commands.set(command.name, command);
-            }
-        }
+      const eventFile = require(path.join(dir, item));
+      this.logger.debug(`Loaded event: ${item.split('.')[0]}`);
+      this.on(item.split('.')[0], eventFile.default.bind(null, this));
     }
+  }
 
-    /**
-     * Loads all events.
-     */
-    async loadEvents(dir: string): Promise<void> {
-        const items = await fs.readdir(dir);
+  /**
+   * Returns timestamps of the command.
+   * @param commandName Name of the command
+   */
+  getCooldownTimestamps(commandName: string): Collection<string, number> {
+    if (!this.cooldowns.has(commandName)) this.cooldowns.set(commandName, new Collection<string, number>());
+    return this.cooldowns.get(commandName) as Collection<string, number>;
+  }
 
-        for (let i = 0; i < items.length; i++) {
-            const item = items[i];
-
-            const eventFile = require(path.join(dir, item));
-            this.logger.debug(`Loaded event: ${item.split('.')[0]}`);
-            this.on(item.split('.')[0], eventFile.default.bind(null, this));
-        }
+  hasNoPerms(guild: string, type: noServerPerms): boolean {
+    if (this.noPerms.has(guild)) {
+      return this.noPerms.get(guild).includes(type);
+    } else {
+      return false;
     }
+  }
 
-    /**
-     * Returns timestamps of the command.
-     * @param commandName Name of the command
-     */
-    getCooldownTimestamps(commandName: string): Collection<string, number> {
-        if (!this.cooldowns.has(commandName))
-            this.cooldowns.set(commandName, new Collection<string, number>());
-        return this.cooldowns.get(commandName) as Collection<string, number>;
+  addNoPerms(guild: string, type: noServerPerms) {
+    let current = this.noPerms.get(guild);
+    if (current) {
+      current.push(type);
+    } else {
+      current = [type];
     }
+    this.noPerms.set(guild, current);
+  }
 
-    hasNoPerms(guild: string, type: noServerPerms): boolean {
-        if (this.noPerms.has(guild)) {
-            return this.noPerms.get(guild).includes(type);
-        } else {
-            return false;
-        }
-    }
+  randomStatus() {
+    const status = _.sample(['discord.gg/warden', 'mk3ext#6044', '{guilds} guilds']).replace(
+      '{guilds}',
+      `${this.guilds.cache.size}`
+    );
 
-    addNoPerms(guild: string, type: noServerPerms) {
-        let current = this.noPerms.get(guild);
-        if (current) {
-            current.push(type);
-        } else {
-            current = [type];
-        }
-        this.noPerms.set(guild, current);
-    }
+    this.user.setActivity({
+      type: 'WATCHING',
+      name: status,
+    });
+  }
 
-    randomStatus() {
-        const status = _.sample(['discord.gg/warden', 'mk3ext#6044', '{guilds} guilds']).replace(
-            '{guilds}',
-            `${this.guilds.cache.size}`
-        );
+  resetNoPerms() {
+    this.noPerms.clear();
+    this.logger.debug('Cleared noPerms cache');
+  }
 
-        this.user.setActivity({
-            type: 'WATCHING',
-            name: status,
-        });
-    }
+  resetLogChans() {
+    this.logger.debug(`Removed ${this.logChans.size} from cached logged channels`);
+    this.logChans.clear();
+  }
 
-    resetNoPerms() {
-        this.noPerms.clear();
-        this.logger.debug('Cleared noPerms cache');
-    }
+  resetConfigIDs() {
+    this.config.clearGuildMessageIDs();
+    this.logger.debug('Cleared config guild message ids');
+  }
 
-    resetLogChans() {
-        this.logger.debug(`Removed ${this.logChans.size} from cached logged channels`);
-        this.logChans.clear();
-    }
+  startTimers() {
+    cron.schedule('*/5 * * * *', async () => {
+      this.resetNoPerms();
+      this.randomStatus();
+    });
 
-    resetConfigIDs() {
-        this.config.clearGuildMessageIDs();
-        this.logger.debug('Cleared config guild message ids');
-    }
+    this.logger.debug('Started timer');
+  }
 
-    startTimers() {
-        cron.schedule('*/5 * * * *', async () => {
-            this.resetNoPerms();
-            this.randomStatus();
-        });
+  capitalize(s: string) {
+    return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+  }
 
-        this.logger.debug('Started timer');
-    }
+  async uploadText(text: string, time: string) {
+    const formData = new FormData();
 
-    capitalize(s: string) {
-        return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
-    }
+    formData.append('lang', 'json');
+    formData.append('expire', time);
+    formData.append('password', '');
+    formData.append('title', '');
+    formData.append('text', text);
 
-    async uploadText(text: string, time: string) {
-        const formData = new FormData();
+    const response = await axios.request({
+      url: data.POST_URL,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      data: formData,
+    });
 
-        formData.append('lang', 'json');
-        formData.append('expire', time);
-        formData.append('password', '');
-        formData.append('title', '');
-        formData.append('text', text);
+    return response.request.res.responseUrl;
+  }
 
-        const response = await axios.request({
-            url: data.POST_URL,
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            data: formData,
-        });
-
-        return response.request.res.responseUrl;
-    }
-
-    /**
-     * Retrieves channel by id from cache, if set otherwise set
-     */
-    async getChannelByID(channel: Snowflake, cache: boolean, guildID: Snowflake) {
-        const chan = (this.channels.cache.get(channel) ||
-            (await this.channels.fetch(channel))) as TextChannel;
-        if (cache) this.logChans.set(guildID, chan);
-        return chan;
-    }
+  /**
+   * Retrieves channel by id from cache, if set otherwise set
+   */
+  async getChannelByID(channel: Snowflake, cache: boolean, guildID: Snowflake) {
+    const chan = (this.channels.cache.get(channel) || (await this.channels.fetch(channel))) as TextChannel;
+    if (cache) this.logChans.set(guildID, chan);
+    return chan;
+  }
 }
 
 export { Bot };

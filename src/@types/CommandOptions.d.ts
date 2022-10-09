@@ -3,38 +3,38 @@ import { ApplicationCommandOptionData, ApplicationCommandType, PermissionString 
 import { Bot } from '../classes';
 
 export interface CommandOptions {
-    client: Bot;
+  client: Bot;
 
-    name: string;
+  name: string;
 
-    description: string;
+  description: string;
 
-    /**
-     * NAME         TYPE    DESCRIPTION
-     * CHAT_INPUT	1	    Slash commands; a text-based command that shows up when a user types /
-     * USER	        2	    A UI-based command that shows up when you right click or tap on a user
-     * MESSAGE	    3	    A UI-based command that shows up when you right click or tap on a message
-     */
-    type: ApplicationCommandType;
+  /**
+   * NAME         TYPE    DESCRIPTION
+   * CHAT_INPUT	1	    Slash commands; a text-based command that shows up when a user types /
+   * USER	        2	    A UI-based command that shows up when you right click or tap on a user
+   * MESSAGE	    3	    A UI-based command that shows up when you right click or tap on a message
+   */
+  type: ApplicationCommandType;
 
-    options: Array<ApplicationCommandOptionData>;
+  options: Array<ApplicationCommandOptionData>;
 
-    defaultPermission: boolean;
+  defaultPermission: boolean;
 
-    /**
-     * Staff Role Types
-     * dev
-     * admin
-     */
-    staffRole?: StaffRoles;
+  /**
+   * Staff Role Types
+   * dev
+   * admin
+   */
+  staffRole?: StaffRoles;
 
-    /**
-     * This is for in built discord permissions
-     */
-    permission?: PermissionString;
+  /**
+   * This is for in built discord permissions
+   */
+  permission?: PermissionString;
 
-    /**
-     * Cooldown in seconds
-     */
-    cooldown?: number;
+  /**
+   * Cooldown in seconds
+   */
+  cooldown?: number;
 }

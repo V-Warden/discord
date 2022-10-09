@@ -1,22 +1,22 @@
 import {
-    CommandInteraction,
-    MessageActionRow,
-    MessageActionRowOptions,
-    MessageEmbed,
-    MessageEmbedOptions,
-    TextBasedChannel,
+  CommandInteraction,
+  MessageActionRow,
+  MessageActionRowOptions,
+  MessageEmbed,
+  MessageEmbedOptions,
+  TextBasedChannel,
 } from 'discord.js';
 
 export interface EmbedOptions {
-    interaction?: CommandInteraction;
+  interaction?: CommandInteraction;
 
-    channel?: TextBasedChannel;
+  channel?: TextBasedChannel;
 
-    content?: string;
+  content?: string;
 
-    embed: MessageEmbed | MessageEmbedOptions;
+  embed: MessageEmbed | MessageEmbedOptions;
 
-    components?: (MessageActionRow | MessageActionRowOptions)[] | undefined;
+  components?: (MessageActionRow | MessageActionRowOptions)[] | undefined;
 
-    hidden?: boolean;
+  hidden?: boolean;
 }

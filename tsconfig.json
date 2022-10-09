@@ -1,36 +1,27 @@
 {
-    "extends": "./node_modules/gts/tsconfig-google.json",
-    "compilerOptions": {
-        "target": "es2020",
-        "module": "commonjs",
-        "lib": [
-            "ES2021",
-            "DOM"
-          ],
-        "rootDir": "./src/",
-        "outDir": "./build/",
-        "strict": true,
-        "moduleResolution": "node",
-        "importHelpers": true,
-        "experimentalDecorators": true,
-        "esModuleInterop": true,
-        "skipLibCheck": true,
-        "allowSyntheticDefaultImports": true,
-        "resolveJsonModule": true,
-        "declaration": false,
-        "forceConsistentCasingInFileNames": true,
-        "removeComments": true,
-        "strictNullChecks": false,
-        "typeRoots": [
-            "src/@types/*"
-        ],
-        "sourceMap": false,
-        "baseUrl": "./"
-    },
-    "include": [
-        "src/**/*.ts",
-    ],
-    "exclude": [
-        "node_modules"
-    ]
-  }
+  "extends": "./node_modules/gts/tsconfig-google.json",
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "commonjs",
+    "lib": ["ES2021", "DOM"],
+    "rootDir": "./src/",
+    "outDir": "./build/",
+    "strict": true,
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "declaration": false,
+    "forceConsistentCasingInFileNames": true,
+    "removeComments": true,
+    "strictNullChecks": false,
+    "typeRoots": ["src/@types/*"],
+    "sourceMap": false,
+    "baseUrl": "./"
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
+}
