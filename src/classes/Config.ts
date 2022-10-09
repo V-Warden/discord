@@ -108,7 +108,7 @@ export class Config {
         name: 'Unban',
         value: `Status: \`${
           punishments.unban ? 'Enabled' : 'Disabled'
-        }\`\n> This will automatically unban a user when appealed, if they are banned via Warden`,
+        }\`\n> This will automatically unban a user when appealed, if they are banned via Warden. Also removes their punishment role if one is set.`,
       },
       {
         name: 'Global Scan',
