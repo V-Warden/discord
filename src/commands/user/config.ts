@@ -13,6 +13,11 @@ export default class ConfigCommand extends SlashCommand {
       options: [
         {
           type: 'SUB_COMMAND',
+          name: 'settings',
+          description: 'All bot settings',
+        },
+        {
+          type: 'SUB_COMMAND',
           name: 'logs',
           description: 'Log Channel Settings',
           options: [
@@ -150,10 +155,13 @@ export default class ConfigCommand extends SlashCommand {
           });
           return false;
         });
-    } else {
+    }
+
+    if (!rolePunish && !logchan) {
       await interaction.reply({ ephemeral: true, content: 'Sent configuration menu' });
       client.config.sendConfigMenu(interaction, interaction.guild.id);
     }
+
     return true;
   }
 }

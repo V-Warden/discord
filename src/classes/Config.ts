@@ -102,7 +102,7 @@ export class Config {
       },
       {
         name: 'Log Channel',
-        value: `Channel: <#${logchan}>\n> A text channel where all bot logs are sent to. Please use \`/config logchan\` to change this`,
+        value: `Channel: <#${logchan}>\n> A text channel where all bot logs are sent to. Please use \`/config logs logchan\` to change this`,
       },
       {
         name: 'Unban',
