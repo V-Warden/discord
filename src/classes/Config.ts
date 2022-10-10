@@ -167,13 +167,6 @@ export class Config {
         emoji: '📕',
         label: 'Punishments',
       },
-      {
-        type: 'BUTTON',
-        style: 'SECONDARY',
-        customId: 'CONFIG_SET_ROLE',
-        emoji: '📛',
-        label: 'Punishment role',
-      },
     ]);
   }
 }
