@@ -121,6 +121,7 @@ export default class AppealCommand extends SlashCommand {
           enabled: true,
         },
       },
+      select: { punishments: true, id: true, name: true },
     });
 
     let unbanned = 0;
@@ -131,6 +132,10 @@ export default class AppealCommand extends SlashCommand {
       client.guilds
         .fetch(guild.id)
         .then((g) => {
+          if (guild.punishments.roleId) {
+            const member = g.members.cache.find((member) => member.id === id);
+            member.roles.remove(guild.punishments.roleId);
+          }
           g.bans
             .fetch(id)
             .then((b) => {

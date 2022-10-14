@@ -102,13 +102,13 @@ export class Config {
       },
       {
         name: 'Log Channel',
-        value: `Channel: <#${logchan}>\n> A text channel where all bot logs are sent to. Please use \`/config logchan\` to change this`,
+        value: `Channel: <#${logchan}>\n> A text channel where all bot logs are sent to. Please use \`/config logs logchan\` to change this`,
       },
       {
         name: 'Unban',
         value: `Status: \`${
           punishments.unban ? 'Enabled' : 'Disabled'
-        }\`\n> This will automatically unban a user when appealed, if they are banned via Warden`,
+        }\`\n> This will automatically unban a user when appealed, if they are banned via Warden. Also removes their punishment role if one is set.`,
       },
       {
         name: 'Global Scan',
@@ -166,13 +166,6 @@ export class Config {
         customId: 'PUNISHMENT_PANEL',
         emoji: '📕',
         label: 'Punishments',
-      },
-      {
-        type: 'BUTTON',
-        style: 'SECONDARY',
-        customId: 'CONFIG_SET_ROLE',
-        emoji: '📛',
-        label: 'Punishment role',
       },
     ]);
   }
