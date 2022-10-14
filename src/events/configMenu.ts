@@ -1,4 +1,4 @@
-import { ButtonInteraction, Message, MessageActionRow, MessageSelectOptionData } from 'discord.js';
+import { ButtonInteraction, Message } from 'discord.js';
 import { Colours } from '../@types';
 import { Bot } from '../classes';
 import { updateGuildPunishment } from '../utils/db';
@@ -32,14 +32,13 @@ export default async function (client: Bot, interaction: ButtonInteraction): Pro
         }
         break;
       }
-      break;
-    }
-    case 'TOGGLE_UNBAN': {
-      if (guild.punishments.unban) {
-        await updateGuildPunishment(client, message.guild.id, { unban: false });
-      } else {
-        await updateGuildPunishment(client, message.guild.id, { unban: true });
-
+      case 'TOGGLE_UNBAN': {
+        if (guild.punishments.unban) {
+          await updateGuildPunishment(client, message.guild.id, { unban: false });
+        } else {
+          await updateGuildPunishment(client, message.guild.id, { unban: true });
+        }
+        break;
       }
       case 'LOG_CHANNEL': {
         try {
