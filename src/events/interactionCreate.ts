@@ -196,6 +196,7 @@ export default async function (client: Bot, interaction: Interaction) {
     return true;
   } catch (e) {
     console.log('failed');
+    return false;
   }
 }
 
