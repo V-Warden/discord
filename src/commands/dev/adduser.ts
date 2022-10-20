@@ -158,15 +158,16 @@ export default class AddUserCommand extends SlashCommand {
 
         return true;
       })
-      .catch(() =>
+      .catch((e) => {
+        console.log(e);
         sendEmbed({
           interaction,
           embed: {
             description: '`🔴` Could not retrieve this user from Discords API',
             color: Colours.RED,
           },
-        })
-      );
+        });
+      });
 
     return true;
   }
