@@ -1,7 +1,7 @@
-import { UserType } from '@prisma/client';
+import { ServerType, UserType } from '@prisma/client';
 import { capitalize } from 'lodash';
 
-export function findHighestType(types: UserType[]) {
+export function findHighestType(types: UserType[]): UserType {
   let highest: UserType = 'BOT';
   let highestNum = 0;
 
@@ -30,6 +30,34 @@ export function findHighestType(types: UserType[]) {
       highest = 'OTHER';
     } else if (highestNum <= num && x === 'BOT') {
       highest = 'BOT';
+    }
+    highestNum = num;
+  }
+  return highest;
+}
+
+export function findHighestServerType(types: ServerType[]): UserType {
+  let highest: UserType = 'BOT';
+  let highestNum = 0;
+
+  const values = {
+    CHEATING: 5,
+    LEAKING: 4,
+    RESELLING: 3,
+    ADVERTISING: 2,
+    OTHER: 1,
+    BOT: 0,
+  };
+
+  for (let i = 0; i < types.length; i++) {
+    const x = types[i];
+    const num = values[x];
+    if (highestNum < num && x === 'CHEATING') {
+      highest = 'CHEATER';
+    } else if (highestNum < num && x === 'LEAKING') {
+      highest = 'LEAKER';
+    } else if (highestNum <= num && (x === 'RESELLING' || x === 'ADVERTISING' || x === 'OTHER')) {
+      highest = 'OTHER';
     }
     highestNum = num;
   }

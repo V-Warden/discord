@@ -1,5 +1,6 @@
 import { Punish, Punishments, Users, UserType } from '@prisma/client';
 import { GuildMember, TextChannel } from 'discord.js';
+import { findHighestServerType, findHighestType } from '../utils/helpers';
 import { Colours, noServerPerms } from '../@types';
 import { sendEmbed } from '../utils/messages';
 import { Bot } from './Bot';
@@ -27,8 +28,16 @@ export class ActionUser {
   ) {
     if (!punishments.enabled) return;
     if (member.user.bot) return;
+    const types = await this.client.db.imports.findMany({
+      where: { appealed: false },
+      select: { type: true, BadServer: true },
+    });
+
+    const toCheck = types.map((x) => x.BadServer.type);
+    const highest = findHighestServerType(toCheck);
+
     let toDo: Punish;
-    switch (user.type) {
+    switch (highest) {
       case UserType.OWNER:
         toDo = punishments.owner;
         break;
@@ -48,7 +57,7 @@ export class ActionUser {
 
     let channel: TextChannel;
     try {
-      channel = await this.getCachedChannel(logChannel);
+      channel = this.getCachedChannel(logChannel);
     } catch (e) {
       this.skipGuilds.push(punishments.id);
       return;
