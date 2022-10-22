@@ -138,7 +138,10 @@ https://discord.gg/jeFeDRasfs`,
           },
         })
           .then(() => {
-            if (punishments.roleId) member.roles.add(punishments.roleId, `User Type: ${user.type.toLowerCase()}`);
+            if (punishments.roleId)
+              member.roles.add(punishments.roleId, `User Type: ${user.type.toLowerCase()}`).catch((e) => {
+                this.client.logger.error(`Role not found ${punishments.roleId} - ${punishments.id}`);
+              });
             if (process) this.success.warnings += 1;
           })
           .catch(() => {
