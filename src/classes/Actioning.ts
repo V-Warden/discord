@@ -29,7 +29,7 @@ export class ActionUser {
     if (!punishments.enabled) return;
     if (member.user.bot) return;
     const types = await this.client.db.imports.findMany({
-      where: { appealed: false },
+      where: { appealed: false, id: user.id },
       select: { type: true, BadServer: true },
     });
 
