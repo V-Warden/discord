@@ -10,7 +10,26 @@ export default async function (client: Bot, member: GuildMember) {
   if (!settings) {
     client.logger.error(`guildMemberAdd ${guild.name}: Unknown guild - Owner is: ${guild.ownerId}`);
     client.logger.error(`CRITICAL: GUILD HAS NO SETTINGS ${guild.name} ${guild.id} - OWNER: ${member.guild.ownerId}`);
-    return false;
+
+    const channel = (await guild.channels.fetch()).first();
+
+    await client.db.guild
+      .create({
+        data: {
+          id: guild.id,
+          name: guild.name,
+          logChannel: channel.id,
+          punishments: {
+            connectOrCreate: {
+              where: {
+                id: guild.id,
+              },
+              create: {},
+            },
+          },
+        },
+      })
+      .catch((e) => console.log(e));
   }
 
   if (member.user.bot) return false;
