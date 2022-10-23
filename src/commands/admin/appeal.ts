@@ -147,6 +147,8 @@ export default class AppealCommand extends SlashCommand {
                     unbanned++;
                   })
                   .catch(() => client.logger.warn(`appeal ${id}: ${guild.name} - Unable to unban`));
+              } else {
+                client.logger.warn(`appeal ${id}: ${guild.name} - Ban not by Warden = ${b.reason}`);
               }
             })
             .catch(() => client.logger.warn(`appeal ${id}: ${guild.name} - Invalid ban`));
