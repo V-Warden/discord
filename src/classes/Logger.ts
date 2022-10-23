@@ -1,8 +1,11 @@
 import * as winston from 'winston';
 import { LeveledLogMethod } from 'winston';
-import DailyRotateFile from 'winston-daily-rotate-file';
 // eslint-disable-next-line node/no-extraneous-import
 import { grey, gray, white } from 'chalk';
+import LokiTransport from 'winston-loki';
+import dotenv from 'dotenv';
+import DailyRotateFile from 'winston-daily-rotate-file';
+dotenv.config();
 
 const customLevels = {
   levels: {
@@ -32,14 +35,16 @@ export class Logger {
       levels: customLevels.levels,
       transports: [
         new winston.transports.Console({
-          format: winston.format.combine(
-            winston.format.timestamp({
-              format: 'YYYY-MM-DD HH:mm:ss',
-            }),
-            winston.format.colorize(),
-            winston.format.splat(),
-            this.consoleFormat
-          ),
+          format: winston.format.combine(winston.format.simple(), winston.format.colorize()),
+        }),
+        new LokiTransport({
+          host: process.env.LOKI_URL,
+          basicAuth: process.env.LOKI_AUTH,
+          labels: { app: 'warden' },
+          batching: false,
+          json: true,
+          format: winston.format.json(),
+          onConnectionError: (err) => console.error(err),
         }),
         new DailyRotateFile({
           filename: 'logs/%DATE%.log',
