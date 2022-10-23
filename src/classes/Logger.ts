@@ -35,7 +35,14 @@ export class Logger {
       levels: customLevels.levels,
       transports: [
         new winston.transports.Console({
-          format: winston.format.combine(winston.format.simple(), winston.format.colorize()),
+          format: winston.format.combine(
+            winston.format.timestamp({
+              format: 'YYYY-MM-DD HH:mm:ss',
+            }),
+            winston.format.colorize(),
+            winston.format.splat(),
+            this.consoleFormat
+          ),
         }),
         new LokiTransport({
           host: process.env.LOKI_URL,
