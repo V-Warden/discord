@@ -1,6 +1,5 @@
 import { Punish, Punishments, Users, UserType } from '@prisma/client';
 import { GuildMember, TextChannel } from 'discord.js';
-import { findHighestServerType, findHighestType } from '../utils/helpers';
 import { Colours, noServerPerms } from '../@types';
 import { sendEmbed } from '../utils/messages';
 import { Bot } from './Bot';
@@ -28,16 +27,9 @@ export class ActionUser {
   ) {
     if (!punishments.enabled) return;
     if (member.user.bot) return;
-    const types = await this.client.db.imports.findMany({
-      where: { appealed: false, id: user.id },
-      select: { type: true, BadServer: true },
-    });
-
-    const toCheck = types.map((x) => x.BadServer.type);
-    const highest = findHighestServerType(toCheck);
 
     let toDo: Punish;
-    switch (highest) {
+    switch (user.type) {
       case UserType.OWNER:
         toDo = punishments.owner;
         break;
@@ -148,7 +140,7 @@ https://discord.gg/jeFeDRasfs`,
         })
           .then(() => {
             if (punishments.roleId)
-              member.roles.add(punishments.roleId, `User Type: ${user.type.toLowerCase()}`).catch((e) => {
+              member.roles.add(punishments.roleId, `User Type: ${user.type.toLowerCase()}`).catch(() => {
                 this.client.logger.debug(`Role not found ${punishments.roleId} - ${punishments.id}`);
               });
             if (process) this.success.warnings += 1;
