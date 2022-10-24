@@ -30,7 +30,7 @@ process.on('uncaughtException', (error: Error) => {
   console.log('----- Exception origin -----');
   console.log(error.message);
   const date = new Date();
-  fs.writeFileSync(`execption/${Math.floor(date.getTime() / 1000)}`, JSON.stringify({ error: error.stack, origin }));
+  fs.writeFileSync(`execptions/${Math.floor(date.getTime() / 1000)}`, JSON.stringify({ error: error.stack, origin }));
 });
 
 process.on('unhandledRejection', (reason: Error, promise: Promise<unknown>) => {

@@ -12,3 +12,5 @@ yarn.lock
 .prettierrc.js
 package-lock.json
 src/config.json
+rejections/
+exceptions/
