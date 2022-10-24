@@ -62,7 +62,7 @@ export default class ScanUsers extends SlashCommand {
               "Now scanning users. This may take awhile so be patient.\nBe aware this is resource intensive, and shouldn't be used often.\nAbuse of this command will result in punishment.",
             color: Colours.YELLOW,
           },
-        });
+        }).catch(() => console.log('scanusers interaction not found'));
 
         // Reduce database calls from one per member to one
         // Bulk grab all blacklisted then check if exists
@@ -98,7 +98,7 @@ export default class ScanUsers extends SlashCommand {
             description: `Scanning completed, \`${users.length} user(s)\` have been actioned`,
             color: Colours.GREEN,
           },
-        }).catch((e) => console.log(e));
+        }).catch(() => console.log('scanusers completed, channel not found'));
 
         const end = Date.now();
         client.logger.info(

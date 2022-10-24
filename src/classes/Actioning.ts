@@ -118,7 +118,7 @@ https://discord.gg/jeFeDRasfs`,
                 author,
                 color: Colours.RED,
               },
-            }).catch();
+            }).catch(() => console.log('Actioning, channel not found'));
           });
       }
 

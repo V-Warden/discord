@@ -31,7 +31,7 @@ export class Config {
             'Invalid guild found, please reinvite the bot. If this does not fix the issue, please open a support ticket in the Official Warden Discord',
           color: Colours.RED,
         },
-      });
+      }).catch(() => console.log('Config, channel not found'));
       return;
     }
 
@@ -73,7 +73,9 @@ export class Config {
               color: Colours.GREEN,
             },
             components: [buttons],
-          }).then((res) => this.guildMessageIDs.set(guildID, res as Message));
+          })
+            .then((res) => this.guildMessageIDs.set(guildID, res as Message))
+            .catch(() => console.log('Config, channel not found'));
         });
     } else {
       sendEmbed({
@@ -88,7 +90,9 @@ export class Config {
           color: Colours.GREEN,
         },
         components: [buttons],
-      }).then((res) => this.guildMessageIDs.set(guildID, res as Message));
+      })
+        .then((res) => this.guildMessageIDs.set(guildID, res as Message))
+        .catch(() => console.log('Config, channel not found'));
     }
   }
 

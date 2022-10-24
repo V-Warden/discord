@@ -14,7 +14,8 @@ export async function sendEmbed({ interaction, channel, content, embed, componen
         return await interaction.editReply({ ...options, ...{ ephemeral: hidden } });
       else return await interaction.reply({ ...options, ...{ ephemeral: hidden } });
     }
-  } catch {
+  } catch (e) {
+    console.log(`sendEmbed error ${e}`);
     return null;
   }
 }
