@@ -176,10 +176,11 @@ export default class CheckUserAdminCommand extends SlashCommand {
         value.push(`Legacy Data\n> View data: <${response}>\n`);
       } else {
         realCount += 1;
+        const date = new Date(x.createdAt);
         value.push(
-          `${x.BadServer.name}\n> Type: ${x.type} \n> Roles: ${x.roles.split(';').join(', ')}\n> Added: ${new Date(
-            x.createdAt
-          )}\n`
+          `${x.BadServer.name}\n> Type: ${x.type} \n> Roles: ${x.roles
+            .split(';')
+            .join(', ')}\n> Added: ${date.toLocaleDateString()}\n`
         );
       }
     }
