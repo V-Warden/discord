@@ -177,9 +177,9 @@ export default class CheckUserAdminCommand extends SlashCommand {
       } else {
         realCount += 1;
         value.push(
-          `${x.BadServer.name}\n> Type: ${x.type} \n> Roles: ${x.roles.split(';').join(', ')}\n> Added: ${
+          `${x.BadServer.name}\n> Type: ${x.type} \n> Roles: ${x.roles.split(';').join(', ')}\n> Added: <t:${new Date(
             x.createdAt
-          }\n`
+          ).getTime()}:>\n`
         );
       }
     }
