@@ -179,7 +179,7 @@ export default class CheckUserAdminCommand extends SlashCommand {
         value.push(
           `${x.BadServer.name}\n> Type: ${x.type} \n> Roles: ${x.roles.split(';').join(', ')}\n> Added: <t:${new Date(
             x.createdAt
-          ).getTime()}:>\n`
+          ).getTime()}:f>\n`
         );
       }
     }
