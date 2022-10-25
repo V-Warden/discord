@@ -51,6 +51,7 @@ export default class CheckUserAdminCommand extends SlashCommand {
         BadServer: { select: { name: true, oldNames: true, id: true } },
         type: true,
         roles: true,
+        createdAt: true,
       },
     });
 
@@ -83,6 +84,7 @@ export default class CheckUserAdminCommand extends SlashCommand {
         server: true,
         roles: true,
         type: true,
+        createdAt: true,
       },
     });
 
@@ -174,7 +176,11 @@ export default class CheckUserAdminCommand extends SlashCommand {
         value.push(`Legacy Data\n> View data: <${response}>\n`);
       } else {
         realCount += 1;
-        value.push(`${x.BadServer.name}\n> Type: ${x.type} \n> Roles: ${x.roles.split(';').join(', ')}\n`);
+        value.push(
+          `${x.BadServer.name}\n> Type: ${x.type} \n> Roles: ${x.roles.split(';').join(', ')}\n> Added: ${
+            x.createdAt
+          }\n`
+        );
       }
     }
 
