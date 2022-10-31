@@ -134,16 +134,22 @@ export default class AppealCommand extends SlashCommand {
         .fetch(guild.id)
         .then((g) => {
           if (guild.punishments.roleId) {
-            const member = g.members.cache.find((member) => member.id === id);
-            member.roles
-              .remove(guild.punishments.roleId)
-              .then(() => {
-                client.logger.debug(`removed role ${guild.punishments.roleId} for user ${member.id}`);
-                roleRemoved++;
+            g.members
+              .fetch(id)
+              .then((m) => {
+                m.roles
+                  .remove(guild.punishments.roleId)
+                  .then(() => {
+                    client.logger.debug(`removed role ${guild.punishments.roleId} for user ${m.id}`);
+                    roleRemoved++;
+                  })
+                  .catch(() =>
+                    client.logger.warn(`unable to remove role ${guild.punishments.roleId} for user ${m.id}`)
+                  );
               })
-              .catch(() =>
-                client.logger.warn(`unable to remove role ${guild.punishments.roleId} for user ${member.id}`)
-              );
+              .catch(() => {
+                client.logger.warn(`unable to fetch member ${id} for guild ${guild.id}`);
+              });
           }
           g.bans
             .fetch(id)
