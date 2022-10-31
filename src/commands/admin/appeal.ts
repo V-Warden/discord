@@ -125,6 +125,7 @@ export default class AppealCommand extends SlashCommand {
     });
 
     let unbanned = 0;
+    let roleRemoved = 0;
 
     for (let i = 0, l = guilds.length; i < l; ++i) {
       const guild = guilds[i];
@@ -134,7 +135,15 @@ export default class AppealCommand extends SlashCommand {
         .then((g) => {
           if (guild.punishments.roleId) {
             const member = g.members.cache.find((member) => member.id === id);
-            member.roles.remove(guild.punishments.roleId);
+            member.roles
+              .remove(guild.punishments.roleId)
+              .then(() => {
+                client.logger.debug(`removed role ${guild.punishments.roleId} for user ${member.id}`);
+                roleRemoved++;
+              })
+              .catch(() =>
+                client.logger.warn(`unable to remove role ${guild.punishments.roleId} for user ${member.id}`)
+              );
           }
           g.bans
             .fetch(id)
@@ -160,7 +169,9 @@ export default class AppealCommand extends SlashCommand {
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
 
-    client.logger.debug(`appeal ${id}: Finished, unbanned on ${unbanned} guilds`);
+    client.logger.debug(
+      `appeal ${id}: Finished, unbanned on ${unbanned} guilds, punishment role removed in ${roleRemoved} guilds`
+    );
 
     return true;
   }
