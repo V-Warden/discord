@@ -26,7 +26,9 @@ export default new Command({
         const members = interaction.guild.members.cache
             .filter(x => x.roles.cache.has(punishRole))
             .map(x => {
-                const roles = x.roles.cache.filter(a => a.id !== punishRole).map(b => b.id);
+                const roles = x.roles.cache
+                    .filter(a => a.id !== punishRole && a.id !== interaction.guild?.roles.everyone.id)
+                    .map(b => b.id);
                 return { id: x.id, roles: roles };
             });
 
