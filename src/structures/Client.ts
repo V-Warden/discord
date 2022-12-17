@@ -69,9 +69,10 @@ export class ExtendedClient extends Client {
         });
 
         this.on('ready', () => {
-            // this.registerCommands({
-            //     commands: globalSlashCommands,
-            // });
+            this.application?.commands.set([]);
+            this.registerCommands({
+                commands: globalCommands,
+            });
             this.registerCommands({
                 commands: guildSpecfic,
                 guildId: process.env.guildId,
