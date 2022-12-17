@@ -8,7 +8,8 @@ export default new Event('interactionCreate', async interaction => {
     if (interaction.isChatInputCommand()) {
         const command = client.commands.get(interaction.commandName);
         if (!command) return interaction.followUp('You have used a non existent command');
-        await interaction.deferReply();
+        if (interaction.commandName === 'checkself') await interaction.deferReply({ ephemeral: true });
+        else await interaction.deferReply();
 
         try {
             await command.run({
