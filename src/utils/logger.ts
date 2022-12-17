@@ -6,7 +6,7 @@ import { Colours } from '../@types/Colours';
 import sendEmbed from './messages/sendEmbed';
 
 const consoleFormat = format.printf(({ level, message, timestamp }) => {
-    return `[${timestamp}] [${level}] | ${((message instanceof Object) ? JSON.stringify(message) : message)}`;
+    return `[${timestamp}] [${level}] | ${message instanceof Object ? JSON.stringify(message) : message}`;
 });
 
 const logger = createLogger({
@@ -23,9 +23,8 @@ const logger = createLogger({
             ),
         }),
         new LokiTransport({
-            host: 'https://logs-prod3.grafana.net',
-            basicAuth:
-                '297470:eyJrIjoiOGMxYzJhY2YyYjg3YzdiY2NmZGQwOTc4ZjUwYzZkYzA1MDNkYTQzOCIsIm4iOiJXYXJkZW4iLCJpZCI6NzIwNjgxfQ==',
+            host: process.env.LOKI_URL ?? '',
+            basicAuth: process.env.LOKI_AUTH ?? '',
             labels: { app: 'warden-test' },
             batching: true,
             interval: 10,
@@ -47,7 +46,7 @@ const logger = createLogger({
  */
 export async function logException(interaction: CommandInteraction | null, e: any): Promise<string> {
     const errorId = (Math.random() + 1).toString(36).substring(3);
-    e = e.message ?? e
+    e = e.message ?? e;
 
     if (interaction) {
         const args = interaction.options.data.map(x => {
