@@ -7,7 +7,6 @@ export default new Event('interactionCreate', async interaction => {
     // Chat Input Commands
     if (interaction.isChatInputCommand()) {
         const command = client.commands.get(interaction.commandName);
-        console.log(command, interaction.commandName);
         if (!command) return interaction.followUp('You have used a non existent command');
         await interaction.deferReply();
 
