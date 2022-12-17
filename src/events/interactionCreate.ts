@@ -9,7 +9,7 @@ export default new Event('interactionCreate', async interaction => {
         const command = client.commands.get(interaction.commandName);
         console.log(command, interaction.commandName);
         if (!command) return interaction.followUp('You have used a non existent command');
-        await interaction.deferReply({ ephemeral: false });
+        await interaction.deferReply();
 
         try {
             await command.run({
