@@ -70,14 +70,13 @@ export class ExtendedClient extends Client {
         });
 
         this.on('ready', () => {
-            this.application?.commands.set([]);
-            this.registerCommands({
-                commands: globalCommands,
-            });
-            this.registerCommands({
-                commands: guildSpecfic,
-                guildId: process.env.guildId,
-            });
+            // this.registerCommands({
+            //     commands: globalCommands,
+            // });
+            // this.registerCommands({
+            //     commands: guildSpecfic,
+            //     guildId: process.env.guildId,
+            // });
 
             this.user?.setActivity({
                 type: ActivityType.Watching,
