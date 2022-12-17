@@ -9,19 +9,21 @@ const consoleFormat = format.printf(({ level, message, timestamp }) => {
     return `[${timestamp}] [${level}] | ${message instanceof Object ? JSON.stringify(message) : message}`;
 });
 
-const logger = createLogger({
-    level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
-    transports: [
-        new transports.Console({
-            format: format.combine(
-                format.timestamp({
-                    format: 'YYYY-MM-DD HH:mm:ss',
-                }),
-                format.colorize(),
-                format.splat(),
-                consoleFormat
-            ),
-        }),
+const transport_logs: any = [
+    new transports.Console({
+        format: format.combine(
+            format.timestamp({
+                format: 'YYYY-MM-DD HH:mm:ss',
+            }),
+            format.colorize(),
+            format.splat(),
+            consoleFormat
+        ),
+    }),
+];
+
+if (process.env.LOKI_URL) {
+    transport_logs.push(
         new LokiTransport({
             host: process.env.LOKI_URL ?? '',
             basicAuth: process.env.LOKI_AUTH ?? '',
@@ -32,8 +34,13 @@ const logger = createLogger({
             replaceTimestamp: true,
             format: format.json(),
             onConnectionError: (err: any) => console.error(err),
-        }),
-    ],
+        })
+    );
+}
+
+const logger = createLogger({
+    level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+    transports: transport_logs,
     exceptionHandlers: [new transports.File({ filename: 'logs/exceptions.log' })],
     rejectionHandlers: [new transports.File({ filename: 'logs/rejections.log' })],
 });
