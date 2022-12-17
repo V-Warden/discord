@@ -4,6 +4,8 @@ import LokiTransport from 'winston-loki';
 import { Colours } from '../@types/Colours';
 import sendEmbed from './messages/sendEmbed';
 
+require('dotenv').config();
+
 const consoleFormat = format.printf(({ level, message, timestamp }) => {
     return `[${timestamp}] [${level}] | ${JSON.stringify(message)}`;
 });

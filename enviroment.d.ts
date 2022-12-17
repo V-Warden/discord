@@ -5,6 +5,8 @@ declare global {
             guildId: string;
             enviroment: 'dev' | 'prod' | 'debug';
             DATABASE_URL: string;
+            LOKI_URL: string;
+            LOKI_AUTH: string;
         }
     }
 }
