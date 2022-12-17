@@ -20,8 +20,13 @@ export default new Command({
         const id = interaction.options.getUser('user')?.id as string;
         if (!id) return sendError(interaction, 'Invalid user or id provided');
 
-        const imports = await client.prisma.countUnappealedImports(id);
-        if (imports === 0) return sendError(interaction, 'That user has no new servers to appeal');
+        const [imports, user] = await Promise.all([
+            client.prisma.countUnappealedImports(id),
+            client.prisma.getUser(id),
+        ]);
+
+        if (imports === 0 && user?.status === 'APPEALED')
+            return sendError(interaction, 'That user has no new servers to appeal');
         const appealPromise = client.prisma.appealImports(id);
         const updatePromise = client.prisma.updateUser(id, {
             status: UserStatus.APPEALED,
