@@ -1,0 +1,21 @@
+{
+    "extends": "./node_modules/gts/tsconfig-google.json",
+    "compilerOptions": {
+        "outDir": "dist",
+        "lib": ["ES2021", "DOM"],
+        "esModuleInterop": true,
+        "moduleResolution": "node",
+        "module": "CommonJS",
+        "target": "ESNext",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "resolveJsonModule": true,
+        "sourceMap": false,
+        "declaration": false,
+        "typeRoots": ["src/@types/*"],
+        "importHelpers": true,
+        "allowSyntheticDefaultImports": true,
+    },
+    "include": ["src/**/*.ts", "enviroment.d.ts"],
+    "exclude": ["node_modules"]
+}

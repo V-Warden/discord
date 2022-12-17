@@ -1,0 +1,14 @@
+node_modules
+# Keep environment variables out of version control
+.env
+build/
+node_modules/
+logs/
+dist/
+imports/
+yarn-error.log
+yarn.lock
+package-lock.json
+src/config.json
+rejections/
+exceptions/
