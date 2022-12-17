@@ -40,13 +40,11 @@ export default new Command({
             const inv = await client.fetchInvite(invite);
             if (!inv) return sendError(interaction, 'Invalid invite or invite has expired');
 
-            lookup = { where: { id: inv?.guild?.id ?? sid } };
+            lookup = { id: inv?.guild?.id ?? sid };
         } else if (sname) {
             lookup = {
-                where: {
-                    name: {
-                        contains: sname,
-                    },
+                name: {
+                    contains: sname,
                 },
             };
         }

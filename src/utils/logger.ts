@@ -1,4 +1,3 @@
-import { PrismaClientValidationError } from '@prisma/client/runtime';
 import { CommandInteraction } from 'discord.js';
 import { createLogger, transports, format } from 'winston';
 import LokiTransport from 'winston-loki';
@@ -6,7 +5,7 @@ import { Colours } from '../@types/Colours';
 import sendEmbed from './messages/sendEmbed';
 
 const consoleFormat = format.printf(({ level, message, timestamp }) => {
-    return `[${timestamp}] [${level}] | ${message instanceof Object ? JSON.stringify(message) : message}`;
+    return `[${timestamp}] [${level}] | ${JSON.stringify(message)}`;
 });
 
 const transport_logs: any = [
