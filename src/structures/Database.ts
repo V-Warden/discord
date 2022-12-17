@@ -274,37 +274,13 @@ export class Database {
     }
 
     findHighestType(types: UserType[]): UserType {
-        let highest: UserType = 'BOT';
-        let highestNum = 0;
+        if (types.includes('OWNER')) return 'OWNER';
+        else if (types.includes('SUPPORTER')) return 'SUPPORTER';
+        else if (types.includes('CHEATER')) return 'CHEATER';
+        else if (types.includes('LEAKER')) return 'LEAKER';
+        else if (types.includes('OTHER')) return 'OTHER';
+        else if (types.includes('BOT')) return 'BOT';
 
-        const values = {
-            OWNER: 5,
-            SUPPORTER: 4,
-            CHEATER: 3,
-            LEAKER: 2,
-            OTHER: 1,
-            BOT: 0,
-        };
-
-        for (let i = 0; i < types.length; i++) {
-            const x = types[i];
-            const num = values[x];
-            if (x === 'OWNER') {
-                highest = 'OWNER';
-                highestNum = 0;
-            } else if (highestNum < num && x === 'SUPPORTER') {
-                highest = 'SUPPORTER';
-            } else if (highestNum < num && x === 'CHEATER') {
-                highest = 'CHEATER';
-            } else if (highestNum < num && x === 'LEAKER') {
-                highest = 'LEAKER';
-            } else if (highestNum <= num && x === 'OTHER') {
-                highest = 'OTHER';
-            } else if (highestNum <= num && x === 'BOT') {
-                highest = 'BOT';
-            }
-            highestNum = num;
-        }
-        return highest;
+        return 'BOT';
     }
 }
