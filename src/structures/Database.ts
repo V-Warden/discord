@@ -32,8 +32,8 @@ export class Database {
         return this.prisma.badServers.findMany({ select: { id: true, name: true } });
     }
 
-    async getBadServer(lookup: Prisma.BadServersWhereUniqueInput): Promise<BadServers | null> {
-        return this.prisma.badServers.findUnique({ where: lookup });
+    async getBadServer(lookup: Prisma.BadServersWhereInput): Promise<BadServers | null> {
+        return this.prisma.badServers.findFirst({ where: lookup });
     }
 
     async countAllBlacklistedServers(): Promise<number> {

@@ -13,7 +13,13 @@ import { getPunishment } from './utils';
  * @param punishments guild punishments
  * @param user
  */
-export default async function (client: ExtendedClient, guild: Guild, logChannel: string, punishments: Punishments, user: Users) {
+export default async function (
+    client: ExtendedClient,
+    guild: Guild,
+    logChannel: string,
+    punishments: Punishments,
+    user: Users
+) {
     const member = guild.members.cache.get(user.id);
     if (!member) return;
 
@@ -113,10 +119,11 @@ export default async function (client: ExtendedClient, guild: Guild, logChannel:
         try {
             await action;
 
-            if (toDo === 'BAN') await client.prisma.createBan({ id: user.id, Guild: { connect: { id: punishments.id } } });
+            if (toDo === 'BAN')
+                await client.prisma.createBan({ id: user.id, Guild: { connect: { id: punishments.id } } });
             logger.info({
                 labels: { action: 'actionUser', guildId: member.guild.id },
-                message: `${toDo}ED - ${user.last_username} (${user.id})`,
+                message: `${toDo}ED - ${user.last_username} (${user.id}) - ${member.guild.id}`,
             });
             sendEmbed({
                 channel,
@@ -135,5 +142,5 @@ export default async function (client: ExtendedClient, guild: Guild, logChannel:
             });
         }
     }
-    return
+    return;
 }
