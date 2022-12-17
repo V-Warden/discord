@@ -1,4 +1,5 @@
 import {
+    ActivityType,
     ApplicationCommandDataResolvable,
     ApplicationCommandType,
     Client,
@@ -76,6 +77,11 @@ export class ExtendedClient extends Client {
             this.registerCommands({
                 commands: guildSpecfic,
                 guildId: process.env.guildId,
+            });
+
+            this.user?.setActivity({
+                type: ActivityType.Watching,
+                name: 'discord.gg/warden',
             });
         });
 
