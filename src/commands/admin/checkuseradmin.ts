@@ -6,6 +6,7 @@ import sendPagination from '../../utils/messages/sendPagination';
 import { chunk } from 'lodash';
 import { capitalize, uploadText } from '../../utils/misc';
 import sendEmbed from '../../utils/messages/sendEmbed';
+import logger from '../../utils/logger';
 
 export default new Command({
     name: 'checkuseradmin',
@@ -39,11 +40,26 @@ export default new Command({
             historyResponse = 'No prior history';
         }
 
-        if (imports.length === 0 && user.status === 'APPEALED') {
-            return sendSuccess(
-                interaction,
-                `User has no outstanding servers to be appealed for\n\n> History: <${historyResponse}>\n> Notes: ${noteCount}`
-            );
+        if (imports.length === 0) {
+            if (user.status === 'APPEALED') {
+                return sendSuccess(
+                    interaction,
+                    `User has no outstanding servers to be appealed for\n\n> History: <${historyResponse}>\n> Notes: ${noteCount}`
+                );
+            } else if (['PERM_BLACKLISTED', 'BLACKLISTED'].includes(user.status)) {
+                const result = await client.prisma.failSafeStatus(user);
+                if (result) {
+                    logger.debug({
+                        labels: { action: 'checkuseradmin', userId: id },
+                        message: 'User being appealed',
+                    });
+                    client.shard?.send({ action: 'appeal', userid: id });
+                    return sendSuccess(
+                        interaction,
+                        `User has no outstanding servers to be appealed for\n\n> History: <${historyResponse}>\n> Notes: ${noteCount}`
+                    );
+                }
+            }
         } else {
             const value = [];
             let realCount = 0;

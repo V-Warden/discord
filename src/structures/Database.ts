@@ -195,6 +195,33 @@ export class Database {
         });
     }
 
+    async getAllImports(id: string) {
+        return this.prisma.imports.findMany({
+            where: { id },
+            select: {
+                BadServer: true,
+                server: true,
+                roles: true,
+                type: true,
+                createdAt: true,
+                appealed: true,
+            },
+        });
+    }
+
+    async failSafeStatus(user: Users): Promise<boolean> {
+        const allImports = await this.getAllImports(user.id);
+
+        const countAll = allImports.length;
+        const appealedCount = allImports.filter(x => x.appealed === true).length;
+        if (countAll === appealedCount) {
+            await this.updateUser(user.id, { status: 'APPEALED' });
+            return true;
+        }
+
+        return false;
+    }
+
     async countUnappealedImports(id: string): Promise<number> {
         return this.prisma.imports.count({ where: { id, appealed: false } });
     }

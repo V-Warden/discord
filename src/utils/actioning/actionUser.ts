@@ -24,8 +24,20 @@ export default async function (
     if (!member) return;
 
     const imports = await client.prisma.getImports(user.id);
-    let realCount = 0;
 
+    if (imports.length === 0 && ['PERM_BLACKLISTED', 'BLACKLISTED'].includes(user.status)) {
+        const result = await client.prisma.failSafeStatus(user);
+        if (result) {
+            logger.debug({
+                labels: { action: 'actionUser', userId: user.id },
+                message: 'User being appealed',
+            });
+            client.shard?.send({ action: 'appeal', userid: user.id });
+            return;
+        }
+    }
+
+    let realCount = 0;
     try {
         if (imports.length === 1) {
             const toParse = imports[0].roles;

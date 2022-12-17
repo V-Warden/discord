@@ -5,6 +5,7 @@ import { sendSuccess } from '../../utils/messages';
 import sendEmbed from '../../utils/messages/sendEmbed';
 import { Colours } from '../../@types/Colours';
 import { capitalize } from '../../utils/misc';
+import logger from '../../utils/logger';
 
 export default new Command({
     name: 'checkuser',
@@ -33,6 +34,21 @@ export default new Command({
                 interaction,
                 'No results found for this ID.\n> They are either fine or not yet listed.'
             );
+
+        if (imports.length === 0 && ['PERM_BLACKLISTED', 'BLACKLISTED'].includes(data.status)) {
+            const result = await client.prisma.failSafeStatus(data);
+            if (result) {
+                logger.debug({
+                    labels: { action: 'checkuser', userId: id },
+                    message: 'User being appealed',
+                });
+                client.shard?.send({ action: 'appeal', userid: id });
+                return sendSuccess(
+                    interaction,
+                    'No results found for this ID.\n> They are either fine or not yet listed.'
+                );
+            }
+        }
 
         const types: UserType[] = imports.map(x => x.type);
         const highest = client.prisma.findHighestType(types);
