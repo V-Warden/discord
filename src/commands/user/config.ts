@@ -165,7 +165,7 @@ export default new Command({
                         {
                             name: 'Punishment Role',
                             value: `Role: ${
-                                guild.punishments.roleId ? '`Not Set`' : `<@&${guild.punishments.roleId}>`
+                                guild.punishments.roleId ? `<@&${guild.punishments.roleId}>` : '`Not Set`'
                             }\n> Set a role that a blacklisted user recieves, they will gain all roles back after being appealed\n>/config set punishrole id:id`,
                         },
                         {
