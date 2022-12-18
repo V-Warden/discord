@@ -40,13 +40,17 @@ export default new Command({
             const inv = await client.fetchInvite(invite);
             if (!inv) return sendError(interaction, 'Invalid invite or invite has expired');
 
-            lookup = { id: inv?.guild?.id ?? sid };
+            lookup = { id: inv?.guild?.id };
         } else if (sname) {
             lookup = {
                 name: {
                     contains: sname,
                 },
             };
+        } else if (sid) {
+            lookup = {
+                id: sid
+            }
         }
 
         const server = await client.prisma.getBadServer(lookup);
