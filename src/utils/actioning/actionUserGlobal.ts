@@ -155,7 +155,7 @@ export default async function (client: ExtendedClient, userid: string) {
                 sendEmbed({
                     channel,
                     embed: {
-                        description: `I tried to remove this users role and set them to \`${settings.punishments.roleId}\`, however I encountered an error. > Error ID: ${errorId}`,
+                        description: `I tried to remove this users role and set them to \`${settings.punishments.roleId}\`, however I encountered an error.\n> Error ID: ${errorId}`,
                         author,
                         color: Colours.RED,
                     },

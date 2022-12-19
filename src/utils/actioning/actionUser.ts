@@ -101,6 +101,9 @@ export default async function (
         try {
             if (!punishments.roleId) throw new Error('Invalid role id set');
             const oldRoles = member.roles.cache.map(x => x.id).join(',');
+            const hasBlacklisedAlready = member.roles.cache.find(x => x.id === punishments.roleId)
+            if (hasBlacklisedAlready) return;
+
             await member.roles.set([punishments.roleId]);
             await client.prisma.createArchiveRole({
                 id: member.id,
@@ -112,7 +115,7 @@ export default async function (
             return sendEmbed({
                 channel,
                 embed: {
-                    description: `I tried to remove this users role and set them to \`${punishments.roleId}\`, however I encountered an error. > Error ID: ${errorId}`,
+                    description: `I tried to remove this users role and set them to \`${punishments.roleId}\`, however I encountered an error. \n> Error ID: ${errorId}`,
                     author,
                     color: Colours.RED,
                 },

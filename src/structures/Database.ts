@@ -84,7 +84,11 @@ export class Database {
     }
 
     async createArchiveRole(data: Prisma.RolesCreateInput): Promise<Roles> {
-        return this.prisma.roles.create({ data });
+        return this.prisma.roles.upsert({
+            where: { id: data.id },
+            create: data,
+            update: {},
+        });
     }
 
     async createArchiveRoles(data: Prisma.RolesCreateManyInput[]): Promise<Prisma.BatchPayload> {
