@@ -88,6 +88,7 @@ export default new Command({
                             roles: 'Undefined',
                             type,
                             appealed: false,
+                            reason: reason,
                         },
                     },
                 },
