@@ -15,6 +15,9 @@ export default async function (client: ExtendedClient, userid: string) {
     const user = await client.prisma.getUser(userid);
     if (!user) return;
 
+    const discordUser = await client.users.fetch(userid)
+    if (discordUser.bot) return;
+
     console.time('action');
 
     // Reduce database queries by grabbing

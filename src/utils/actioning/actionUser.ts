@@ -22,6 +22,7 @@ export default async function (
 ) {
     const member = guild.members.cache.get(user.id);
     if (!member) return;
+    if (member.user.bot) return;
 
     const imports = await client.prisma.getImports(user.id);
 

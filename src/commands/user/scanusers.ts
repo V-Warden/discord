@@ -20,7 +20,7 @@ export default new Command({
         if (!settings.punishments?.enabled) return sendError(interaction, 'Punishments are not enabled');
 
         await guild.members.fetch().then(async members => {
-            const memberMap = members.map(x => x.id);
+            const memberMap = members.filter(x => !x.user.bot).map(x => x.id);
             const users = await client.prisma.getManyUsers({
                 id: { in: memberMap },
                 status: { notIn: ['APPEALED', 'WHITELISTED'] },

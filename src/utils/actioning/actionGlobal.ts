@@ -20,7 +20,7 @@ export default async function (client: ExtendedClient) {
         if (!guild) continue;
 
         await guild.members.fetch().then(async members => {
-            const memberMap = members.map(x => x.id);
+            const memberMap = members.filter(x => !x.user.bot).map(x => x.id);
             const users = await client.prisma.getManyUsers({
                 id: { in: memberMap },
                 status: { notIn: ['APPEALED', 'WHITELISTED'] },
