@@ -26,6 +26,6 @@ export default async function ({ interaction, channel, content, embed, component
             message: e
         })
 
-        throw new Error('Invalid channel');
+        throw new Error('Invalid channel or missing permission');
     }
 }
