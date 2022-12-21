@@ -28,7 +28,7 @@ if (process.env.LOKI_URL) {
         new LokiTransport({
             host: process.env.LOKI_URL ?? '',
             basicAuth: process.env.LOKI_AUTH ?? '',
-            labels: { app: 'warden-test' },
+            labels: { app: `warden-${process.env.enviroment}` },
             batching: true,
             interval: 10,
             json: true,
