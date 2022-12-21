@@ -98,6 +98,11 @@ export default async function (
                 color: Colours.GREEN,
             },
         });
+        logger.info({
+            labels: { action: 'actionUser', guildId: member.guild.id },
+            message: `WARN (${channel.id}) - ${user.last_username} (${user.id}) - ${member.guild.id}`,
+        });
+
     } else if (toDo === 'ROLE') {
         try {
             if (!punishments.roleId) throw new Error('Invalid role id set');
@@ -111,6 +116,12 @@ export default async function (
                 roles: oldRoles,
                 Guild: { connect: { id: punishments.id } },
             });
+
+            logger.info({
+                labels: { action: 'actionUser', guildId: member.guild.id },
+                message: `ROLE ADDED (${punishments.roleId}) - ${user.last_username} (${user.id}) - ${member.guild.id}`,
+            });
+
         } catch (e: any) {
             const errorId = await logException(null, e);
             return sendEmbed({
