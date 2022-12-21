@@ -2,6 +2,7 @@ import { TextChannel } from 'discord.js';
 import { Colours } from '../../@types/Colours';
 import { Command } from '../../structures/Command';
 import actionUser from '../../utils/actioning/actionUser';
+import logger from '../../utils/logger';
 import { sendError, sendSuccess } from '../../utils/messages';
 import sendEmbed from '../../utils/messages/sendEmbed';
 
@@ -34,12 +35,17 @@ export default new Command({
             if (!settings.punishments) return sendError(interaction, 'No punishments set for this guild');
             if (!settings.logChannel) return sendError(interaction, 'Must have a log channel set');
 
-            sendSuccess(interaction, 'Scanning..');
+            sendSuccess(interaction, 'Scanning..\n> This may take a while due to Discords rate limit');
 
             for (let index = 0; index < users.length; index++) {
                 const user = users[index];
                 await actionUser(client, guild, settings.logChannel, settings.punishments, user);
             }
+
+            logger.info({
+                labels: { action: 'scanusers', guildId: interaction?.guild?.id },
+                message: `Successfully actioned ${users.length} users, scanning complete`,
+            });
 
             sendEmbed({
                 channel: interaction.channel as TextChannel,
