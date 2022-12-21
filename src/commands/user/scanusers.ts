@@ -1,3 +1,5 @@
+import { TextChannel } from 'discord.js';
+import { Colours } from '../../@types/Colours';
 import { Command } from '../../structures/Command';
 import actionUser from '../../utils/actioning/actionUser';
 import { sendError, sendSuccess } from '../../utils/messages';
@@ -39,10 +41,13 @@ export default new Command({
                 await actionUser(client, guild, settings.logChannel, settings.punishments, user);
             }
 
-            sendSuccess(
-                interaction,
-                `Scanning has completed, \`${users.length}\` are blacklisted and have been actioned accordingly`
-            );
+            sendEmbed({
+                channel: interaction.channel as TextChannel,
+                embed: {
+                    description: `Scanning has completed, \`${users.length}\` are blacklisted and have been actioned accordingly`,
+                    color: Colours.GREEN,
+                },
+            });
 
             return;
         });
