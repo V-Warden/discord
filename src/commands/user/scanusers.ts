@@ -1,6 +1,7 @@
 import { Command } from '../../structures/Command';
 import actionUser from '../../utils/actioning/actionUser';
 import { sendError, sendSuccess } from '../../utils/messages';
+import sendEmbed from '../../utils/messages/sendEmbed';
 
 export default new Command({
     name: 'scanusers',
@@ -36,6 +37,11 @@ export default new Command({
                 const user = users[index];
                 await actionUser(client, guild, settings.logChannel, settings.punishments, user);
             }
+
+            sendSuccess(
+                interaction,
+                `Scanning has completed, \`${users.length}\` are blacklisted and have been actioned accordingly`
+            );
 
             return;
         });
