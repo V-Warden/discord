@@ -26,7 +26,8 @@ export default new Command({
                 id: { in: memberMap },
                 status: { notIn: ['APPEALED', 'WHITELISTED'] },
             });
-            if (users.length === 0) return;
+            if (users.length === 0)
+                return sendSuccess(interaction, 'Scanning has complete, no users blacklisted');
 
             if (!settings.punishments) return sendError(interaction, 'No punishments set for this guild');
             if (!settings.logChannel) return sendError(interaction, 'Must have a log channel set');
