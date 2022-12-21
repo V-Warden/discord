@@ -21,8 +21,8 @@ export default async function (
     user: Users
 ) {
     const member = guild.members.cache.get(user.id);
-    if (!member) return;
-    if (member.user.bot) return;
+    if (!member) return false;
+    if (member.user.bot) return false;
 
     const imports = await client.prisma.getImports(user.id);
 
@@ -30,11 +30,11 @@ export default async function (
         const result = await client.prisma.failSafeStatus(user);
         if (result) {
             logger.debug({
-                labels: { action: 'actionUser', userId: user.id },
+                labels: { action: 'actionUser', userId: user.id, guildId: member.guild.id },
                 message: 'User being appealed',
             });
             client.shard?.send({ action: 'appeal', userid: user.id });
-            return;
+            return false;
         }
     }
 
@@ -54,7 +54,7 @@ export default async function (
         }
     } catch (e) {
         return logger.error({
-            labels: { action: 'actionUser', userId: user.id },
+            labels: { action: 'actionUser', userId: user.id, guildId: member.guild.id },
             message: e,
         });
     }
@@ -65,10 +65,10 @@ export default async function (
     try {
         channel = (await guild.channels.fetch(logChannel ?? '')) as TextChannel;
     } catch {
-        return;
+        return false;
     }
 
-    if (!channel) return;
+    if (!channel) return false;
 
     const author = {
         name: `${member.user.username}#${member.user.discriminator} / ${member.id}`,
@@ -84,7 +84,7 @@ export default async function (
                     https://discord.gg/jeFeDRasfs`,
         });
     } catch (e) {
-        return;
+        return false;
     }
 
     if (toDo === 'WARN') {
@@ -122,6 +122,8 @@ export default async function (
                 message: `ROLE ADDED (${punishments.roleId}) - ${user.last_username} (${user.id}) - ${member.guild.id}`,
             });
 
+            return true;
+
         } catch (e: any) {
             const errorId = await logException(null, e);
             return sendEmbed({
@@ -141,7 +143,7 @@ export default async function (
             action = member.kick(`Warden - User Type ${user.type}`);
         }
 
-        if (!action) return;
+        if (!action) return false;
 
         try {
             await action;
@@ -162,6 +164,7 @@ export default async function (
                     color: Colours.GREEN,
                 },
             });
+            return true;
         } catch (e) {
             return logger.error({
                 labels: { action: 'actionUser', guildId: member.guild.id },
@@ -169,5 +172,5 @@ export default async function (
             });
         }
     }
-    return;
+    return true;
 }

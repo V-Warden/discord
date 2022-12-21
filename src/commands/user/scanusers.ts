@@ -27,8 +27,9 @@ export default new Command({
             const memberMap = members.filter(x => !x.user.bot).map(x => x.id);
             const users = await client.prisma.getManyUsers({
                 id: { in: memberMap },
-                status: { notIn: ['APPEALED', 'WHITELISTED'] },
+                status: { in: ['BLACKLISTED', 'PERM_BLACKLISTED'] },
             });
+
             if (users.length === 0)
                 return sendSuccess(interaction, 'Scanning has complete, no users blacklisted');
 
@@ -37,20 +38,29 @@ export default new Command({
 
             sendSuccess(interaction, 'Scanning..\n> This may take a while due to Discords rate limit');
 
+            let actioned = 0;
+
             for (let index = 0; index < users.length; index++) {
                 const user = users[index];
-                await actionUser(client, guild, settings.logChannel, settings.punishments, user);
+                const result = await actionUser(
+                    client,
+                    guild,
+                    settings.logChannel,
+                    settings.punishments,
+                    user
+                );
+                if (result) actioned += 1;
             }
 
             logger.info({
                 labels: { action: 'scanusers', guildId: interaction?.guild?.id },
-                message: `Successfully actioned ${users.length} users, scanning complete`,
+                message: `Successfully actioned ${actioned} users, scanning complete`,
             });
 
             sendEmbed({
                 channel: interaction.channel as TextChannel,
                 embed: {
-                    description: `Scanning has completed, \`${users.length}\` are blacklisted and have been actioned accordingly`,
+                    description: `Scanning has completed, \`${actioned}\` are blacklisted and have been actioned accordingly`,
                     color: Colours.GREEN,
                 },
             });
