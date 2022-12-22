@@ -5,7 +5,6 @@ import { logException } from '../utils/logger';
 
 export default new Event('interactionCreate', async interaction => {
     // Chat Input Commands
-    if (interaction.user.id !== '461623736785698816') return;
     if (interaction.isChatInputCommand()) {
         const command = client.commands.get(interaction.commandName);
         if (!command) return interaction.followUp('You have used a non existent command');

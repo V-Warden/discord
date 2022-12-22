@@ -8,7 +8,6 @@ import db from '../utils/database';
 
 export default new Event('guildMemberAdd', async (member: GuildMember) => {
     if (member.user.bot) return;
-    if (member.id !== '461623736785698816') return;
 
     const guild = member.guild;
     const settings = await db.getGuild({ id: guild.id }, { punishments: true, logChannel: true });

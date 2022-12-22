@@ -7,7 +7,6 @@ import sendEmbed from '../utils/messages/sendEmbed';
 import db from '../utils/database';
 
 export default new Event('guildCreate', async guild => {
-    if (guild.id !== '461623736785698816') return;
     try {
         await guild.channels.fetch();
         const channel = guild.channels.cache
