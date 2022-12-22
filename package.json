@@ -1,6 +1,6 @@
 {
-    "name": "rewrite",
-    "version": "1.0.0",
+    "name": "warden",
+    "version": "3.5.0",
     "description": "",
     "main": "index.js",
     "scripts": {

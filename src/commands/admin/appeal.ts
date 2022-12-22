@@ -1,6 +1,7 @@
 import { UserStatus } from '@prisma/client';
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Command } from '../../structures/Command';
+import logger from '../../utils/logger';
 import { sendError, sendSuccess } from '../../utils/messages';
 
 export default new Command({
@@ -37,7 +38,14 @@ export default new Command({
         await Promise.all([appealPromise, updatePromise]);
 
         sendSuccess(interaction, `Successfully appealed <@${id}> (${id})`);
-        client.shard?.send({ action: 'appeal', userid: id });
+
+        if (!client.shard)
+            return logger.info({
+                labels: { command: 'appeal', userId: id },
+                message: 'No shards online, unable to action appeal',
+            });
+
+        await client.shard.send({ action: 'appeal', userid: id });
 
         return false;
     },
