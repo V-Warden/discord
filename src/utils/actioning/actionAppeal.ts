@@ -44,7 +44,7 @@ export default async function (c: Client, id: string) {
 
             if (guildBans.length > 0) {
                 for (let index = 0; index < guildBans.length; index++) {
-                    const element = bans[index];
+                    const element = guildBans[index];
                     try {
                         const guild = await client.guilds.fetch(element.guild);
                         const ban = await guild.bans.fetch({ user: element.id, force: true });
@@ -73,7 +73,7 @@ export default async function (c: Client, id: string) {
 
             if (guildRoles.length > 0) {
                 for (let index = 0; index < guildRoles.length; index++) {
-                    const element = roles[index];
+                    const element = guildRoles[index];
                     try {
                         const guild = await client.guilds.fetch(element.guild);
                         const member = await guild.members.fetch(element.id);

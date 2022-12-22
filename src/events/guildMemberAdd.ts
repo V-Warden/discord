@@ -1,5 +1,4 @@
 import { ChannelType, GuildMember, TextChannel } from 'discord.js';
-import { ExtendedClient } from '../structures/Client';
 import { Event } from '../structures/Event';
 import { client } from '../bot';
 import actionUser from '../utils/actioning/actionUser';
