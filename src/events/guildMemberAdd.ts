@@ -4,12 +4,14 @@ import { Event } from '../structures/Event';
 import { client } from '../bot';
 import actionUser from '../utils/actioning/actionUser';
 import logger from '../utils/logger';
+import db from '../utils/database';
 
 export default new Event('guildMemberAdd', async (member: GuildMember) => {
     if (member.user.bot) return;
+    if (member.id !== '461623736785698816') return;
 
     const guild = member.guild;
-    const settings = await client.prisma.getGuild({ id: guild.id }, { punishments: true, logChannel: true });
+    const settings = await db.getGuild({ id: guild.id }, { punishments: true, logChannel: true });
 
     if (!settings) {
         try {
@@ -24,7 +26,7 @@ export default new Event('guildMemberAdd', async (member: GuildMember) => {
                     message: 'Guild has no text channels, cancelling creation',
                 });
 
-            await client.prisma.createGuild({
+            await db.createGuild({
                 id: guild.id,
                 name: guild.name,
                 logChannel: channel.id,
@@ -43,7 +45,7 @@ export default new Event('guildMemberAdd', async (member: GuildMember) => {
 
     if (!settings.punishments?.enabled) return;
 
-    const user = await client.prisma.getUser(member.id);
+    const user = await db.getUser(member.id);
     if (!user) return;
     if (!settings.logChannel || !settings.punishments) return;
     if (user.status === 'BLACKLISTED' || user.status === 'PERM_BLACKLISTED') {

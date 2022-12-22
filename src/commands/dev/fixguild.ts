@@ -1,5 +1,6 @@
 import { ApplicationCommandOptionType, ChannelType, TextChannel } from 'discord.js';
 import { Command } from '../../structures/Command';
+import db from '../../utils/database';
 import { sendError, sendSuccess } from '../../utils/messages';
 
 export default new Command({
@@ -27,7 +28,7 @@ export default new Command({
             .first() as TextChannel;
         if (!channel) return sendError(interaction, 'Unable to find a channel in guild');
 
-        await client.prisma.createGuild({
+        await db.createGuild({
             id: guild.id,
             name: guild.name,
             logChannel: channel.id,

@@ -3,6 +3,7 @@ import { APIEmbed, ApplicationCommandType } from 'discord.js';
 import { capitalize, chunk } from 'lodash';
 import { Colours } from '../../@types/Colours';
 import { ContextMenu } from '../../structures/ContextMenu';
+import db from '../../utils/database';
 import { sendSuccess } from '../../utils/messages';
 import sendEmbed from '../../utils/messages/sendEmbed';
 import sendPagination from '../../utils/messages/sendPagination';
@@ -15,13 +16,13 @@ export default new ContextMenu({
     run: async ({ interaction, client }) => {
         const id = interaction.targetId;
 
-        const user: Users | null = await client.prisma.getUser(id);
+        const user: Users | null = await db.getUser(id);
         if (!user) return sendSuccess(interaction, 'User not found in database');
 
         const [noteCount, imports, history] = await Promise.all([
-            client.prisma.countNotes(id),
-            client.prisma.getImports(id),
-            client.prisma.getHistory(id),
+            db.countNotes(id),
+            db.getImports(id),
+            db.getHistory(id),
         ]);
 
         let historyResponse;
@@ -46,7 +47,7 @@ export default new ContextMenu({
                     const parsed = JSON.parse(x.roles);
                     const servers = parsed['servers'].split(';');
 
-                    const badServers = await client.prisma.getBadServers(servers);
+                    const badServers = await db.getBadServers(servers);
                     realCount += servers.length;
 
                     const names = badServers.map(x => x.name);

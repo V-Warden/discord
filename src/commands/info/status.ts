@@ -2,6 +2,8 @@ import { Colours } from '../../@types/Colours';
 import { Command } from '../../structures/Command';
 import sendEmbed from '../../utils/messages/sendEmbed';
 import { formatSeconds } from '../../utils/misc';
+import db from '../../utils/database';
+import { sendError } from '../../utils/messages';
 
 export default new Command({
     name: 'status',
@@ -10,8 +12,8 @@ export default new Command({
         const uptime = process.uptime();
 
         // Could optimise this by caching result and storing for x minutes?
-        const blacklistedUsersPromise = client.prisma.countAllBlacklistedUsers();
-        const blacklistedServersPromise = client.prisma.countAllBlacklistedServers();
+        const blacklistedUsersPromise = db.countAllBlacklistedUsers();
+        const blacklistedServersPromise = db.countAllBlacklistedServers();
 
         const [blacklistedUsers, blacklistedServers] = await Promise.all([
             blacklistedUsersPromise,
@@ -19,6 +21,15 @@ export default new Command({
         ]);
         // ---- //
 
+        const res = await client.shard?.broadcastEval(client => {
+            return {
+                guilds: client.guilds.cache.size,
+            };
+        });
+
+        if (!res) return sendError(interaction, 'No shards available..?');
+
+        const guilds = res.reduce((a, b) => a + b.guilds, 0);
         return sendEmbed({
             interaction,
             embed: {
@@ -32,10 +43,7 @@ export default new Command({
                     },
                     {
                         name: 'Protected Guilds',
-                        value: `I am watching ${
-                            (await client?.shard?.fetchClientValues('guilds.cache.size')) ??
-                            client.guilds.cache.size
-                        } guilds`,
+                        value: `I am watching ${guilds} guilds`,
                         inline: false,
                     },
                     {

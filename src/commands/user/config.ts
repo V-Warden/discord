@@ -5,6 +5,7 @@ import { Command } from '../../structures/Command';
 import { sendError, sendSuccess } from '../../utils/messages';
 import sendEmbed from '../../utils/messages/sendEmbed';
 import { capitalize, mapAnyType } from '../../utils/misc';
+import db from '../../utils/database';
 
 export default new Command({
     name: 'config',
@@ -124,7 +125,7 @@ export default new Command({
 
         if (subCommand === 'settings') {
             // view settings
-            const guild = await client.prisma.getGuild(
+            const guild = await db.getGuild(
                 { id: interaction.guild?.id },
                 { punishments: true, logChannel: true }
             );
@@ -185,16 +186,13 @@ export default new Command({
                 const value = interaction.options.getBoolean('value') as boolean;
                 if (subCommand === 'actioning') {
                     msg = `Toggled actioning to \`${value}\``;
-                    await client.prisma.updatePunishments({ id: interaction.guild?.id }, { enabled: value });
+                    await db.updatePunishments({ id: interaction.guild?.id }, { enabled: value });
                 } else if (subCommand === 'unban') {
                     msg = `Toggled unban to \`${value}\``;
-                    await client.prisma.updatePunishments({ id: interaction.guild?.id }, { unban: value });
+                    await db.updatePunishments({ id: interaction.guild?.id }, { unban: value });
                 } else if (subCommand === 'globalscan') {
                     msg = `Toggled globalscan to \`${value}\``;
-                    await client.prisma.updatePunishments(
-                        { id: interaction.guild?.id },
-                        { globalCheck: value }
-                    );
+                    await db.updatePunishments({ id: interaction.guild?.id }, { globalCheck: value });
                 }
                 break;
             }
@@ -204,15 +202,12 @@ export default new Command({
                     if (value?.type !== ChannelType.GuildText)
                         return sendError(interaction, 'Logging channel must be a text channel');
 
-                    await client.prisma.updateGuild({ id: interaction.guild?.id }, { logChannel: value.id });
+                    await db.updateGuild({ id: interaction.guild?.id }, { logChannel: value.id });
                     msg = `Successfully updated \`${subCommand}\` to \`${value.name}\`\n> Make sure I have permissions to send messages in here`;
                 } else if (subCommand === 'punishrole') {
                     const value = interaction.options.getRole('role');
 
-                    await client.prisma.updatePunishments(
-                        { id: interaction.guild?.id },
-                        { roleId: value?.id }
-                    );
+                    await db.updatePunishments({ id: interaction.guild?.id }, { roleId: value?.id });
                     msg = `Successfully updated \`${subCommand}\` to \`${value?.name}\`\n> Make sure I have permissions to assign and remove this role`;
                 } else if (subCommand === 'action') {
                     const type = interaction.options.getString('type') as UserType;
@@ -230,7 +225,7 @@ export default new Command({
                     } else if (type === 'SUPPORTER') {
                         data = { supporter: punish };
                     }
-                    await client.prisma.updatePunishments({ id: interaction.guild?.id }, data);
+                    await db.updatePunishments({ id: interaction.guild?.id }, data);
                     msg = `Successfully updated \`${capitalize(type)}\` to \`${capitalize(punish)}\``;
                 }
                 break;

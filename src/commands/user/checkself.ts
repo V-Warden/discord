@@ -1,12 +1,13 @@
 import { Colours } from '../../@types/Colours';
 import { Command } from '../../structures/Command';
 import sendEmbed from '../../utils/messages/sendEmbed';
+import db from '../../utils/database';
 
 export default new Command({
     name: 'checkself',
     description: 'Find out which blacklisted servers you were found in',
     run: async ({ interaction, client }) => {
-        const imports = await client.prisma.getImports(interaction.user.id);
+        const imports = await db.getImports(interaction.user.id);
 
         if (imports.length <= 0) {
             return sendEmbed({

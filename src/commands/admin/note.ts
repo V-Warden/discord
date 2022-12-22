@@ -4,6 +4,7 @@ import { sendError, sendSuccess } from '../../utils/messages';
 import { chunk } from 'lodash';
 import { Colours } from '../../@types/Colours';
 import sendPagination from '../../utils/messages/sendPagination';
+import db from '../../utils/database';
 
 export default new Command({
     name: 'note',
@@ -57,15 +58,15 @@ export default new Command({
             ],
         },
     ],
-    run: async ({ interaction, client }) => {
+    run: async ({ interaction }) => {
         const subcommand = interaction.options.data[0]?.name;
         if (subcommand === 'add') {
             const note = interaction.options.get('note')?.value as string;
             const id = interaction.options.get('id')?.value as string;
-            const exists = await client.prisma.userExist(id);
+            const exists = await db.userExist(id);
             if (!exists) return sendError(interaction, 'That user is not in the database');
 
-            await client.prisma.createNote(id, note, interaction.user.id);
+            await db.createNote(id, note, interaction.user.id);
 
             return sendSuccess(
                 interaction,
@@ -74,12 +75,12 @@ export default new Command({
         } else if (subcommand === 'remove') {
             const nId = interaction.options.get('nid')?.value as number;
 
-            await client.prisma.deleteNote(nId);
+            await db.deleteNote(nId);
 
             return sendSuccess(interaction, 'Successfully deleted note');
         } else if (subcommand === 'view') {
             const id = interaction.options.get('id')?.value as string;
-            const notes = await client.prisma.getUserNotes(id);
+            const notes = await db.getUserNotes(id);
 
             if (notes.length === 0) return sendSuccess(interaction, 'User has no notes');
 

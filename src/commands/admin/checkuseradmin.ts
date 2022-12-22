@@ -7,6 +7,7 @@ import { chunk } from 'lodash';
 import { capitalize, uploadText } from '../../utils/misc';
 import sendEmbed from '../../utils/messages/sendEmbed';
 import logger from '../../utils/logger';
+import db from '../../utils/database';
 
 export default new Command({
     name: 'checkuseradmin',
@@ -24,13 +25,13 @@ export default new Command({
     run: async ({ interaction, client }) => {
         const id = interaction.options.getUser('user')?.id as string;
 
-        const user = await client.prisma.getUser(id);
+        const user = await db.getUser(id);
         if (!user) return sendSuccess(interaction, 'User not found in database');
 
         const [noteCount, imports, history] = await Promise.all([
-            client.prisma.countNotes(id),
-            client.prisma.getImports(id),
-            client.prisma.getHistory(id),
+            db.countNotes(id),
+            db.getImports(id),
+            db.getHistory(id),
         ]);
 
         let historyResponse;
@@ -47,7 +48,7 @@ export default new Command({
                     `User has no outstanding servers to be appealed for\n\n> History: <${historyResponse}>\n> Notes: ${noteCount}`
                 );
             } else if (['PERM_BLACKLISTED', 'BLACKLISTED'].includes(user.status)) {
-                const result = await client.prisma.failSafeStatus(user);
+                const result = await db.failSafeStatus(user);
                 if (result) {
                     logger.debug({
                         labels: { action: 'checkuseradmin', userId: id },
@@ -70,7 +71,7 @@ export default new Command({
                     const parsed = JSON.parse(x.roles);
                     const servers = parsed['servers'].split(';');
 
-                    const badServers = await client.prisma.getBadServers(servers);
+                    const badServers = await db.getBadServers(servers);
                     realCount += servers.length;
 
                     const names = badServers.map(x => x.name);

@@ -1,18 +1,18 @@
 import { Punish, Users, UserType } from '@prisma/client';
-import { GuildMember, TextChannel } from 'discord.js';
+import { Client, GuildMember, TextChannel } from 'discord.js';
 import { Colours } from '../../@types/Colours';
-import { ExtendedClient } from '../../structures/Client';
 import logger, { logException } from '../logger';
 import sendEmbed from '../messages/sendEmbed';
+import db from '../database';
 
 /**
  * Actions a user globally, mainly used for forcecheck
  * @param client Client
  * @param user Database user
  */
-export default async function (client: ExtendedClient, userid: string) {
+export default async function (client: Client, userid: string) {
     const guildIds = client.guilds.cache.map(x => x.id);
-    const user = await client.prisma.getUser(userid);
+    const user = await db.getUser(userid);
     if (!user) return;
 
     const discordUser = await client.users.fetch(userid)
@@ -22,15 +22,15 @@ export default async function (client: ExtendedClient, userid: string) {
 
     // Reduce database queries by grabbing
     // all guilds that have punishments enabled
-    const guilds = await client.prisma.getAllGuilds(
+    const guilds = await db.getAllGuilds(
         { punishments: { enabled: true }, id: {in: guildIds} },
         { punishments: true, logChannel: true }
     );
 
-    const imports = await client.prisma.getImports(userid);
+    const imports = await db.getImports(userid);
 
     if (imports.length === 0 && ['PERM_BLACKLISTED', 'BLACKLISTED'].includes(user.status)) {
-        const result = await client.prisma.failSafeStatus(user);
+        const result = await db.failSafeStatus(user);
         if (result) {
             logger.debug({
                 labels: { action: 'actionUserGlobal', userId: user.id },
@@ -148,7 +148,7 @@ export default async function (client: ExtendedClient, userid: string) {
                 if (hasBlacklisedAlready) continue;
 
                 await member.roles.set([settings.punishments.roleId]);
-                await client.prisma.createArchiveRole({
+                await db.createArchiveRole({
                     id: member.id,
                     roles: oldRoles,
                     Guild: { connect: { id: settings.punishments.id } },
@@ -175,7 +175,7 @@ export default async function (client: ExtendedClient, userid: string) {
             if (!action) continue;
             try {
                 await action;
-                if (toDo === 'BAN') await client.prisma.createBan({ id: user.id, Guild: { connect: { id: settings.punishments.id } } });
+                if (toDo === 'BAN') await db.createBan({ id: user.id, Guild: { connect: { id: settings.punishments.id } } });
                 logger.info({
                     labels: { action: 'actionUserGlobal', guildId: member.guild.id },
                     message: `${toDo}ED - ${user.last_username} (${user.id})`,

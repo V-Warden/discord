@@ -1,6 +1,7 @@
 import { UserType, UserStatus } from '@prisma/client';
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Command } from '../../structures/Command';
+import db from '../../utils/database';
 import { sendError, sendSuccess } from '../../utils/messages';
 import { mapAnyType } from '../../utils/misc';
 
@@ -37,17 +38,17 @@ export default new Command({
             required: true,
         },
     ],
-    run: async ({ interaction, client }) => {
+    run: async ({ interaction }) => {
         const id = interaction.options.getUser('user')?.id as string;
         const status = interaction.options.get('status')?.value as UserStatus;
         const type = interaction.options.get('type')?.value as UserType;
         const reason = interaction.options.get('reason')?.value as string;
 
-        const user = await client.prisma.getUser(id);
+        const user = await db.getUser(id);
 
         if (!user) return sendError(interaction, 'User not found in the database');
 
-        await client.prisma.updateUser(id, { status, type, reason });
+        await db.updateUser(id, { status, type, reason });
         return sendSuccess(
             interaction,
             ` Successfully changed ${user.last_username} (${id}) status to \`${status}\` and type to \`${type}\``

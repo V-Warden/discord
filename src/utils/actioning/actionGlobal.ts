@@ -1,13 +1,14 @@
-import { ExtendedClient } from '../../structures/Client';
 import actionUser from './actionUser';
+import db from '../database';
+import { Client } from 'discord.js';
 
 /**
  * Actions on all guilds
  * @param client Client
  */
-export default async function (client: ExtendedClient) {
+export default async function (client: Client) {
     const guildIds = client.guilds.cache.map(x => x.id);
-    const guilds = await client.prisma.getAllGuilds(
+    const guilds = await db.getAllGuilds(
         { punishments: { enabled: true, globalCheck: true }, id: { in: guildIds } },
         { punishments: true, logChannel: true, id: true }
     );
@@ -21,7 +22,7 @@ export default async function (client: ExtendedClient) {
 
         await guild.members.fetch().then(async members => {
             const memberMap = members.filter(x => !x.user.bot).map(x => x.id);
-            const users = await client.prisma.getManyUsers({
+            const users = await db.getManyUsers({
                 id: { in: memberMap },
                 status: { notIn: ['APPEALED', 'WHITELISTED'] },
             });

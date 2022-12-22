@@ -1,6 +1,8 @@
 import { UserStatus } from '@prisma/client';
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Command } from '../../structures/Command';
+import actionAppeal from '../../utils/actioning/actionAppeal';
+import db from '../../utils/database';
 import logger from '../../utils/logger';
 import { sendError, sendSuccess } from '../../utils/messages';
 
@@ -21,15 +23,13 @@ export default new Command({
         const id = interaction.options.getUser('user')?.id as string;
         if (!id) return sendError(interaction, 'Invalid user or id provided');
 
-        const [imports, user] = await Promise.all([
-            client.prisma.countUnappealedImports(id),
-            client.prisma.getUser(id),
-        ]);
+        const [imports, user] = await Promise.all([db.countUnappealedImports(id), db.getUser(id)]);
 
         if (imports === 0 && user?.status === 'APPEALED')
             return sendError(interaction, 'That user has no new servers to appeal');
-        const appealPromise = client.prisma.appealImports(id);
-        const updatePromise = client.prisma.updateUser(id, {
+
+        const appealPromise = db.appealImports(id);
+        const updatePromise = db.updateUser(id, {
             status: UserStatus.APPEALED,
             appeals: {
                 increment: 1,
@@ -39,13 +39,7 @@ export default new Command({
 
         sendSuccess(interaction, `Successfully appealed <@${id}> (${id})`);
 
-        if (!client.shard)
-            return logger.info({
-                labels: { command: 'appeal', userId: id },
-                message: 'No shards online, unable to action appeal',
-            });
-
-        await client.shard.send({ action: 'appeal', userid: id });
+        await actionAppeal(client, id);
 
         return false;
     },

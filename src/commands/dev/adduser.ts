@@ -1,6 +1,7 @@
 import { UserType, UserStatus } from '@prisma/client';
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Command } from '../../structures/Command';
+import db from '../../utils/database';
 import { sendError, sendSuccess } from '../../utils/messages';
 import { mapAnyType } from '../../utils/misc';
 
@@ -52,19 +53,19 @@ export default new Command({
 
         if (id?.length < 17 || id?.length > 20) return sendError(interaction, 'Invalid ID provided');
 
-        const isBadServer = await client.prisma.getBadServer({ id: server });
+        const isBadServer = await db.getBadServer({ id: server });
         if (!isBadServer) return sendError(interaction, 'Server is not blacklisted');
 
         const user = await client.users.fetch(id);
         if (!user) return sendError(interaction, 'Invalid id provided');
 
-        const count = await client.prisma.userExist(id);
+        const count = await db.userExist(id);
 
         if (count) {
-            await client.prisma.createImport(id, server, type);
-            await client.prisma.updateUser(id, { status, type, reason });
+            await db.createImport(id, server, type);
+            await db.updateUser(id, { status, type, reason });
         } else {
-            await client.prisma.createUser({
+            await db.createUser({
                 id,
                 last_username: user?.username ? `${user.username}#${user.discriminator}` : 'unknown#0000',
                 avatar: user.avatarURL() ?? 'https://cdn.mk3ext.dev/yuva7/HaXeYOBA30.png',

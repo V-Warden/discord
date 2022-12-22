@@ -6,6 +6,7 @@ import sendEmbed from '../../utils/messages/sendEmbed';
 import { Colours } from '../../@types/Colours';
 import { capitalize } from '../../utils/misc';
 import logger from '../../utils/logger';
+import db from '../../utils/database';
 
 export default new Command({
     name: 'checkuser',
@@ -21,14 +22,14 @@ export default new Command({
     run: async ({ interaction, client }) => {
         const id = interaction.options.getUser('user')?.id as string;
 
-        const data = await client.prisma.getUser(id);
+        const data = await db.getUser(id);
         if (!data || data.status === 'WHITELISTED')
             return sendSuccess(
                 interaction,
                 'No results found for this ID.\n> They are either fine or not yet listed.'
             );
 
-        const imports = await client.prisma.getImports(id);
+        const imports = await db.getImports(id);
         if (imports.length === 0 && data.status === 'APPEALED')
             return sendSuccess(
                 interaction,
@@ -36,7 +37,7 @@ export default new Command({
             );
 
         if (imports.length === 0 && ['PERM_BLACKLISTED', 'BLACKLISTED'].includes(data.status)) {
-            const result = await client.prisma.failSafeStatus(data);
+            const result = await db.failSafeStatus(data);
             if (result) {
                 logger.debug({
                     labels: { action: 'checkuser', userId: id },
@@ -51,7 +52,7 @@ export default new Command({
         }
 
         const types: UserType[] = imports.map(x => x.type);
-        const highest = client.prisma.findHighestType(types);
+        const highest = db.findHighestType(types);
 
         return sendEmbed({
             interaction,

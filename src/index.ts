@@ -6,6 +6,8 @@ const manager = new ShardingManager(__dirname + '/bot.js', {
     token: process.env.token,
 });
 
-manager.on('shardCreate', shard => console.log(`Launched shard ${shard.id}`));
+manager.on('shardCreate', shard => {
+    console.log(`Launched shard ${shard.id}`);
+});
 
 manager.spawn({ timeout: -1 });

@@ -1,6 +1,7 @@
 import { BadServers, ServerType } from '@prisma/client';
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Command } from '../../structures/Command';
+import db from '../../utils/database';
 import { sendError, sendSuccess } from '../../utils/messages';
 
 // Priority - LOW
@@ -81,14 +82,14 @@ export default new Command({
 
             if (!server?.guild) return sendError(interaction, 'Unknown Server');
 
-            const exists: BadServers | null = await client.prisma.getBadServer({ id: server.guild?.id });
+            const exists: BadServers | null = await db.getBadServer({ id: server.guild?.id });
             if (exists) {
                 if (exists?.name === server.guild?.name)
                     return sendError(interaction, 'Server is already blacklisted');
 
                 const newOldNames = exists?.oldNames ? exists.oldNames.split('<>') : [];
                 newOldNames.push(exists?.name);
-                await client.prisma.updateBadServer(server.guild?.id, {
+                await db.updateBadServer(server.guild?.id, {
                     name: server.guild?.name,
                     oldNames: newOldNames.join('<>'),
                     invite,
@@ -99,7 +100,7 @@ export default new Command({
                     `This server already exists but under a new name, I have automatically updated this. \`\`\`New Name: ${server.guild?.name}\nOld Name: ${exists.name}\`\`\``
                 );
             } else {
-                await client.prisma.createBadServer({
+                await db.createBadServer({
                     id: server.guild?.id,
                     name: server.guild?.name,
                     type,
@@ -126,10 +127,10 @@ export default new Command({
         } else if (name === 'remove') {
             const id = interaction.options.get('id')?.value as string;
 
-            const exists = await client.prisma.getBadServer({ id });
+            const exists = await db.getBadServer({ id });
             if (!exists) return sendError(interaction, 'That ID is not a bad server');
 
-            await client.prisma.deleteBadServer(id);
+            await db.deleteBadServer(id);
             return sendSuccess(interaction, 'Successfully removed as a bad server');
         } else return sendError(interaction, 'Invalid sub command');
     },

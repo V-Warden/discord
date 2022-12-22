@@ -20,7 +20,6 @@ const globPromise = promisify(glob);
 export class ExtendedClient extends Client {
     commands: Collection<string, CommandType> = new Collection();
     contextmenus: Collection<string, MenuType> = new Collection();
-    prisma: Database = new Database();
 
     constructor() {
         super({ intents: 519, waitGuildTimeout: 1000 });

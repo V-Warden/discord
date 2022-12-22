@@ -1,6 +1,7 @@
 import { Bans, Roles } from '@prisma/client';
 import { Command } from '../../structures/Command';
 import { sendError, sendSuccess } from '../../utils/messages';
+import db from '../../utils/database';
 
 export default new Command({
     name: 'export',
@@ -9,7 +10,7 @@ export default new Command({
     run: async ({ interaction, client }) => {
         if (!interaction.guild) return sendError(interaction, 'Must be used in a guild');
 
-        const settings = await client.prisma.getGuild({ id: interaction.guild.id }, { punishments: true });
+        const settings = await db.getGuild({ id: interaction.guild.id }, { punishments: true });
 
         if (!settings) return sendError(interaction, 'Unable to find guild in the database');
 
@@ -53,10 +54,7 @@ export default new Command({
 
         // Override exception handling in interactionCreate
         try {
-            await Promise.all([
-                client.prisma.createBans(bansImport),
-                client.prisma.createArchiveRoles(roleImport),
-            ]);
+            await Promise.all([db.createBans(bansImport), db.createArchiveRoles(roleImport)]);
 
             return sendSuccess(
                 interaction,

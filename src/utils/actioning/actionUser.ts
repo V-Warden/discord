@@ -1,10 +1,11 @@
 import { Punish, Punishments, Users } from '@prisma/client';
-import { Guild, TextChannel } from 'discord.js';
+import { Client, Guild, TextChannel } from 'discord.js';
 import { Colours } from '../../@types/Colours';
 import { ExtendedClient } from '../../structures/Client';
 import logger, { logException } from '../logger';
 import sendEmbed from '../messages/sendEmbed';
 import { getPunishment } from './utils';
+import db from '../database';
 
 /**
  * Actions a user on a specific guild
@@ -14,7 +15,7 @@ import { getPunishment } from './utils';
  * @param user
  */
 export default async function (
-    client: ExtendedClient,
+    client: Client,
     guild: Guild,
     logChannel: string,
     punishments: Punishments,
@@ -24,10 +25,10 @@ export default async function (
     if (!member) return false;
     if (member.user.bot) return false;
 
-    const imports = await client.prisma.getImports(user.id);
+    const imports = await db.getImports(user.id);
 
     if (imports.length === 0 && ['PERM_BLACKLISTED', 'BLACKLISTED'].includes(user.status)) {
-        const result = await client.prisma.failSafeStatus(user);
+        const result = await db.failSafeStatus(user);
         if (result) {
             logger.debug({
                 labels: { action: 'actionUser', userId: user.id, guildId: member.guild.id },
@@ -111,7 +112,7 @@ export default async function (
             if (hasBlacklisedAlready) return;
 
             await member.roles.set([punishments.roleId]);
-            await client.prisma.createArchiveRole({
+            await db.createArchiveRole({
                 id: member.id,
                 roles: oldRoles,
                 Guild: { connect: { id: punishments.id } },
@@ -149,7 +150,7 @@ export default async function (
             await action;
 
             if (toDo === 'BAN')
-                await client.prisma.createBan({ id: user.id, Guild: { connect: { id: punishments.id } } });
+                await db.createBan({ id: user.id, Guild: { connect: { id: punishments.id } } });
             logger.info({
                 labels: { action: 'actionUser', guildId: member.guild.id },
                 message: `${toDo}ED - ${user.last_username} (${user.id}) - ${member.guild.id}`,

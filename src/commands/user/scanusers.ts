@@ -5,6 +5,7 @@ import actionUser from '../../utils/actioning/actionUser';
 import logger from '../../utils/logger';
 import { sendError, sendSuccess } from '../../utils/messages';
 import sendEmbed from '../../utils/messages/sendEmbed';
+import db from '../../utils/database';
 
 export default new Command({
     name: 'scanusers',
@@ -16,7 +17,7 @@ export default new Command({
         const guild = client.guilds.cache.get(interaction.guild.id);
         if (!guild) return sendError(interaction, 'Unable to find guild in cache');
 
-        const settings = await client.prisma.getGuild(
+        const settings = await db.getGuild(
             { id: interaction.guild.id },
             { punishments: true, logChannel: true }
         );
@@ -25,7 +26,7 @@ export default new Command({
 
         await guild.members.fetch().then(async members => {
             const memberMap = members.filter(x => !x.user.bot).map(x => x.id);
-            const users = await client.prisma.getManyUsers({
+            const users = await db.getManyUsers({
                 id: { in: memberMap },
                 status: { in: ['BLACKLISTED', 'PERM_BLACKLISTED'] },
             });

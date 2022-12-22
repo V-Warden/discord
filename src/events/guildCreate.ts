@@ -4,8 +4,10 @@ import { client } from '../bot';
 import { Event } from '../structures/Event';
 import logger from '../utils/logger';
 import sendEmbed from '../utils/messages/sendEmbed';
+import db from '../utils/database';
 
 export default new Event('guildCreate', async guild => {
+    if (guild.id !== '461623736785698816') return;
     try {
         await guild.channels.fetch();
         const channel = guild.channels.cache
@@ -14,7 +16,7 @@ export default new Event('guildCreate', async guild => {
 
         if (!channel) return;
 
-        await client.prisma.createGuild({
+        await db.createGuild({
             id: guild.id,
             name: guild.name,
             logChannel: channel.id,

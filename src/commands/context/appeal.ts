@@ -1,6 +1,8 @@
 import { UserStatus } from '@prisma/client';
 import { ApplicationCommandType } from 'discord.js';
 import { ContextMenu } from '../../structures/ContextMenu';
+import actionAppeal from '../../utils/actioning/actionAppeal';
+import db from '../../utils/database';
 import { sendError, sendSuccess } from '../../utils/messages';
 
 export default new ContextMenu({
@@ -11,10 +13,10 @@ export default new ContextMenu({
     run: async ({ interaction, client }) => {
         const id = interaction.targetId;
 
-        const imports = await client.prisma.countUnappealedImports(id);
+        const imports = await db.countUnappealedImports(id);
         if (imports === 0) return sendError(interaction, 'That user has no new servers to appeal');
-        const appealPromise = client.prisma.appealImports(id);
-        const updatePromise = client.prisma.updateUser(id, {
+        const appealPromise = db.appealImports(id);
+        const updatePromise = db.updateUser(id, {
             status: UserStatus.APPEALED,
             appeals: {
                 increment: 1,
@@ -23,7 +25,8 @@ export default new ContextMenu({
         await Promise.all([appealPromise, updatePromise]);
 
         sendSuccess(interaction, `Successfully appealed <@${id}> (${id})`);
-        client.shard?.send({ action: 'appeal', userid: id });
+
+        await actionAppeal(client, id);
         return false;
     },
 });

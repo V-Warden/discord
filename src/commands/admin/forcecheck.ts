@@ -1,6 +1,6 @@
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Command } from '../../structures/Command';
-import actionUserGlobal from '../../utils/actioning/actionUserGlobal';
+import db from '../../utils/database';
 import { sendError, sendSuccess } from '../../utils/messages';
 
 export default new Command({
@@ -20,7 +20,7 @@ export default new Command({
         const id = interaction.options.getUser('user')?.id as string;
         if (!id) return sendError(interaction, 'Invalid user or id provided');
 
-        const user = await client.prisma.getUser(id);
+        const user = await db.getUser(id);
         if (!user) return sendError(interaction, 'User not found in database');
         if (user.status === 'WHITELISTED')
             return sendError(interaction, 'You cannot action a whitelisted user');

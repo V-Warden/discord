@@ -3,6 +3,7 @@ import { Colours } from '../../@types/Colours';
 import { Command } from '../../structures/Command';
 import { sendError, sendSuccess } from '../../utils/messages';
 import sendEmbed from '../../utils/messages/sendEmbed';
+import db from '../../utils/database';
 
 export default new Command({
     name: 'checkserver',
@@ -53,7 +54,7 @@ export default new Command({
             }
         }
 
-        const server = await client.prisma.getBadServer(lookup);
+        const server = await db.getBadServer(lookup);
 
         if (!server) return sendSuccess(interaction, 'Server not found in the database');
 

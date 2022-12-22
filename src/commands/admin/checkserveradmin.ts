@@ -1,6 +1,7 @@
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Colours } from '../../@types/Colours';
 import { Command } from '../../structures/Command';
+import db from '../../utils/database';
 import { sendError, sendSuccess } from '../../utils/messages';
 import sendEmbed from '../../utils/messages/sendEmbed';
 
@@ -55,7 +56,7 @@ export default new Command({
             }
         }
 
-        const server = await client.prisma.getBadServer(lookup);
+        const server = await db.getBadServer(lookup);
 
         if (!server) return sendSuccess(interaction, 'Server not found in the database');
 

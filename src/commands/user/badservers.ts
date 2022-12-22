@@ -3,12 +3,13 @@ import { chunk } from 'lodash';
 import { APIEmbed } from 'discord.js';
 import { Colours } from '../../@types/Colours';
 import sendPagination from '../../utils/messages/sendPagination';
+import db from '../../utils/database';
 
 export default new Command({
     name: 'badservers',
     description: 'View a list of all the bad servers',
     run: async ({ interaction, client }) => {
-        const badServers = await client.prisma.getAllBadServers();
+        const badServers = await db.getAllBadServers();
         const desc: string[] = [];
         badServers.forEach(server => desc.push(`${server.id} | ${server.name}`));
 
