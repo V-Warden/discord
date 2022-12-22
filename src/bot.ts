@@ -17,13 +17,14 @@ process.on('uncaughtException', e => console.error(e));
 process.on('message', async (m: any) => {
     try {
         if (typeof m === 'object') {
+            console.log(`Received ${m?.action}`)
             if (m?.action === 'actionGlobal') {
                 await actionGlobal(client);
             } else if (m?.action === 'forcecheck') {
                 if (!m.userid) return;
                 await actionUserGlobal(client, m.userid);
             } else if (m?.action === 'appeal') {
-                if (!m.userid) return;
+                if (!m.userid) return console.log('No user id found in appealing action');
                 await actionAppeal(client, m.userid);
             }
         } else {
