@@ -117,6 +117,17 @@ export default async function (
                 Guild: { connect: { id: punishments.id } },
             });
 
+            sendEmbed({
+                channel,
+                embed: {
+                    description: `:shield: User ${user.last_username} (${
+                        member.id
+                    }) has been punished with a ROLE.\nThey have been seen in ${realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()}`,
+                    author,
+                    color: Colours.GREEN,
+                },
+            });
+
             logger.info({
                 labels: { action: 'actionUser', guildId: member.guild.id },
                 message: `ROLE ADDED (${punishments.roleId}) - ${user.last_username} (${user.id}) - ${member.guild.id}`,
