@@ -4,6 +4,7 @@ import { Colours } from '../../@types/Colours';
 import logger, { logException } from '../logger';
 import sendEmbed from '../messages/sendEmbed';
 import db from '../database';
+import actionAppeal from './actionAppeal';
 
 /**
  * Actions a user globally, mainly used for forcecheck
@@ -36,7 +37,7 @@ export default async function (client: Client, userid: string) {
                 labels: { action: 'actionUserGlobal', userId: user.id },
                 message: 'User being appealed',
             });
-            client.shard?.send({ action: 'appeal', userid: user.id });
+            await actionAppeal(client, user.id)
             return;
         }
     }

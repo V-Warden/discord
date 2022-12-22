@@ -6,6 +6,7 @@ import logger, { logException } from '../logger';
 import sendEmbed from '../messages/sendEmbed';
 import { getPunishment } from './utils';
 import db from '../database';
+import actionAppeal from './actionAppeal';
 
 /**
  * Actions a user on a specific guild
@@ -34,7 +35,7 @@ export default async function (
                 labels: { action: 'actionUser', userId: user.id, guildId: member.guild.id },
                 message: 'User being appealed',
             });
-            client.shard?.send({ action: 'appeal', userid: user.id });
+            await actionAppeal(client, user.id)
             return false;
         }
     }
