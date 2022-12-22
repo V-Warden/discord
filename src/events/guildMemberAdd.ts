@@ -41,6 +41,8 @@ export default new Event('guildMemberAdd', async (member: GuildMember) => {
         return;
     }
 
+    if (!settings.punishments?.enabled) return;
+
     const user = await client.prisma.getUser(member.id);
     if (!user) return;
     if (!settings.logChannel || !settings.punishments) return;

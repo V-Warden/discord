@@ -10,8 +10,10 @@ export default async function ({ interaction, channel, content, embed, component
     };
     try {
         if (content) sendOpts.content = content;
-        if (channel) return await channel.send(sendOpts);
-        if (interaction) {
+
+        if (channel) {
+            return await channel.send(sendOpts)
+        } else if (interaction) {
             if (interaction.deferred || interaction.replied) {
                 return await interaction.editReply(sendOpts)
             } else {
