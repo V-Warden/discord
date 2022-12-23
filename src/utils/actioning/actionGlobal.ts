@@ -1,42 +1,65 @@
 import actionUser from './actionUser';
 import db from '../database';
 import { Client } from 'discord.js';
+import logger from '../logger';
 
 /**
  * Actions on all guilds
  * @param client Client
  */
-export default async function (client: Client) {
-    const guildIds = client.guilds.cache.map(x => x.id);
+export default async function (c: Client) {
+    if (!c.shard)
+        return logger.warn({
+            labels: { command: 'globalscan' },
+            message: 'No shards online, unable to perform globalscan',
+        });
+
     const guilds = await db.getAllGuilds(
-        { punishments: { enabled: true, globalCheck: true }, id: { in: guildIds } },
+        { punishments: { enabled: true, globalCheck: true } },
         { punishments: true, logChannel: true, id: true }
     );
 
-    for (let i = 0; i < guilds.length; i++) {
-        const element = guilds[i];
-        if (!element.id) continue;
+    const result = await c.shard.broadcastEval(
+        async (client, { dbGuilds }) => {
+            const output: any[] = [];
 
-        const guild = client.guilds.cache.get(element.id);
-        if (!guild) continue;
+            await client.guilds.fetch();
 
-        await guild.members.fetch().then(async members => {
-            const memberMap = members.filter(x => !x.user.bot).map(x => x.id);
-            const users = await db.getManyUsers({
-                id: { in: memberMap },
-                status: { notIn: ['APPEALED', 'WHITELISTED'] },
-            });
+            const guilds = client.guilds.cache.map(x => x.id);
+            const guildSettings = dbGuilds.filter(x => guilds.some(a => a === x.id));
 
-            if (users.length === 0) return;
-            if (!element.punishments) return;
-            if (!element.logChannel) return;
+            for (let i = 0; i < client.guilds.cache.size; i++) {
+                const guild = client.guilds.cache.at(i);
+                if (!guild) continue;
 
-            for (let index = 0; index < users.length; index++) {
-                const user = users[index];
-                if (user.type === 'BOT') continue;
+                const settings = guildSettings.find(x => x.id === guild.id);
+                if (!settings) continue;
 
-                actionUser(client, guild, element.logChannel, element.punishments, user);
+                await guild.members.fetch();
+
+                for (let a = 0; a < guild.members.cache.size; a++) {
+                    const member = guild.members.cache.at(a);
+                    if (!member) continue;
+
+                    client.emit('guildMemberAdd', member)
+
+                    output.push({
+                        labels: { action: 'globalscan', guildId: guild.id },
+                        message: `Emitted guildMemberAdd for ${member.id}`,
+                    });
+                }
             }
-        });
+
+            return output;
+        },
+        { context: { dbGuilds: guilds } }
+    );
+
+    for (let index = 0; index < result.length; index++) {
+        for (let i = 0; i < result.length; i++) {
+            logger.info(result[index][i]);
+        }
     }
+
+    return;
 }

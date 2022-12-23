@@ -1,4 +1,5 @@
 import { Command } from '../../structures/Command';
+import actionGlobal from '../../utils/actioning/actionGlobal';
 import { sendSuccess } from '../../utils/messages';
 
 export default new Command({
@@ -8,7 +9,7 @@ export default new Command({
     defaultMemberPermissions: 'Administrator',
     run: async ({ interaction, client }) => {
         sendSuccess(interaction, 'Globally scanning..');
-        client.shard?.send({ action: 'actionGlobal' });
+        await actionGlobal(client);
         return false;
     },
 });
