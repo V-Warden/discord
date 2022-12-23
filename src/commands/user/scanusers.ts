@@ -14,8 +14,7 @@ export default new Command({
     run: async ({ interaction, client }) => {
         if (!interaction.guild) return sendError(interaction, 'Must be used in a guild');
 
-        const guild = client.guilds.cache.get(interaction.guild.id);
-        if (!guild) return sendError(interaction, 'Unable to find guild in cache');
+        const guild = await client.guilds.fetch(interaction.guild.id);
 
         const settings = await db.getGuild(
             { id: interaction.guild.id },

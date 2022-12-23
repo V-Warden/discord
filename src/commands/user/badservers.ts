@@ -8,7 +8,7 @@ import db from '../../utils/database';
 export default new Command({
     name: 'badservers',
     description: 'View a list of all the bad servers',
-    run: async ({ interaction, client }) => {
+    run: async ({ interaction }) => {
         const badServers = await db.getAllBadServers();
         const desc: string[] = [];
         badServers.forEach(server => desc.push(`${server.id} | ${server.name}`));

@@ -7,7 +7,7 @@ export default new Command({
     name: 'export',
     description: 'Export VVarden data to database',
     defaultMemberPermissions: 'Administrator',
-    run: async ({ interaction, client }) => {
+    run: async ({ interaction }) => {
         if (!interaction.guild) return sendError(interaction, 'Must be used in a guild');
 
         const settings = await db.getGuild({ id: interaction.guild.id }, { punishments: true });

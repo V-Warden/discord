@@ -6,7 +6,7 @@ import db from '../../utils/database';
 export default new Command({
     name: 'checkself',
     description: 'Find out which blacklisted servers you were found in',
-    run: async ({ interaction, client }) => {
+    run: async ({ interaction }) => {
         const imports = await db.getImports(interaction.user.id);
 
         if (imports.length <= 0) {
