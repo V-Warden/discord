@@ -8,6 +8,7 @@ import { capitalize, uploadText } from '../../utils/misc';
 import sendEmbed from '../../utils/messages/sendEmbed';
 import logger from '../../utils/logger';
 import db from '../../utils/database';
+import actionAppeal from '../../utils/actioning/actionAppeal';
 
 export default new Command({
     name: 'checkuseradmin',
@@ -54,11 +55,12 @@ export default new Command({
                         labels: { action: 'checkuseradmin', userId: id },
                         message: 'User being appealed',
                     });
-                    client.shard?.send({ action: 'appeal', userid: id });
-                    return sendSuccess(
+                    sendSuccess(
                         interaction,
                         `User has no outstanding servers to be appealed for\n\n> History: <${historyResponse}>\n> Notes: ${noteCount}`
                     );
+                    await actionAppeal(client, user.id);
+                    return;
                 }
             }
         } else {

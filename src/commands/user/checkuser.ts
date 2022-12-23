@@ -7,6 +7,7 @@ import { Colours } from '../../@types/Colours';
 import { capitalize } from '../../utils/misc';
 import logger from '../../utils/logger';
 import db from '../../utils/database';
+import actionAppeal from '../../utils/actioning/actionAppeal';
 
 export default new Command({
     name: 'checkuser',
@@ -43,11 +44,12 @@ export default new Command({
                     labels: { action: 'checkuser', userId: id },
                     message: 'User being appealed',
                 });
-                client.shard?.send({ action: 'appeal', userid: id });
-                return sendSuccess(
+                sendSuccess(
                     interaction,
                     'No results found for this ID.\n> They are either fine or not yet listed.'
                 );
+                await actionAppeal(client, id);
+                return;
             }
         }
 
