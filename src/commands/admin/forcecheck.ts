@@ -1,5 +1,6 @@
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Command } from '../../structures/Command';
+import actionUserGlobal from '../../utils/actioning/actionUserGlobal';
 import db from '../../utils/database';
 import { sendError, sendSuccess } from '../../utils/messages';
 
@@ -28,7 +29,7 @@ export default new Command({
         if (user.type === 'BOT') return sendError(interaction, 'You cannot action a bot user');
 
         sendSuccess(interaction, 'Requested force check on all shards');
-        client.shard?.send({ action: 'forcecheck', userid: id });
+        await actionUserGlobal(client, id);
 
         return false;
     },
