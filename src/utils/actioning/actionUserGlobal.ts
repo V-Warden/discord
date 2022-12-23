@@ -24,15 +24,15 @@ export default async function (c: Client, id: string) {
             for (let i = 0; i < client.guilds.cache.size; i++) {
                 const guild = client.guilds.cache.at(i);
                 if (!guild) continue;
-                const member = await guild.members.fetch(userid)
-                if (!member) continue;
+                try {
+                    const member = await guild.members.fetch(userid)
+                    if (!member) continue;
 
-                client.emit('guildMemberAdd', member)
-
-                output.push({
-                    labels: { action: 'forcecheck', guildId: guild.id },
-                    message: `Emitted guildMemberAdd for ${member.id}`,
-                });
+                    client.emit('guildMemberAdd', member)
+                } catch (e) {
+                    // Member not in guild
+                    continue
+                }
             }
 
             return output;
