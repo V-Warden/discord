@@ -41,11 +41,20 @@ export default new Event('guildMemberAdd', async (member: GuildMember) => {
         return;
     }
 
-    if (!settings.punishments?.enabled) return;
+    if (!settings.logChannel || !settings.punishments)
+        return logger.info({
+            labels: { event: 'guildMemberAdd', guildId: guild.id },
+            message: 'Guild has no settings or a log channel set',
+        });
+
+    if (!settings.punishments?.enabled)
+        return logger.info({
+            labels: { event: 'guildMemberAdd', guildId: guild.id },
+            message: 'Guild has punishments disabled',
+        });
 
     const user = await db.getUser(member.id);
     if (!user) return;
-    if (!settings.logChannel || !settings.punishments) return;
     if (user.status === 'BLACKLISTED' || user.status === 'PERM_BLACKLISTED') {
         await actionUser(client, guild, settings.logChannel, settings.punishments, user);
         return true;
