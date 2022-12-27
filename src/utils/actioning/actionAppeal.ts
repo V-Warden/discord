@@ -1,5 +1,5 @@
 import db from '../database';
-import { Client } from 'discord.js';
+import { Client, Guild, GuildBan } from 'discord.js';
 import logger from '../logger';
 
 /**
@@ -7,12 +7,14 @@ import logger from '../logger';
  * @param client Client
  * @param id User ID
  */
-export default async function (c: Client, id: string) {
-    if (!c.shard)
-        return console.log({
+export default async function (c: Client, id: string): Promise<boolean> {
+    if (!c.shard) {
+        logger.info({
             labels: { command: 'appeal', userId: id },
             message: 'No shards online, unable to action appeal',
         });
+        return false;
+    }
 
     const bansPromise = db.getAllBans({
         id,
@@ -46,8 +48,8 @@ export default async function (c: Client, id: string) {
                 for (let index = 0; index < guildBans.length; index++) {
                     const element = guildBans[index];
                     try {
-                        const guild = await client.guilds.fetch(element.guild);
-                        const ban = await guild.bans.fetch({ user: element.id, force: true });
+                        const guild: Guild = await client.guilds.fetch(element.guild);
+                        const ban: GuildBan = await guild.bans.fetch({ user: element.id, force: true });
 
                         if (!ban.reason?.includes('Warden - User Type')) continue;
 
@@ -110,5 +112,5 @@ export default async function (c: Client, id: string) {
 
     await db.removeAllBans({ id });
     await db.removeAllRoles({ id });
-    return;
+    return true;
 }
