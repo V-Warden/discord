@@ -59,6 +59,10 @@ export class Database {
         return this.prisma.users.findUnique({ where: { id } });
     }
 
+    async deleteUser(id: string): Promise<Users | null> {
+        return this.prisma.users.delete({ where: { id: id } });
+    }
+
     async getManyUsers(where: Prisma.UsersWhereInput): Promise<Users[]> {
         return this.prisma.users.findMany({
             where,
@@ -213,6 +217,22 @@ export class Database {
         });
     }
 
+    async getAllImportsByBadServer(id: string) {
+        return this.prisma.imports.findMany({
+            where: { server: id },
+            select: {
+                User: {
+                    select: {
+                        servers: true,
+                        id: true,
+                        type: true,
+                        status: true,
+                    },
+                },
+            },
+        });
+    }
+
     async failSafeStatus(user: Users): Promise<boolean> {
         const allImports = await this.getAllImports(user.id);
 
@@ -232,6 +252,13 @@ export class Database {
 
     async appealImports(id: string): Promise<Prisma.BatchPayload> {
         return this.prisma.imports.updateMany({ where: { id, appealed: false }, data: { appealed: true } });
+    }
+
+    async appealSpecificImport(id: string, server: string): Promise<Imports> {
+        return this.prisma.imports.update({
+            where: { id_server: { id: id, server: server } },
+            data: { appealed: true },
+        });
     }
 
     async createImport(id: string, server: string, type: UserType): Promise<Imports> {

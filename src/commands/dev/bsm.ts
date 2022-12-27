@@ -1,11 +1,9 @@
-import { BadServers, ServerType } from '@prisma/client';
+import { BadServers, ServerType, UserStatus } from '@prisma/client';
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Command } from '../../structures/Command';
+import actionAppeal from '../../utils/actioning/actionAppeal';
 import db from '../../utils/database';
 import { sendError, sendSuccess } from '../../utils/messages';
-
-// Priority - LOW
-//TODO when unblacklisting a server, unban all people and such
 
 export default new Command({
     name: 'bsm',
@@ -125,12 +123,55 @@ export default new Command({
                 );
             }
         } else if (name === 'remove') {
-            const id = interaction.options.get('id')?.value as string;
+            const serverId = interaction.options.get('id')?.value as string;
 
-            const exists = await db.getBadServer({ id });
+            const exists = await db.getBadServer({ id: serverId });
             if (!exists) return sendError(interaction, 'That ID is not a bad server');
 
-            await db.deleteBadServer(id);
+            const users = await db.getAllImportsByBadServer(serverId);
+            if (!users) return;
+
+            for (let index = 0; index < users.length; index++) {
+                const user = users[index];
+                const { User } = user;
+                if (User.servers.length === 1) {
+                    if (User.servers[0].id !== serverId) continue;
+                    // appeal user and delete user
+                    const appealPromise = db.appealImports(User.id);
+                    const updatePromise = db.updateUser(User.id, {
+                        status: UserStatus.APPEALED,
+                        appeals: {
+                            increment: 1,
+                        },
+                    });
+                    await Promise.all([appealPromise, updatePromise]);
+                    await actionAppeal(client, User.id);
+                    await db.deleteUser(User.id);
+                } else {
+                    const unappealedImports = await db.countUnappealedImports(User.id);
+                    for (let i = 0; i < User.servers.length; i++) {
+                        const server = User.servers[i];
+                        if (server.id === serverId) {
+                            if (server.appealed) break;
+                            if (unappealedImports === 1) {
+                                const appealPromise = db.appealImports(User.id);
+                                const updatePromise = db.updateUser(User.id, {
+                                    status: UserStatus.APPEALED,
+                                    appeals: {
+                                        increment: 1,
+                                    },
+                                });
+                                await Promise.all([appealPromise, updatePromise]);
+                                await actionAppeal(client, User.id);
+                            } else {
+                                await db.appealSpecificImport(User.id, serverId);
+                            }
+                        }
+                    }
+                }
+            }
+
+            await db.deleteBadServer(serverId);
             return sendSuccess(interaction, 'Successfully removed as a bad server');
         } else return sendError(interaction, 'Invalid sub command');
     },
