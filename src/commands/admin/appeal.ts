@@ -3,7 +3,6 @@ import { ApplicationCommandOptionType } from 'discord.js';
 import { Command } from '../../structures/Command';
 import actionAppeal from '../../utils/actioning/actionAppeal';
 import db from '../../utils/database';
-import logger from '../../utils/logger';
 import { sendError, sendSuccess } from '../../utils/messages';
 
 export default new Command({
@@ -40,7 +39,6 @@ export default new Command({
         sendSuccess(interaction, `Successfully appealed <@${id}> (${id})`);
 
         await actionAppeal(client, id);
-
         return false;
     },
 });

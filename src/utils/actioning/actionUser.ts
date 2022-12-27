@@ -1,7 +1,6 @@
 import { Punish, Punishments, Users } from '@prisma/client';
 import { Client, Guild, TextChannel } from 'discord.js';
 import { Colours } from '../../@types/Colours';
-import { ExtendedClient } from '../../structures/Client';
 import logger, { logException } from '../logger';
 import sendEmbed from '../messages/sendEmbed';
 import { getPunishment } from './utils';
