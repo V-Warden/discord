@@ -1,6 +1,10 @@
 import axios from 'axios';
 import FormData from 'form-data';
 
+export function generateErrorID(): string {
+    return (Math.random() + 1).toString(36).substring(3);
+}
+
 export function capitalize(string: string): string {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }

@@ -7,6 +7,7 @@ import sendEmbed from '../messages/sendEmbed';
 import { getPunishment } from './utils';
 import db from '../database';
 import actionAppeal from './actionAppeal';
+import { generateErrorID } from '../misc';
 
 /**
  * Actions a user on a specific guild
@@ -179,8 +180,19 @@ export default async function (
             });
             return true;
         } catch (e) {
+
+            const errorId = generateErrorID()
+
+            sendEmbed({
+                channel,
+                embed: {
+                    description: `\`🔴\` I have failed to issue a ${toDo} against ${user.last_username} (${user.id}) due to insufficient permissions. \n> Error ID: ${errorId}`,
+                    author,
+                    color: Colours.RED,
+                },
+            });
             return logger.error({
-                labels: { action: 'actionUser', guildId: member.guild.id },
+                labels: { action: 'actionUser', guildId: member.guild.id, errorId: errorId },
                 message: e,
             });
         }

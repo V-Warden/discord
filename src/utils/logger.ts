@@ -3,6 +3,7 @@ import { createLogger, transports, format } from 'winston';
 import LokiTransport from 'winston-loki';
 import { Colours } from '../@types/Colours';
 import sendEmbed from './messages/sendEmbed';
+import { generateErrorID } from './misc';
 
 require('dotenv').config();
 
@@ -53,7 +54,7 @@ const logger = createLogger({
  * @returns Error ID
  */
 export async function logException(interaction: CommandInteraction | null, e: any): Promise<string> {
-    const errorId = (Math.random() + 1).toString(36).substring(3);
+    const errorId = generateErrorID();
     e = e.message ?? e;
 
     if (interaction) {
