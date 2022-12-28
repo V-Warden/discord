@@ -97,9 +97,7 @@ export default new Command({
             name: 'User Information',
             value: `> ID: ${user.id}\n> Status: ${capitalize(user.status)}\n> Type: ${capitalize(
                 user.type
-            )}\n> History: ${historyResponse}\n> Notes: ${noteCount}\n> Appeals: ${user.appeals}\n> Reason: ${
-                user.reason
-            }`,
+            )}\n> History: ${historyResponse}\n> Notes: ${noteCount}\n> Appeals: ${user.appeals}`,
             inline: false,
         };
 
@@ -126,7 +124,7 @@ export default new Command({
                             value:
                                 value.length > 0
                                     ? value.join('\n')
-                                    : "> User was upstatus'd therefore no new servers",
+                                    : `> User was upstatus'd therefore no new servers\n> Reason: ${user.reason}`,
                         },
                     ],
                 },
