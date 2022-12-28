@@ -13,7 +13,6 @@ import { Event } from './Event';
 import { RegisterCommandsOptions, CommandType, MenuType } from '../@types';
 import path from 'path';
 import logger from '../utils/logger';
-import { Database } from './Database';
 
 const globPromise = promisify(glob);
 

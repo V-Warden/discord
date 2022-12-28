@@ -18,7 +18,6 @@ export default new Event('interactionCreate', async interaction => {
                 interaction: interaction,
             });
         } catch (e) {
-            console.log(e);
             logException(interaction, e);
         }
     }
@@ -33,7 +32,6 @@ export default new Event('interactionCreate', async interaction => {
                 interaction,
             });
         } catch (e) {
-            console.log(e);
             logException(interaction, e);
         }
     }

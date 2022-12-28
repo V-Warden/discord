@@ -6,9 +6,9 @@ import logger from '../utils/logger';
 import db from '../utils/database';
 
 export default new Event('guildMemberAdd', async (member: GuildMember) => {
-    if (member.user.bot) return;
+    if (member.user.bot) return false;
 
-    const guild = member.guild;
+    const { guild } = member;
     const settings = await db.getGuild({ id: guild.id }, { punishments: true, logChannel: true });
 
     if (!settings) {
@@ -38,7 +38,7 @@ export default new Event('guildMemberAdd', async (member: GuildMember) => {
                 message: e,
             });
         }
-        return;
+        return false;
     }
 
     if (!settings.logChannel || !settings.punishments)
@@ -54,11 +54,10 @@ export default new Event('guildMemberAdd', async (member: GuildMember) => {
         });
 
     const user = await db.getUser(member.id);
-    if (!user) return;
+    if (!user) return false;
     if (user.status === 'BLACKLISTED' || user.status === 'PERM_BLACKLISTED') {
         await actionUser(client, guild, settings.logChannel, settings.punishments, user);
-        return true;
     }
 
-    return;
+    return true;
 });

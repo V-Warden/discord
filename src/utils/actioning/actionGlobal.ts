@@ -1,4 +1,3 @@
-import actionUser from './actionUser';
 import db from '../database';
 import { Client } from 'discord.js';
 import logger from '../logger';
@@ -61,5 +60,5 @@ export default async function (c: Client) {
         }
     }
 
-    return;
+    return true;
 }

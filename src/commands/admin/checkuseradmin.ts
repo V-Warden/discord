@@ -59,8 +59,7 @@ export default new Command({
                         interaction,
                         `User has no outstanding servers to be appealed for\n\n> History: <${historyResponse}>\n> Notes: ${noteCount}`
                     );
-                    await actionAppeal(client, user.id);
-                    return;
+                    return actionAppeal(client, user.id);
                 }
             }
         } else {

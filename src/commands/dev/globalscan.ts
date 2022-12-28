@@ -9,7 +9,6 @@ export default new Command({
     defaultMemberPermissions: 'Administrator',
     run: async ({ interaction, client }) => {
         sendSuccess(interaction, 'Globally scanning..');
-        await actionGlobal(client);
-        return false;
+        return actionGlobal(client);
     },
 });

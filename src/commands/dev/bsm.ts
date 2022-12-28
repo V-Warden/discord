@@ -1,5 +1,5 @@
 import { BadServers, ServerType, UserStatus } from '@prisma/client';
-import { ApplicationCommandOptionType } from 'discord.js';
+import { ApplicationCommandOptionType, Invite } from 'discord.js';
 import { Command } from '../../structures/Command';
 import actionAppeal from '../../utils/actioning/actionAppeal';
 import db from '../../utils/database';
@@ -76,7 +76,7 @@ export default new Command({
             const invite = interaction.options.get('invite')?.value as string;
             const type = interaction.options.get('type')?.value as ServerType;
             const reason = interaction.options.get('reason')?.value as string;
-            const server = await client.isValidInvite(invite);
+            const server: undefined | Invite = await client.isValidInvite(invite);
 
             if (!server?.guild) return sendError(interaction, 'Unknown Server');
 

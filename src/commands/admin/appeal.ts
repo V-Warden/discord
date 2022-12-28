@@ -38,7 +38,6 @@ export default new Command({
 
         sendSuccess(interaction, `Successfully appealed <@${id}> (${id})`);
 
-        await actionAppeal(client, id);
-        return false;
+        return actionAppeal(client, id);
     },
 });

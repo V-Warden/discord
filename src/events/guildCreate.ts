@@ -1,6 +1,5 @@
 import { ChannelType, TextChannel } from 'discord.js';
 import { Colours } from '../@types/Colours';
-import { client } from '../bot';
 import { Event } from '../structures/Event';
 import logger from '../utils/logger';
 import sendEmbed from '../utils/messages/sendEmbed';
@@ -13,7 +12,7 @@ export default new Event('guildCreate', async guild => {
             .filter(chan => chan?.type === ChannelType.GuildText)
             .first() as TextChannel;
 
-        if (!channel) return;
+        if (!channel) return false;
 
         await db.createGuild({
             id: guild.id,
@@ -44,5 +43,5 @@ export default new Event('guildCreate', async guild => {
             message: e,
         });
     }
-    return;
+    return true;
 });

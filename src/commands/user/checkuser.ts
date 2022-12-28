@@ -48,8 +48,7 @@ export default new Command({
                     interaction,
                     'No results found for this ID.\n> They are either fine or not yet listed.'
                 );
-                await actionAppeal(client, id);
-                return;
+                return actionAppeal(client, id);
             }
         }
 

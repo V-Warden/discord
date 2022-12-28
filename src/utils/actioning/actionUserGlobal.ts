@@ -8,8 +8,8 @@ import logger from '../logger';
  */
 export default async function (c: Client, id: string) {
     if (!c.shard)
-        return console.log({
-            labels: { command: 'appeal', userId: id },
+        return logger.warn({
+            labels: { userId: id },
             message: 'No shards online, unable to action appeal',
         });
 
@@ -42,4 +42,5 @@ export default async function (c: Client, id: string) {
         }
     }
 
+    return true;
 }

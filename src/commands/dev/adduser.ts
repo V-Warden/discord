@@ -62,8 +62,9 @@ export default new Command({
         const count = await db.userExist(id);
 
         if (count) {
-            await db.createImport(id, server, type);
-            await db.updateUser(id, { status, type, reason });
+            const createPromise = db.createImport(id, server, type);
+            const updatePromise = db.updateUser(id, { status, type, reason });
+            await Promise.all([createPromise, updatePromise]);
         } else {
             await db.createUser({
                 id,

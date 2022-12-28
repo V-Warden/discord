@@ -8,6 +8,8 @@ import db from '../database';
 import actionAppeal from './actionAppeal';
 import { generateErrorID } from '../misc';
 
+let running: string[] = [];
+
 /**
  * Actions a user on a specific guild
  * @param guild
@@ -22,13 +24,14 @@ export default async function (
     punishments: Punishments,
     user: Users
 ) {
-    const member = guild.members.cache.get(user.id);
+    const member = await guild.members.fetch(user.id);
     if (!member) return false;
     if (member.user.bot) return false;
 
     const imports = await db.getImports(user.id);
 
-    if (imports.length === 0 && ['PERM_BLACKLISTED', 'BLACKLISTED'].includes(user.status)) {
+    if (imports.length === 0 && ['PERM_BLACKLISTED', 'BLACKLISTED'].includes(user.status) && !running.includes(user.id)) {
+        running.push(user.id)
         const result = await db.failSafeStatus(user);
         if (result) {
             logger.debug({
@@ -36,6 +39,7 @@ export default async function (
                 message: 'User being appealed',
             });
             await actionAppeal(client, user.id)
+            running = running.filter(x => x != user.id)
             return false;
         }
     }

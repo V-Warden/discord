@@ -1,6 +1,7 @@
 import db from '../database';
-import { Client, Guild, GuildBan } from 'discord.js';
+import { Client, Guild, GuildBan, GuildMember } from 'discord.js';
 import logger from '../logger';
+import { Bans, Roles } from '@prisma/client';
 
 /**
  * Removes roles/bans for user on appeal
@@ -9,8 +10,8 @@ import logger from '../logger';
  */
 export default async function (c: Client, id: string): Promise<boolean> {
     if (!c.shard) {
-        logger.info({
-            labels: { command: 'appeal', userId: id },
+        logger.warn({
+            labels: { userId: id },
             message: 'No shards online, unable to action appeal',
         });
         return false;
@@ -32,8 +33,8 @@ export default async function (c: Client, id: string): Promise<boolean> {
             await client.guilds.fetch();
 
             const guilds = client.guilds.cache.map(x => x.id);
-            const guildBans = bans.filter(x => guilds.some(a => a === x.guild));
-            const guildRoles = roles.filter(x => guilds.some(a => a === x.guild));
+            const guildBans: Bans[] = bans.filter(x => guilds.some(a => a === x.guild));
+            const guildRoles: Roles[] = roles.filter(x => guilds.some(a => a === x.guild));
 
             if (!guildBans && !guildRoles) {
                 output.push({
@@ -56,19 +57,19 @@ export default async function (c: Client, id: string): Promise<boolean> {
                         await guild.bans.remove(element.id);
 
                         output.push({
-                            labels: { command: 'appeal', action: 'actionAppeal', guildId: guild.id },
-                            message: `Unbaned ${element.id}`,
+                            labels: { action: 'actionAppeal', guildId: guild.id },
+                            message: `Unbanned ${element.id}`,
                         });
                     } catch (e) {
                         output.push({
-                            labels: { command: 'appeal', action: 'actionAppeal' },
+                            labels: { action: 'actionAppeal' },
                             message: e,
                         });
                     }
                 }
             } else {
                 output.push({
-                    labels: { command: 'appeal', action: 'actionAppeal' },
+                    labels: { action: 'actionAppeal' },
                     message: 'No bans found in database',
                 });
             }
@@ -77,24 +78,24 @@ export default async function (c: Client, id: string): Promise<boolean> {
                 for (let index = 0; index < guildRoles.length; index++) {
                     const element = guildRoles[index];
                     try {
-                        const guild = await client.guilds.fetch(element.guild);
-                        const member = await guild.members.fetch(element.id);
+                        const guild: Guild = await client.guilds.fetch(element.guild);
+                        const member: GuildMember = await guild.members.fetch(element.id);
                         await member.roles.set(element.roles.split(','));
 
                         output.push({
-                            labels: { command: 'appeal', action: 'actionAppeal', guildId: guild.id },
+                            labels: { action: 'actionAppeal', guildId: guild.id },
                             message: `Set roles for ${member.id} - ${element.roles}`,
                         });
                     } catch (e) {
                         output.push({
-                            labels: { command: 'appeal', action: 'actionAppeal' },
+                            labels: { action: 'actionAppeal' },
                             message: e,
                         });
                     }
                 }
             } else {
                 output.push({
-                    labels: { command: 'appeal', action: 'actionAppeal' },
+                    labels: { action: 'actionAppeal' },
                     message: 'No roles found in database',
                 });
             }
@@ -110,7 +111,10 @@ export default async function (c: Client, id: string): Promise<boolean> {
         }
     }
 
-    await db.removeAllBans({ id });
-    await db.removeAllRoles({ id });
+    const removeBansPromise = db.removeAllBans({ id });
+    const removeRolesPromise = db.removeAllRoles({ id });
+
+    await Promise.all([removeBansPromise, removeRolesPromise]);
+
     return true;
 }
