@@ -30,6 +30,7 @@ export default new Command({
 
         sendSuccess(interaction, 'Requested force check on all shards');
         await actionUserGlobal(client, id);
+        sendSuccess(interaction, 'Force check successfully completed');
 
         return false;
     },
