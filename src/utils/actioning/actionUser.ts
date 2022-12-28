@@ -30,20 +30,6 @@ export default async function (
 
     const imports = await db.getImports(user.id);
 
-    if (imports.length === 0 && ['PERM_BLACKLISTED', 'BLACKLISTED'].includes(user.status) && !running.includes(user.id)) {
-        running.push(user.id)
-        const result = await db.failSafeStatus(user);
-        if (result) {
-            logger.debug({
-                labels: { action: 'actionUser', userId: user.id, guildId: member.guild.id },
-                message: 'User being appealed',
-            });
-            await actionAppeal(client, user.id)
-            running = running.filter(x => x != user.id)
-            return false;
-        }
-    }
-
     let realCount = 0;
     try {
         if (imports.length === 1) {
