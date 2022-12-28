@@ -20,7 +20,7 @@ export default new Command({
             required: true,
         },
     ],
-    run: async ({ interaction, client }) => {
+    run: async ({ interaction }) => {
         const id = interaction.options.getUser('user')?.id as string;
 
         const data = await db.getUser(id);
@@ -40,11 +40,18 @@ export default new Command({
         const types: UserType[] = imports.map(x => x.type);
         const highest = db.findHighestType(types);
 
+        let reason = '';
+        if (imports.length > 0) {
+            reason = `seen in ${imports.length} blacklisted Discords.`;
+        } else {
+            reason = 'blacklisted by Warden.';
+        }
+
         return sendEmbed({
             interaction,
             embed: {
                 title: ':shield: User Blacklisted',
-                description: `<@${id}> has been seen in ${imports.length} blacklisted Discords.`,
+                description: `<@${id}> has been ${reason}`,
                 author: {
                     name: data.last_username,
                     icon_url: data.avatar,
