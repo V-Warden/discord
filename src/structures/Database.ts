@@ -337,6 +337,6 @@ export class Database {
         else if (types.includes('OTHER')) return 'OTHER';
         else if (types.includes('BOT')) return 'BOT';
 
-        return 'BOT';
+        return types[0];
     }
 }
