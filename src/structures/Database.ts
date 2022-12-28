@@ -24,46 +24,46 @@ export class Database {
      * BadServer Getters/Setters
      */
 
-    async getBadServers(server: string[]): Promise<{ name: string }[]> {
+    getBadServers(server: string[]): Promise<{ name: string }[]> {
         return this.prisma.badServers.findMany({ where: { id: { in: server } }, select: { name: true } });
     }
 
-    async getAllBadServers(): Promise<{ name: string; id: string }[]> {
+    getAllBadServers(): Promise<{ name: string; id: string }[]> {
         return this.prisma.badServers.findMany({ select: { id: true, name: true } });
     }
 
-    async getBadServer(lookup: Prisma.BadServersWhereInput): Promise<BadServers | null> {
+    getBadServer(lookup: Prisma.BadServersWhereInput): Promise<BadServers | null> {
         return this.prisma.badServers.findFirst({ where: lookup });
     }
 
-    async countAllBlacklistedServers(): Promise<number> {
+    countAllBlacklistedServers(): Promise<number> {
         return this.prisma.badServers.count({});
     }
 
-    async updateBadServer(id: string, data: Prisma.BadServersUpdateInput): Promise<BadServers> {
+    updateBadServer(id: string, data: Prisma.BadServersUpdateInput): Promise<BadServers> {
         return this.prisma.badServers.update({ where: { id }, data });
     }
 
-    async createBadServer(data: Prisma.BadServersCreateInput): Promise<BadServers> {
+    createBadServer(data: Prisma.BadServersCreateInput): Promise<BadServers> {
         return this.prisma.badServers.create({ data });
     }
 
-    async deleteBadServer(id: string): Promise<BadServers> {
+    deleteBadServer(id: string): Promise<BadServers> {
         return this.prisma.badServers.delete({ where: { id } });
     }
 
     /**
      * User Getters/Setters
      */
-    async getUser(id: string): Promise<Users | null> {
+    getUser(id: string): Promise<Users | null> {
         return this.prisma.users.findUnique({ where: { id } });
     }
 
-    async deleteUser(id: string): Promise<Users | null> {
+    deleteUser(id: string): Promise<Users | null> {
         return this.prisma.users.delete({ where: { id: id } });
     }
 
-    async getManyUsers(where: Prisma.UsersWhereInput): Promise<Users[]> {
+    getManyUsers(where: Prisma.UsersWhereInput): Promise<Users[]> {
         return this.prisma.users.findMany({
             where,
         });
@@ -73,56 +73,54 @@ export class Database {
         return (await this.prisma.users.count({ where: { id } })) === 1;
     }
 
-    async updateUser(id: string, data: Prisma.UsersUpdateInput): Promise<Users> {
+    updateUser(id: string, data: Prisma.UsersUpdateInput): Promise<Users> {
         return this.prisma.users.update({ where: { id }, data });
     }
 
-    async countAllBlacklistedUsers(): Promise<number> {
+    countAllBlacklistedUsers(): Promise<number> {
         return this.prisma.users.count({
             where: { status: { in: ['BLACKLISTED', 'PERM_BLACKLISTED'] } },
         });
     }
 
-    async createUser(data: Prisma.UsersCreateInput): Promise<Users> {
+    createUser(data: Prisma.UsersCreateInput): Promise<Users> {
         return this.prisma.users.create({ data });
     }
 
-    async createArchiveRole(data: Prisma.RolesCreateInput): Promise<Roles> {
-        return this.prisma.roles.upsert({
-            where: { id: data.id },
-            create: data,
-            update: {},
+    createArchiveRole(data: Prisma.RolesCreateInput): Promise<Roles> {
+        return this.prisma.roles.create({
+            data,
         });
     }
 
-    async createArchiveRoles(data: Prisma.RolesCreateManyInput[]): Promise<Prisma.BatchPayload> {
+    createArchiveRoles(data: Prisma.RolesCreateManyInput[]): Promise<Prisma.BatchPayload> {
         return this.prisma.roles.createMany({ data });
     }
 
-    async getAllRoles(where: Prisma.RolesWhereInput): Promise<Roles[]> {
+    getAllRoles(where: Prisma.RolesWhereInput): Promise<Roles[]> {
         return this.prisma.roles.findMany({ where });
     }
 
-    async removeAllRoles(where: Prisma.RolesWhereInput): Promise<Prisma.BatchPayload> {
+    removeAllRoles(where: Prisma.RolesWhereInput): Promise<Prisma.BatchPayload> {
         return this.prisma.roles.deleteMany({ where });
     }
 
-    async countNotes(id: string): Promise<number> {
+    countNotes(id: string): Promise<number> {
         return this.prisma.notes.count({ where: { id } });
     }
 
-    async deleteNote(nId: number): Promise<Notes> {
+    deleteNote(nId: number): Promise<Notes> {
         return this.prisma.notes.delete({ where: { nId } });
     }
 
-    async getUserNotes(id: string) {
+    getUserNotes(id: string) {
         return this.prisma.notes.findMany({
             where: { id },
             select: { user: true, staff: true, note: true, createdAt: true, nId: true },
         });
     }
 
-    async createNote(user: string, note: string, staff: string): Promise<Notes> {
+    createNote(user: string, note: string, staff: string): Promise<Notes> {
         return this.prisma.notes.create({
             data: {
                 user: {
@@ -190,7 +188,7 @@ export class Database {
         return history;
     }
 
-    async getImports(id: string) {
+    getImports(id: string) {
         return this.prisma.imports.findMany({
             where: { id, appealed: false },
             select: {
@@ -203,7 +201,7 @@ export class Database {
         });
     }
 
-    async getAllImports(id: string) {
+    getAllImports(id: string) {
         return this.prisma.imports.findMany({
             where: { id },
             select: {
@@ -217,7 +215,7 @@ export class Database {
         });
     }
 
-    async getAllImportsByBadServer(id: string) {
+    getAllImportsByBadServer(id: string) {
         return this.prisma.imports.findMany({
             where: { server: id },
             select: {
@@ -246,22 +244,22 @@ export class Database {
         return false;
     }
 
-    async countUnappealedImports(id: string): Promise<number> {
+    countUnappealedImports(id: string): Promise<number> {
         return this.prisma.imports.count({ where: { id, appealed: false } });
     }
 
-    async appealImports(id: string): Promise<Prisma.BatchPayload> {
+    appealImports(id: string): Promise<Prisma.BatchPayload> {
         return this.prisma.imports.updateMany({ where: { id, appealed: false }, data: { appealed: true } });
     }
 
-    async appealSpecificImport(id: string, server: string): Promise<Imports> {
+    appealSpecificImport(id: string, server: string): Promise<Imports> {
         return this.prisma.imports.update({
             where: { id_server: { id: id, server: server } },
             data: { appealed: true },
         });
     }
 
-    async createImport(id: string, server: string, type: UserType): Promise<Imports> {
+    createImport(id: string, server: string, type: UserType): Promise<Imports> {
         return this.prisma.imports.upsert({
             where: { id_server: { id, server } },
             create: {
@@ -286,48 +284,48 @@ export class Database {
         });
     }
 
-    async getAllGuilds(where: Prisma.GuildWhereInput, select?: Prisma.GuildSelect): Promise<ReturnGuild[]> {
+    getAllGuilds(where: Prisma.GuildWhereInput, select?: Prisma.GuildSelect): Promise<ReturnGuild[]> {
         return this.prisma.guild.findMany({
             where,
             select,
         });
     }
 
-    async createGuild(data: Prisma.GuildCreateInput): Promise<Guild> {
+    createGuild(data: Prisma.GuildCreateInput): Promise<Guild> {
         return this.prisma.guild.create({ data });
     }
 
-    async getGuild(where: Prisma.GuildWhereInput, select?: Prisma.GuildSelect): Promise<ReturnGuild | null> {
+    getGuild(where: Prisma.GuildWhereInput, select?: Prisma.GuildSelect): Promise<ReturnGuild | null> {
         return this.prisma.guild.findFirst({
             where,
             select,
         });
     }
 
-    async updateGuild(where: Prisma.GuildWhereUniqueInput, data: Prisma.GuildUpdateInput): Promise<Guild> {
+    updateGuild(where: Prisma.GuildWhereUniqueInput, data: Prisma.GuildUpdateInput): Promise<Guild> {
         return this.prisma.guild.update({ where, data });
     }
 
-    async updatePunishments(
+    updatePunishments(
         where: Prisma.PunishmentsWhereUniqueInput,
         data: Prisma.PunishmentsUpdateInput
     ): Promise<Punishments> {
         return this.prisma.punishments.update({ where, data });
     }
 
-    async getAllBans(where: Prisma.BansWhereInput): Promise<Bans[]> {
+    getAllBans(where: Prisma.BansWhereInput): Promise<Bans[]> {
         return this.prisma.bans.findMany({ where });
     }
 
-    async removeAllBans(where: Prisma.BansWhereInput): Promise<Prisma.BatchPayload> {
+    removeAllBans(where: Prisma.BansWhereInput): Promise<Prisma.BatchPayload> {
         return this.prisma.bans.deleteMany({ where });
     }
 
-    async createBan(data: Prisma.BansCreateInput): Promise<Bans> {
+    createBan(data: Prisma.BansCreateInput): Promise<Bans> {
         return this.prisma.bans.create({ data });
     }
 
-    async createBans(data: Prisma.BansCreateManyInput[]): Promise<Prisma.BatchPayload> {
+    createBans(data: Prisma.BansCreateManyInput[]): Promise<Prisma.BatchPayload> {
         return this.prisma.bans.createMany({ data });
     }
 
