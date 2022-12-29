@@ -131,6 +131,10 @@ export default new Command({
             const users = await db.getAllImportsByBadServer(serverId);
             if (!users) return;
 
+            sendSuccess(
+                interaction,
+                'Successfully removed as a bad server\n> Removing all imports and appealing where needed, this may take some time'
+            );
             for (let index = 0; index < users.length; index++) {
                 const user = users[index];
                 const { User } = user;
@@ -171,7 +175,7 @@ export default new Command({
             }
 
             await db.deleteBadServer(serverId);
-            return sendSuccess(interaction, 'Successfully removed as a bad server');
+            return true;
         } else return sendError(interaction, 'Invalid sub command');
     },
 });
