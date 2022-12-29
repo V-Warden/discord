@@ -35,6 +35,7 @@ export default async function (
 
     if (allImports.length === 0) {
         await actionAppeal(client, user.id)
+        await db.deleteUser(user.id)
         return false;
     }
 
