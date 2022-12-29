@@ -28,7 +28,15 @@ export default async function (
     if (!member) return false;
     if (member.user.bot) return false;
 
-    const imports = await db.getImports(user.id);
+    const importsPromise = db.getImports(user.id);
+    const allImportsPromise = db.getAllImports(user.id)
+
+    const [imports, allImports] = await Promise.all([importsPromise, allImportsPromise])
+
+    if (allImports.length === 0) {
+        await actionAppeal(client, user.id)
+        return false;
+    }
 
     let realCount = 0;
     try {
