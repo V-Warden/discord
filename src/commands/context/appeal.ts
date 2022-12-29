@@ -13,8 +13,11 @@ export default new ContextMenu({
     run: async ({ interaction, client }) => {
         const id = interaction.targetId;
 
-        const imports = await db.countUnappealedImports(id);
-        if (imports === 0) return sendError(interaction, 'That user has no new servers to appeal');
+        const user = await db.getUser(id);
+
+        if (user?.status === 'APPEALED')
+            return sendError(interaction, 'That user has no new servers to appeal');
+
         const appealPromise = db.appealImports(id);
         const updatePromise = db.updateUser(id, {
             status: UserStatus.APPEALED,

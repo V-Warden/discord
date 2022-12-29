@@ -116,7 +116,7 @@ export default new ContextMenu({
                                 value:
                                     value.length > 0
                                         ? value.join('\n')
-                                        : "> User was upstatus'd therefore no new servers",
+                                        : `> User was upstatus'd therefore no new servers\n> Reason: ${user.reason}`,
                             },
                         ],
                     },
