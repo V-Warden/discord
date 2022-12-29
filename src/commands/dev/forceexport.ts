@@ -90,10 +90,8 @@ export default new Command({
                 if (result[i].bans.length === 0) continue;
 
                 try {
-                    await Promise.all([
-                        db.createBans(result[i].bans),
-                        db.createArchiveRoles(result[i].roles),
-                    ]);
+                    await db.createBans(result[i].bans);
+                    await db.createArchiveRoles(result[i].roles);
                     sendSuccess(
                         interaction,
                         `Successfully exported \`${result[i].bans.length}\` bans and \`${result[i].roles.length}\` role punishments`
