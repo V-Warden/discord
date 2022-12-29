@@ -39,7 +39,7 @@ export default new Command({
             async (c, { guildId }) => {
                 await client.guilds.fetch();
 
-                const guild = client.guilds.cache.find(x => x.id === guildId);
+                const guild = c.guilds.cache.find(x => x.id === guildId);
                 if (!guild) return { bans: [], roles: [] };
 
                 await guild.bans.fetch();
