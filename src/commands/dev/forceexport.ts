@@ -64,12 +64,14 @@ export default new Command({
                 for (let index = 0; index < bans.length; index++) {
                     const ban = bans[index];
                     if (ban.reason?.includes('Warden - User Type')) {
+                        if (bansImport.filter(x => x.id === ban.id).length > 0) continue;
                         bansImport.push({ id: ban.id, guild: guildId });
                     }
                 }
 
                 for (let index = 0; index < members.length; index++) {
                     const member = members[index];
+                    if (roleImport.filter(x => x.id === member.id).length > 0) continue;
                     roleImport.push({
                         id: member.id,
                         guild: guildId,
@@ -86,6 +88,7 @@ export default new Command({
             for (let i = 0; i < result.length; i++) {
                 if (result[i].bans.length === 0) continue;
                 if (result[i].bans.length === 0) continue;
+
                 try {
                     await Promise.all([
                         db.createBans(result[i].bans),
