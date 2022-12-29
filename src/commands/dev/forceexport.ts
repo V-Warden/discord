@@ -104,10 +104,9 @@ export default new Command({
                     break;
                 } catch (e) {
                     logger.warn({
-                        labels: { command: 'export', guildId: id },
+                        labels: { command: 'forceexport', guildId: id },
                         message: e,
                     });
-                    logException(interaction, e);
                 }
             }
         }
