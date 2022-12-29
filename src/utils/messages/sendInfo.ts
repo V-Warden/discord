@@ -6,7 +6,7 @@ export function sendSuccess(
     interaction: CommandInteraction,
     message: string,
     ephemeral?: boolean
-): Promise<Message> {
+): Promise<Message | undefined> {
     return sendEmbed({
         interaction,
         embed: {
@@ -21,7 +21,7 @@ export function sendError(
     interaction: CommandInteraction,
     message: string,
     ephemeral?: boolean
-): Promise<Message> {
+): Promise<Message | undefined> {
     return sendEmbed({
         interaction,
         embed: {
