@@ -5,9 +5,7 @@ import { sendSuccess } from '../../utils/messages';
 import sendEmbed from '../../utils/messages/sendEmbed';
 import { Colours } from '../../@types/Colours';
 import { capitalize } from '../../utils/misc';
-import logger from '../../utils/logger';
 import db from '../../utils/database';
-import actionAppeal from '../../utils/actioning/actionAppeal';
 
 export default new Command({
     name: 'checkuser',

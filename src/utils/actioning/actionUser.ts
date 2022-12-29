@@ -71,7 +71,7 @@ export default async function (
         const chan = await member.createDM();
         await chan.send({
             content: `:shield: Warden
-                    You are being automodded by ${member.guild.name} for being associated with ${realCount} leaking, cheating or reselling discord servers.
+                    You are being automodded by ${member.guild.name} for being associated with ${realCount == 0 ? 1 : realCount} leaking, cheating or reselling discord servers.
                     You may attempt to appeal this via the Official Warden Discord:
                     https://discord.gg/jeFeDRasfs`,
         });
@@ -85,7 +85,7 @@ export default async function (
             embed: {
                 description: `:warning: User ${user.last_username} (${
                     member.id
-                }) has been seen in ${realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()} / **User Type**: ${user.type.toLowerCase()}`,
+                }) has been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()} / **User Type**: ${user.type.toLowerCase()}`,
                 author,
                 color: Colours.GREEN,
             },
@@ -114,7 +114,7 @@ export default async function (
                 embed: {
                     description: `:shield: User ${user.last_username} (${
                         member.id
-                    }) has been punished with a ROLE.\nThey have been seen in ${realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()}`,
+                    }) has been punished with a ROLE.\nThey have been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()}`,
                     author,
                     color: Colours.GREEN,
                 },
@@ -162,7 +162,7 @@ export default async function (
                 embed: {
                     description: `:shield: User ${user.last_username} (${
                         member.id
-                    }) has been punished with a ${toDo}.\nThey have been seen in ${realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()}`,
+                    }) has been punished with a ${toDo}.\nThey have been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()}`,
                     author,
                     color: Colours.GREEN,
                 },

@@ -22,9 +22,9 @@ export default new Command({
         const id = interaction.options.getUser('user')?.id as string;
         if (!id) return sendError(interaction, 'Invalid user or id provided');
 
-        const [imports, user] = await Promise.all([db.countUnappealedImports(id), db.getUser(id)]);
+        const user = await db.getUser(id);
 
-        if (imports === 0 && user?.status === 'APPEALED')
+        if (user?.status === 'APPEALED')
             return sendError(interaction, 'That user has no new servers to appeal');
 
         const appealPromise = db.appealImports(id);
