@@ -3,6 +3,7 @@ import { ApplicationCommandOptionType } from 'discord.js';
 import { Command } from '../../structures/Command';
 import db from '../../utils/database';
 import logger from '../../utils/logger';
+import { logException } from '../../utils/logger';
 import { sendError, sendSuccess } from '../../utils/messages';
 
 export default new Command({
@@ -34,6 +35,9 @@ export default new Command({
 
         const punishRole = settings.punishments?.roleId;
         if (!punishRole) return sendError(interaction, 'Invalid punish role set');
+
+        await db.removeAllBans({ guild: id });
+        await db.removeAllRoles({ guild: id });
 
         const result = await client.shard.broadcastEval(
             async (c, { guildId, punishRole }) => {
@@ -101,7 +105,7 @@ export default new Command({
                         labels: { command: 'export', guildId: id },
                         message: e,
                     });
-                    sendError(interaction, 'Unable to export data\n> This command can only be used once');
+                    logException(interaction, e);
                 }
             }
         }
