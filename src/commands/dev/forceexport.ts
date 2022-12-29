@@ -67,15 +67,14 @@ export default new Command({
 
                 for (let index = 0; index < bans.length; index++) {
                     const ban = bans[index];
-                    if (ban.reason?.includes('Warden - User Type')) {
-                        if (bansImport.filter(x => x.id === ban.id).length > 0) continue;
+                    if (!ban.reason) continue;
+                    if (ban.reason.includes('Warden - User Type')) {
                         bansImport.push({ id: ban.id, guild: guildId });
                     }
                 }
 
                 for (let index = 0; index < members.length; index++) {
                     const member = members[index];
-                    if (roleImport.filter(x => x.id === member.id).length > 0) continue;
                     roleImport.push({
                         id: member.id,
                         guild: guildId,
@@ -91,15 +90,18 @@ export default new Command({
         for (let index = 0; index < result.length; index++) {
             for (let i = 0; i < result.length; i++) {
                 if (result[i].bans.length === 0) continue;
-                if (result[i].bans.length === 0) continue;
+                if (result[i].roles.length === 0) continue;
 
                 try {
-                    await db.createBans(result[i].bans);
-                    await db.createArchiveRoles(result[i].roles);
+                    const bansPromise = db.createBans(result[i].bans);
+                    const rolesPromise = db.createArchiveRoles(result[i].roles);
+                    await Promise.all([bansPromise, rolesPromise]);
+
                     sendSuccess(
                         interaction,
                         `Successfully exported \`${result[i].bans.length}\` bans and \`${result[i].roles.length}\` role punishments`
                     );
+                    break;
                 } catch (e) {
                     logger.warn({
                         labels: { command: 'export', guildId: id },
