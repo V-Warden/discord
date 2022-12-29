@@ -143,5 +143,7 @@ export default new ContextMenu({
                 },
             });
         }
+
+        return false;
     },
 });
