@@ -37,7 +37,7 @@ export default new Command({
 
         const result = await client.shard.broadcastEval(
             async (c, { guildId }) => {
-                await client.guilds.fetch();
+                await c.guilds.fetch();
 
                 const guild = c.guilds.cache.find(x => x.id === guildId);
                 if (!guild) return { bans: [], roles: [] };

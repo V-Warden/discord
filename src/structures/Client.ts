@@ -71,10 +71,10 @@ export class ExtendedClient extends Client {
             // this.registerCommands({
             //     commands: globalCommands,
             // });
-            this.registerCommands({
-                commands: guildSpecfic,
-                guildId: process.env.guildId,
-            });
+            // this.registerCommands({
+            //     commands: guildSpecfic,
+            //     guildId: process.env.guildId,
+            // });
 
             this.user?.setActivity({
                 type: ActivityType.Watching,
