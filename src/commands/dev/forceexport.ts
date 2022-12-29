@@ -36,7 +36,7 @@ export default new Command({
         if (!punishRole) return sendError(interaction, 'Invalid punish role set');
 
         const result = await client.shard.broadcastEval(
-            async (c, { guildId }) => {
+            async (c, { guildId, punishRole }) => {
                 await c.guilds.fetch();
 
                 const guild = c.guilds.cache.find(x => x.id === guildId);
@@ -53,7 +53,7 @@ export default new Command({
                     .filter(x => x.roles.cache.has(punishRole))
                     .map(x => {
                         const roles = x.roles.cache
-                            .filter(a => a.id !== punishRole && a.id !== interaction.guild?.roles.everyone.id)
+                            .filter(a => a.id !== punishRole && a.id !== guild?.roles.everyone.id)
                             .map(b => b.id);
                         return { id: x.id, roles: roles };
                     });
@@ -79,7 +79,7 @@ export default new Command({
 
                 return { bans: bansImport, roles: roleImport };
             },
-            { context: { guildId: id } }
+            { context: { guildId: id, punishRole: punishRole } }
         );
 
         for (let index = 0; index < result.length; index++) {
