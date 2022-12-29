@@ -6,7 +6,14 @@ export function generateErrorID(): string {
 }
 
 export function capitalize(string: string): string {
-    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+    var toReturn = string
+    try {
+        toReturn = string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+    } catch (e) {
+        toReturn = string
+    }
+
+    return toReturn
 }
 
 export function formatSeconds(seconds: number) {
