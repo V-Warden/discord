@@ -135,7 +135,6 @@ export default new Command({
                 const user = users[index];
                 const { User } = user;
                 if (User.servers.length === 1) {
-                    if (User.servers[0].id !== serverId) continue;
                     // appeal user and delete user
                     const appealPromise = db.appealImports(User.id);
                     const updatePromise = db.updateUser(User.id, {
@@ -152,7 +151,7 @@ export default new Command({
                     for (let i = 0; i < User.servers.length; i++) {
                         const server = User.servers[i];
                         if (server.id === serverId) {
-                            if (server.appealed) break;
+                            if (server.appealed) continue;
                             if (unappealedImports === 1) {
                                 const appealPromise = db.appealImports(User.id);
                                 const updatePromise = db.updateUser(User.id, {
