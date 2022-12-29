@@ -84,8 +84,8 @@ export default new Command({
 
         for (let index = 0; index < result.length; index++) {
             for (let i = 0; i < result.length; i++) {
-                if (Object.keys(result[i].bans).length === 0) continue;
-                if (Object.keys(result[i].roles).length === 0) continue;
+                if (result[i].bans.length === 0) continue;
+                if (result[i].bans.length === 0) continue;
                 try {
                     await Promise.all([
                         db.createBans(result[i].bans),
