@@ -1,7 +1,7 @@
 import { APIEmbed, ApplicationCommandOptionType } from 'discord.js';
 import { Colours } from '../../@types/Colours';
 import { Command } from '../../structures/Command';
-import { sendSuccess } from '../../utils/messages';
+import { sendSuccess, sendWarning } from '../../utils/messages';
 import sendPagination from '../../utils/messages/sendPagination';
 import { chunk } from 'lodash';
 import { capitalize, uploadText } from '../../utils/misc';
@@ -60,7 +60,7 @@ export default new Command({
         ) {
             await db.updateUser(user.id, { status: 'APPEALED', appeals: { increment: 1 } });
             await actionAppeal(client, user.id);
-            return sendSuccess(
+            return sendWarning(
                 interaction,
                 `User is apart of a unblacklisted server, correcting status and appealing\n\n> History: <${historyResponse}>\n> Notes: ${noteCount}`
             );

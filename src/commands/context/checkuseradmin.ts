@@ -5,7 +5,7 @@ import { Colours } from '../../@types/Colours';
 import { ContextMenu } from '../../structures/ContextMenu';
 import actionAppeal from '../../utils/actioning/actionAppeal';
 import db from '../../utils/database';
-import { sendSuccess } from '../../utils/messages';
+import { sendSuccess, sendWarning } from '../../utils/messages';
 import sendEmbed from '../../utils/messages/sendEmbed';
 import sendPagination from '../../utils/messages/sendPagination';
 import { uploadText } from '../../utils/misc';
@@ -52,7 +52,7 @@ export default new ContextMenu({
         ) {
             await db.updateUser(user.id, { status: 'APPEALED', appeals: { increment: 1 } });
             await actionAppeal(client, user.id);
-            return sendSuccess(
+            return sendWarning(
                 interaction,
                 `User is apart of a unblacklisted server, correcting status and appealing\n\n> History: <${historyResponse}>\n> Notes: ${noteCount}`
             );
