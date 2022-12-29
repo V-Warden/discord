@@ -2,6 +2,7 @@ import { Bans, Roles } from '@prisma/client';
 import { Command } from '../../structures/Command';
 import { sendError, sendSuccess } from '../../utils/messages';
 import db from '../../utils/database';
+import logger from '../../utils/logger';
 
 export default new Command({
     name: 'export',
@@ -61,6 +62,10 @@ export default new Command({
                 `Successfully exported \`${bansImport.length}\` bans and \`${roleImport.length}\` role punishments`
             );
         } catch (e) {
+            logger.warn({
+                labels: { command: 'export', guildId: interaction.guild.id },
+                message: e,
+            });
             return sendError(interaction, 'Unable to export data\n> This command can only be used once');
         }
     },
