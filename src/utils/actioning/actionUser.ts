@@ -8,8 +8,6 @@ import db from '../database';
 import actionAppeal from './actionAppeal';
 import { generateErrorID } from '../misc';
 
-let running: string[] = [];
-
 /**
  * Actions a user on a specific guild
  * @param guild
@@ -30,14 +28,21 @@ export default async function (
 
     const importsPromise = db.getImports(user.id);
     const allImportsPromise = db.getAllImports(user.id)
+    const appealedImportsPromise = db.getAppealedImports(user.id)
 
-    const [imports, allImports] = await Promise.all([importsPromise, allImportsPromise])
+    const [imports, allImports, appealedImports] = await Promise.all([importsPromise, allImportsPromise, appealedImportsPromise])
 
     if (allImports.length === 0) {
         await actionAppeal(client, user.id)
         await db.deleteUser(user.id)
         return false;
     }
+
+    if (user.status === 'BLACKLISTED' && user.reason === 'Unspecified' && allImports.length === appealedImports.length) {
+        await db.updateUser(user.id, {status: 'APPEALED', appeals: {increment: 1}})
+        await actionAppeal(client, user.id)
+        return false
+    };
 
     let realCount = 0;
     try {

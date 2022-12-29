@@ -7,6 +7,7 @@ import { chunk } from 'lodash';
 import { capitalize, uploadText } from '../../utils/misc';
 import sendEmbed from '../../utils/messages/sendEmbed';
 import db from '../../utils/database';
+import actionAppeal from '../../utils/actioning/actionAppeal';
 
 export default new Command({
     name: 'checkuseradmin',
@@ -46,6 +47,25 @@ export default new Command({
                 `User has no outstanding servers to be appealed for\n\n> History: <${historyResponse}>\n> Notes: ${noteCount}`
             );
         }
+
+        const allImportsPromise = db.getAllImports(user.id);
+        const appealedImportsPromise = db.getAppealedImports(user.id);
+
+        const [allImports, appealedImports] = await Promise.all([allImportsPromise, appealedImportsPromise]);
+
+        if (
+            user.status === 'BLACKLISTED' &&
+            user.reason === 'Unspecified' &&
+            allImports.length === appealedImports.length
+        ) {
+            await db.updateUser(user.id, { status: 'APPEALED', appeals: { increment: 1 } });
+            await actionAppeal(client, user.id);
+            return sendSuccess(
+                interaction,
+                `User is apart of a unblacklisted server, correcting status and appealing\n\n> History: <${historyResponse}>\n> Notes: ${noteCount}`
+            );
+        }
+
         const value = [];
         let realCount = 0;
 

@@ -6,6 +6,7 @@ import sendEmbed from '../../utils/messages/sendEmbed';
 import { Colours } from '../../@types/Colours';
 import { capitalize } from '../../utils/misc';
 import db from '../../utils/database';
+import actionAppeal from '../../utils/actioning/actionAppeal';
 
 export default new Command({
     name: 'checkuser',
@@ -18,7 +19,7 @@ export default new Command({
             required: true,
         },
     ],
-    run: async ({ interaction }) => {
+    run: async ({ interaction, client }) => {
         const id = interaction.options.getUser('user')?.id as string;
 
         const data = await db.getUser(id);
@@ -28,12 +29,34 @@ export default new Command({
                 'No results found for this ID.\n> They are either fine or not yet listed.'
             );
 
-        const imports = await db.getImports(id);
+        const importsPromise = db.getImports(data.id);
+        const allImportsPromise = db.getAllImports(data.id);
+        const appealedImportsPromise = db.getAppealedImports(data.id);
+
+        const [imports, allImports, appealedImports] = await Promise.all([
+            importsPromise,
+            allImportsPromise,
+            appealedImportsPromise,
+        ]);
+
         if (imports.length === 0 && data.status === 'APPEALED')
             return sendSuccess(
                 interaction,
                 'No results found for this ID.\n> They are either fine or not yet listed.'
             );
+
+        if (
+            data.status === 'BLACKLISTED' &&
+            data.reason === 'Unspecified' &&
+            allImports.length === appealedImports.length
+        ) {
+            await db.updateUser(data.id, { status: 'APPEALED', appeals: { increment: 1 } });
+            await actionAppeal(client, data.id);
+            return sendSuccess(
+                interaction,
+                'No results found for this ID.\n> They are either fine or not yet listed.'
+            );
+        }
 
         const types: UserType[] = imports.map(x => x.type);
         const highest = db.findHighestType(types);

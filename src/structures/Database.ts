@@ -188,6 +188,19 @@ export class Database {
         return history;
     }
 
+    getAppealedImports(id: string) {
+        return this.prisma.imports.findMany({
+            where: { id, appealed: true },
+            select: {
+                BadServer: true,
+                server: true,
+                roles: true,
+                type: true,
+                createdAt: true,
+            },
+        });
+    }
+
     getImports(id: string) {
         return this.prisma.imports.findMany({
             where: { id, appealed: false },
