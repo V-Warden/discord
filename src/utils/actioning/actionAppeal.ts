@@ -38,7 +38,7 @@ export default async function (c: Client, id: string): Promise<boolean> {
 
             if (!guildBans && !guildRoles) {
                 output.push({
-                    labels: { action: 'actionAppeal' },
+                    labels: { action: 'actionAppeal', userId: id },
                     message: `No bans or roles found for ${id} on this shard`,
                 });
 
@@ -69,7 +69,7 @@ export default async function (c: Client, id: string): Promise<boolean> {
                 }
             } else {
                 output.push({
-                    labels: { action: 'actionAppeal' },
+                    labels: { action: 'actionAppeal', userId: id },
                     message: 'No bans found in database',
                 });
             }
@@ -95,7 +95,7 @@ export default async function (c: Client, id: string): Promise<boolean> {
                 }
             } else {
                 output.push({
-                    labels: { action: 'actionAppeal' },
+                    labels: { action: 'actionAppeal', userId: id },
                     message: 'No roles found in database',
                 });
             }
