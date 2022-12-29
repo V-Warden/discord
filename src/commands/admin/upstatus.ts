@@ -37,12 +37,19 @@ export default new Command({
             description: 'Reason for upstatus',
             required: true,
         },
+        {
+            type: ApplicationCommandOptionType.Integer,
+            name: 'appeals',
+            description: 'Amount of appeals',
+            required: false,
+        },
     ],
     run: async ({ interaction }) => {
         const id = interaction.options.getUser('user')?.id as string;
-        const status = interaction.options.get('status')?.value as UserStatus;
-        const type = interaction.options.get('type')?.value as UserType;
-        const reason = interaction.options.get('reason')?.value as string;
+        const status = interaction.options.getString('status') as UserStatus;
+        const type = interaction.options.getString('type') as UserType;
+        const reason = interaction.options.getString('reason') as string;
+        const appeals = interaction.options.getInteger('appeals') as number;
 
         const user = await db.getUser(id);
 
@@ -50,7 +57,11 @@ export default new Command({
 
         if (status === 'APPEALED') return sendError(interaction, 'You cannot appeal a user this way');
 
-        await db.updateUser(id, { status, type, reason });
+        if (appeals) {
+            await db.updateUser(id, { status, type, reason, appeals });
+        } else {
+            await db.updateUser(id, { status, type, reason });
+        }
         return sendSuccess(
             interaction,
             ` Successfully changed ${user.last_username} (${id}) status to \`${status}\` and type to \`${type}\``
