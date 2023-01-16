@@ -89,9 +89,7 @@ export default async function (
                     You may attempt to appeal this via the Official Warden Discord:
                     https://discord.gg/jeFeDRasfs`,
         });
-    } catch (e) {
-        return false;
-    }
+    } catch (e) {}
 
     if (toDo === 'WARN') {
         sendEmbed({
