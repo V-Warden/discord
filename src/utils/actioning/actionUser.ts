@@ -89,7 +89,12 @@ export default async function (
                     You may attempt to appeal this via the Official Warden Discord:
                     https://discord.gg/jeFeDRasfs`,
         });
-    } catch (e) {}
+    } catch (e) {
+        logger.error({
+            labels: { action: 'actionUser', userId: user.id, guildId: member.guild.id },
+            message: 'Unable to create DM with user',
+        });
+    }
 
     if (toDo === 'WARN') {
         sendEmbed({
