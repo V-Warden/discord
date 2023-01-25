@@ -27,7 +27,7 @@ export default new ContextMenu({
         });
         await Promise.all([appealPromise, updatePromise]);
 
-        sendSuccess(interaction, `Successfully appealed <@${id}> (${id})`);
+        sendSuccess(interaction, `Successfully appealed <@${id}> (${id})`, false);
 
         return actionAppeal(client, id);
     },
