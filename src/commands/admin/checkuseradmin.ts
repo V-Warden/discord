@@ -54,12 +54,16 @@ export default new Command({
         const [allImports, appealedImports] = await Promise.all([allImportsPromise, appealedImportsPromise]);
 
         if (
-            user.status === 'BLACKLISTED' &&
-            user.reason === 'Unspecified' &&
-            allImports.length === appealedImports.length
+            (user.status === 'BLACKLISTED' &&
+                user.reason === 'Unspecified' &&
+                allImports.length === appealedImports.length) ||
+            allImports.length === 0
         ) {
             await db.updateUser(user.id, { status: 'APPEALED', appeals: { increment: 1 } });
             await actionAppeal(client, user.id);
+
+            if (allImports.length === 0) await db.deleteUser(user.id);
+
             return sendWarning(
                 interaction,
                 `User is apart of a unblacklisted server, correcting status and appealing\n\n> History: <${historyResponse}>\n> Notes: ${noteCount}`
