@@ -27,7 +27,13 @@ export default new Command({
         const exists: BadServers | null = await db.getBadServer({ id: server.guild?.id });
         if (!exists) return sendError(interaction, 'Server does not exist in database');
 
-        if (exists?.name === server.guild?.name) return sendError(interaction, 'Server name is the same');
+        if (exists?.name === server.guild?.name) {
+            await db.updateBadServer(server.guild?.id, {
+                invite,
+            });
+
+            return sendError(interaction, 'Server name is the same, I have updated the invite.');
+        }
 
         const newOldNames = exists?.oldNames ? exists.oldNames.split('<>') : [];
         newOldNames.push(exists?.name);
