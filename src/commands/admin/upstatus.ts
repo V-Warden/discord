@@ -55,7 +55,8 @@ export default new Command({
 
         if (!user) return sendError(interaction, 'User not found in the database');
 
-        if (status === 'APPEALED') return sendError(interaction, 'You cannot appeal a user this way');
+        if (status === 'APPEALED' && user.status !== UserStatus.APPEALED)
+            return sendError(interaction, 'You cannot appeal a user this way');
 
         if (appeals) {
             await db.updateUser(id, { status, type, reason, appeals });
