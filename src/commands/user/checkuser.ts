@@ -59,6 +59,7 @@ export default new Command({
         }
 
         const types: UserType[] = imports.map(x => x.type);
+        types.push(data.type);
         const highest = db.findHighestType(types);
 
         let reason = '';

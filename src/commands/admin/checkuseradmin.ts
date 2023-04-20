@@ -8,6 +8,7 @@ import { capitalize, uploadText } from '../../utils/misc';
 import sendEmbed from '../../utils/messages/sendEmbed';
 import db from '../../utils/database';
 import actionAppeal from '../../utils/actioning/actionAppeal';
+import { UserType } from '@prisma/client';
 
 export default new Command({
     name: 'checkuseradmin',
@@ -117,11 +118,17 @@ export default new Command({
             color: Colours.RED,
         };
 
+        const types: UserType[] = imports.map(x => x.type);
+        types.push(user.type);
+        const highestType = db.findHighestType(types);
+
         const commonField = {
             name: 'User Information',
             value: `> ID: ${user.id}\n> Status: ${capitalize(user.status)}\n> Type: ${capitalize(
                 user.type
-            )}\n> History: ${historyResponse}\n> Notes: ${noteCount}\n> Appeals: ${user.appeals}`,
+            )}\n> Highest Type: ${highestType}> History: ${historyResponse}\n> Notes: ${noteCount}\n> Appeals: ${
+                user.appeals
+            }`,
             inline: false,
         };
 
