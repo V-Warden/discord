@@ -126,7 +126,7 @@ export default new Command({
             name: 'User Information',
             value: `> ID: ${user.id}\n> Status: ${capitalize(user.status)}\n> Type: ${capitalize(
                 user.type
-            )}\n> Highest Type: ${highestType}> History: ${historyResponse}\n> Notes: ${noteCount}\n> Appeals: ${
+            )}\n> Highest Type: ${highestType}\n> History: ${historyResponse}\n> Notes: ${noteCount}\n> Appeals: ${
                 user.appeals
             }`,
             inline: false,
