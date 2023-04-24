@@ -37,6 +37,7 @@ export default new Command({
         await Promise.all([appealPromise, updatePromise]);
 
         sendSuccess(interaction, `Successfully appealed <@${id}> (${id})`);
+        await db.increaseAppealsStaff(interaction.user.id);
 
         return actionAppeal(client, id);
     },

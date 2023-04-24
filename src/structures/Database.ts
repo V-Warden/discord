@@ -20,6 +20,15 @@ export class Database {
         this.prisma = new PrismaClient();
     }
 
+    increaseAppealsStaff(id: string) {
+        return this.prisma.staff.update({
+            where: { id: id },
+            data: {
+                appeals: { increment: 1 },
+            },
+        });
+    }
+
     /**
      * BadServer Getters/Setters
      */

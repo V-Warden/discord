@@ -29,6 +29,8 @@ export default new ContextMenu({
 
         sendSuccess(interaction, `Successfully appealed <@${id}> (${id})`, false);
 
+        await db.increaseAppealsStaff(interaction.user.id);
+
         return actionAppeal(client, id);
     },
 });
