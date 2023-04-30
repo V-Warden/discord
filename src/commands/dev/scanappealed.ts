@@ -3,6 +3,7 @@ import { Command } from '../../structures/Command';
 import db from '../../utils/database';
 import { sendError, sendSuccess } from '../../utils/messages';
 import logger from '../../utils/logger';
+import { Users } from '@prisma/client';
 
 export default new Command({
     name: 'scanappealed',
@@ -33,7 +34,6 @@ export default new Command({
         const result = await client.shard.broadcastEval(
             async (c, { guildId }) => {
                 await c.guilds.fetch();
-                let message = '';
 
                 const guild = c.guilds.cache.find(x => x.id === guildId);
                 if (!guild) return { guild: false };
@@ -55,11 +55,32 @@ export default new Command({
                     }
                 }
 
-                const users = await db.getManyUsers({ id: { in: bannedUsers }, status: 'APPEALED' });
-                if (users.length === 0) {
-                    message = 'Guild has no people appealed who are banned';
-                    return { error: true, message: message, guild: true };
-                }
+                return { bannedUsers, guild: true };
+            },
+            { context: { guildId: id } }
+        );
+
+        let users: Users[] = [];
+
+        for (let i = 0; i < result.length; i++) {
+            if (!result[i].guild) continue;
+
+            users = await db.getManyUsers({
+                id: { in: result[i].bannedUsers },
+                status: 'APPEALED',
+            });
+            if (users.length === 0) {
+                return sendError(interaction, 'Guild has no people appealed who are banned');
+            }
+        }
+        if (users.length === 0) return false;
+
+        const res = await client.shard.broadcastEval(
+            async (c, { guildId, users }) => {
+                await c.guilds.fetch();
+
+                const guild = c.guilds.cache.find(x => x.id === guildId);
+                if (!guild) return { guild: false };
 
                 let count = 0;
                 for (let index = 0; index < users.length; index++) {
@@ -75,22 +96,18 @@ export default new Command({
                     }
                 }
 
-                message = `Unbanned ${count} users`;
+                let message = `Unbanned ${count} users`;
                 if (users.length - count > 0)
                     message = `${message}, ${users.length - count} were unable to be unbanned`;
 
-                return { error: false, message: message, guild: true };
+                return { guild: true, message };
             },
-            { context: { guildId: id } }
+            { context: { guildId: id, users: users } }
         );
 
-        for (let index = 0; index < result.length; index++) {
-            for (let i = 0; i < result.length; i++) {
-                if (!result[i].guild) continue;
-
-                if (result[i].error) return sendError(interaction, `${result[i].message}`);
-                sendSuccess(interaction, `${result[i].message}`);
-            }
+        for (let x = 0; x < res.length; x++) {
+            if (!res[x].guild) continue;
+            sendSuccess(interaction, `${res[x].message}`);
         }
 
         return false;
