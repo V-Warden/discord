@@ -83,10 +83,12 @@ export default new Command({
                 if (!guild) return { guild: false };
 
                 let count = 0;
+                const unbanned: string[] = [];
                 for (let index = 0; index < users.length; index++) {
                     const user = users[index];
                     try {
                         await guild.bans.remove(user.id, 'Appealed');
+                        unbanned.push(user.id);
                         count += 1;
                     } catch (e) {
                         logger.warn({
@@ -100,14 +102,30 @@ export default new Command({
                 if (users.length - count > 0)
                     message = `${message}, ${users.length - count} were unable to be unbanned`;
 
-                return { guild: true, message };
+                return { guild: true, message, unbanned };
             },
             { context: { guildId: id, users: users } }
         );
 
         for (let x = 0; x < res.length; x++) {
             if (!res[x].guild) continue;
-            sendSuccess(interaction, `${res[x].message}`);
+
+            try {
+                await db.removeAllBans({ id: { in: res[x].unbanned }, guild: id });
+                sendSuccess(interaction, `${res[x].message}`);
+            } catch (e) {
+                sendSuccess(
+                    interaction,
+                    `${res[x].message}, however I could not remove these from the database; please run the following manually to double check
+\`\`\`sql
+SELECT b.id, b.guild FROM Bans b INNER JOIN Users u WHERE u.id = b.id AND b.guild = '${id}' AND u.\`status\` = 'APPEALED'
+\`\`\``
+                );
+                logger.warn({
+                    labels: { command: 'scanappealed', guildId: id },
+                    message: e,
+                });
+            }
         }
 
         return false;
