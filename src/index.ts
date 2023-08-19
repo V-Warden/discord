@@ -10,4 +10,7 @@ manager.on('shardCreate', shard => {
     console.log(`Launched shard ${shard.id}`);
 });
 
+process.on('unhandledRejection', e => console.error(e));
+process.on('uncaughtException', e => console.error(e));
+
 manager.spawn({ timeout: -1 });
