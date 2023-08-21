@@ -23,6 +23,11 @@ export default new Command({
         if (!settings) return sendError(interaction, 'Unable to find guild in database');
         if (!settings.punishments?.enabled) return sendError(interaction, 'Punishments are not enabled');
 
+        logger.info({
+            labels: { action: 'scanusers', guildId: interaction?.guild?.id },
+            message: `Scanusers requested by ${interaction.user.id} in ${interaction.guild.id}`,
+        });
+
         await guild.members.fetch().then(async members => {
             const memberMap = members.filter(x => !x.user.bot).map(x => x.id);
             const users = await db.getManyUsers({
