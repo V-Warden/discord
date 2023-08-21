@@ -3,6 +3,7 @@ import { Colours } from '../../@types/Colours';
 import { Command } from '../../structures/Command';
 import { sendError, sendSuccess } from '../../utils/messages';
 import sendEmbed from '../../utils/messages/sendEmbed';
+import logger from '../../utils/logger';
 import db from '../../utils/database';
 
 export default new Command({
@@ -38,6 +39,11 @@ export default new Command({
 
         let lookup: any;
         if (invite) {
+            logger.info({
+                labels: { event: 'checkserver', guildId: interaction.guild.id },
+                message: `Checkserver requested by ${interaction.user.id} against ${invite}`,
+            });
+            
             const inv = await client.fetchInvite(invite).then(inv => inv).catch(() => null);
             if (!inv) return sendError(interaction, 'Invalid invite or invite has expired');
 
