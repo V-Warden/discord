@@ -40,8 +40,8 @@ export default new Command({
         let lookup: any;
         if (invite) {
             logger.info({
-                labels: { event: 'checkserver', guildId: interaction.guild.id },
-                message: `Checkserver requested by ${interaction.user.id} against ${invite}`,
+                labels: { event: 'checkserver', guildId: interaction?.guild?.id },
+                message: `Checkserver requested by ${interaction?.user?.id} against ${invite}`,
             });
             
             const inv = await client.fetchInvite(invite).then(inv => inv).catch(() => null);
