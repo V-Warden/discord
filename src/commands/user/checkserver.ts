@@ -37,6 +37,8 @@ export default new Command({
         if (!sid && !sname && !invite)
             return sendError(interaction, 'You must provide either a name, id or invite to check');
 
+        interaction.deferReply();
+
         let lookup: any;
         if (invite) {
             logger.info({
