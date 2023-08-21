@@ -27,6 +27,9 @@ export default new Command({
         if (user?.status === 'APPEALED')
             return sendError(interaction, 'That user has no new servers to appeal');
 
+        if (user?.status === 'WHITELISTED')
+            return sendError(interaction, 'That user is whitelisted. Use upstatus to change.');
+
         const appealPromise = db.appealImports(id);
         const updatePromise = db.updateUser(id, {
             status: UserStatus.APPEALED,
