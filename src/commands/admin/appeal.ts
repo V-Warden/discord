@@ -2,6 +2,7 @@ import { UserStatus } from '@prisma/client';
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Command } from '../../structures/Command';
 import actionAppeal from '../../utils/actioning/actionAppeal';
+import logger from '../../utils/logger';
 import db from '../../utils/database';
 import { sendError, sendSuccess } from '../../utils/messages';
 
@@ -41,6 +42,11 @@ export default new Command({
 
         sendSuccess(interaction, `Successfully appealed <@${id}> (${id})`);
         await db.increaseAppealsStaff(interaction.user.id);
+
+        logger.info({
+            labels: { action: 'appeal', guildId: interaction?.guild?.id },
+            message: `${interaction.user.id} appealed ${id} from ${interaction.guild.id}`,
+        });
 
         return actionAppeal(client, id);
     },
