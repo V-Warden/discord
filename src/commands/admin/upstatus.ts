@@ -64,14 +64,15 @@ export default new Command({
         } else {
             await db.updateUser(id, { status, type, reason });
         }
-        return sendSuccess(
-            interaction,
-            ` Successfully changed ${user.last_username} (${id}) status to \`${status}\` and type to \`${type}\``
-        );
 
         logger.info({
             labels: { action: 'upstatus', guildId: interaction?.guild?.id },
             message: `${interaction.user.id} updated ${id} to ${status} and ${type}`,
         });
+        
+        return sendSuccess(
+            interaction,
+            ` Successfully changed ${user.last_username} (${id}) status to \`${status}\` and type to \`${type}\``
+        );
     },
 });
