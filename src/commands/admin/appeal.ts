@@ -45,7 +45,7 @@ export default new Command({
 
         logger.info({
             labels: { action: 'appeal', guildId: interaction?.guild?.id },
-            message: `${interaction.user.id} appealed ${id} from ${interaction.guild.id}`,
+            message: `${interaction?.user?.id} appealed ${id} from ${interaction?.guild?.id}`,
         });
 
         return actionAppeal(client, id);

@@ -32,7 +32,7 @@ export default new ContextMenu({
 
         logger.info({
             labels: { action: 'appeal', guildId: interaction?.guild?.id },
-            message: `${interaction.user.id} appealed ${id} from ${interaction.guild.id}`,
+            message: `${interaction?.user?.id} appealed ${id} from ${interaction?.guild?.id}`,
         });
 
         await db.increaseAppealsStaff(interaction.user.id);
