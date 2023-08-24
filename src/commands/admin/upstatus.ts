@@ -2,6 +2,7 @@ import { UserType, UserStatus } from '@prisma/client';
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Command } from '../../structures/Command';
 import db from '../../utils/database';
+import logger from '../../utils/logger';
 import { sendError, sendSuccess } from '../../utils/messages';
 import { mapAnyType } from '../../utils/misc';
 
@@ -67,5 +68,10 @@ export default new Command({
             interaction,
             ` Successfully changed ${user.last_username} (${id}) status to \`${status}\` and type to \`${type}\``
         );
+
+        logger.info({
+            labels: { action: 'upstatus', guildId: interaction?.guild?.id },
+            message: `${interaction.user.id} updated ${id} to ${status} and ${type}`,
+        });
     },
 });

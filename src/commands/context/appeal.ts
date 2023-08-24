@@ -3,6 +3,7 @@ import { ApplicationCommandType } from 'discord.js';
 import { ContextMenu } from '../../structures/ContextMenu';
 import actionAppeal from '../../utils/actioning/actionAppeal';
 import db from '../../utils/database';
+import logger from '../../utils/logger';
 import { sendError, sendSuccess } from '../../utils/messages';
 
 export default new ContextMenu({
@@ -28,6 +29,11 @@ export default new ContextMenu({
         await Promise.all([appealPromise, updatePromise]);
 
         sendSuccess(interaction, `Successfully appealed <@${id}> (${id})`, false);
+
+        logger.info({
+            labels: { action: 'appeal', guildId: interaction?.guild?.id },
+            message: `${interaction.user.id} appealed ${id} from ${interaction.guild.id}`,
+        });
 
         await db.increaseAppealsStaff(interaction.user.id);
 
