@@ -21,6 +21,13 @@ export default new Command({
     ],
     run: async ({ interaction, client }) => {
         const id = interaction.options.getUser('user')?.id as string;
+        const bot = interaction.options.getUser('user')?.bot as boolean;
+
+        if (bot === true)
+          return sendSuccess(
+              interaction,
+              'No results are provided to bot accounts.\n> Please access this command as a standard user.'
+          );
 
         const data = await db.getUser(id);
         if (!data || data.status === 'WHITELISTED')
