@@ -146,13 +146,10 @@ export default async function (
 
         } catch (e: any) {
             const errorId = await logException(null, e);
-            const botRole = await guild.members.me.roles.highest.id;
-            const botCanMan = await guild.members.me.permissions.has("MANAGE_ROLES");
-            const roleDiff = await guild.roles.comparePositions(botRole, punishments.roleId);
             return sendEmbed({
                 channel,
                 embed: {
-                    description: `I tried to remove this users role and set them to \`${punishments.roleId}\`, however I encountered an error. \n>Debug: ${roleDiff} - ${botCanMan}\n> Error ID: ${errorId}`,
+                    description: `I tried to remove this users role and set them to \`${punishments.roleId}\`, however I encountered an error. \n> Error ID: ${errorId}`,
                     author,
                     color: Colours.RED,
                 },
