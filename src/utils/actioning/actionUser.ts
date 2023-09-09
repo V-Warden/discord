@@ -1,5 +1,5 @@
 import { Punish, Punishments, Users } from '@prisma/client';
-import { Client, Guild, TextChannel } from 'discord.js';
+import { Client, Guild, TextChannel, PermissionsBitField } from 'discord.js';
 import { Colours } from '../../@types/Colours';
 import logger, { logException } from '../logger';
 import sendEmbed from '../messages/sendEmbed';
@@ -146,17 +146,28 @@ export default async function (
 
         } catch (e: any) {
             const errorId = await logException(null, e);
-            const botRole = await guild.members.me.roles.highest.id;
-            const botCanMan = await guild.members.me.permissions.has("MANAGE_ROLES");
-            const roleDiff = await guild.roles.comparePositions(botRole, punishments.roleId);
-            return sendEmbed({
-                channel,
-                embed: {
-                    description: `I tried to remove this users role and set them to \`${punishments.roleId}\`, however I encountered an error. \n>Debug: ${roleDiff} - ${botCanMan}\n> Error ID: ${errorId}`,
-                    author,
-                    color: Colours.RED,
-                },
-            });
+            const botRole = await guild?.members?.me?.roles?.highest.id;
+            const botCanMan = await guild?.members?.me?.permissions?.has(PermissionsBitField?.Flags.ManageRoles);
+            const roleDiff = await guild?.roles?.comparePositions(botRole, punishments?.roleId);
+            if (typeof botCanMan === 'boolean' && typeof roleDiff == 'number') {
+                return sendEmbed({
+                    channel,
+                    embed: {
+                        description: `I tried to remove this users role and set them to \`${punishments.roleId}\`, however I encountered an error. \n> Debug: ${roleDiff} - ${botCanMan}\n> Error ID: ${errorId}`,
+                        author,
+                        color: Colours.RED,
+                    },
+                });
+            } else {
+                return sendEmbed({
+                    channel,
+                    embed: {
+                        description: `I tried to remove this users role and set them to \`${punishments.roleId}\`, however I encountered an error. \n> Error ID: ${errorId}`,
+                        author,
+                        color: Colours.RED,
+                    },
+                });
+            }
         }
     } else if (toDo === 'KICK' || toDo === 'BAN') {
         let action = null;
