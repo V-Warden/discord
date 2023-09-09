@@ -146,15 +146,15 @@ export default async function (
 
         } catch (e: any) {
             const errorId = await logException(null, e);
-            const botRole = await guild?.members?.me?.roles?.highest.id;
-            if (typeof botRole === 'undefined' || typeof punishments.roleId === 'undefined') return;
+            const botRole = await guild?.members?.me?.roles?.highest.position;
+            const memRole = await member?.roles?.highest.position;
+            if (typeof botRole === 'undefined' || typeof memRole === 'undefined' || typeof punishments.roleId === 'undefined') return;
             const botCanMan = await guild?.members?.me?.permissions?.has(PermissionsBitField?.Flags.ManageRoles);
-            const roleDiff = await guild?.roles?.comparePositions(botRole, punishments?.roleId);
-            if (typeof botCanMan === 'boolean' && typeof roleDiff == 'number') {
+            if (typeof botCanMan === 'boolean' && typeof botRole == 'number' && typeof memRole == 'number') {
                 return sendEmbed({
                     channel,
                     embed: {
-                        description: `I tried to remove this users role and set them to \`${punishments.roleId}\`, however I encountered an error. \n> Debug: ${roleDiff} - ${botCanMan}\n> Error ID: ${errorId}`,
+                        description: `I tried to remove this users role and set them to \`${punishments.roleId}\`, however I encountered an error. \n> Debug: ${botRole} - ${memRole} - ${botCanMan}\n> Error ID: ${errorId}`,
                         author,
                         color: Colours.RED,
                     },
