@@ -147,7 +147,7 @@ export default async function (
         } catch (e: any) {
             const errorId = await logException(null, e);
             const botRole = await guild?.members?.me?.roles?.highest.id;
-            if (typeof botRole === 'undefined') return;
+            if (typeof botRole === 'undefined' || typeof punishments.roleId === 'undefined') return;
             const botCanMan = await guild?.members?.me?.permissions?.has(PermissionsBitField?.Flags.ManageRoles);
             const roleDiff = await guild?.roles?.comparePositions(botRole, punishments?.roleId);
             if (typeof botCanMan === 'boolean' && typeof roleDiff == 'number') {
