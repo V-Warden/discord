@@ -39,7 +39,7 @@ export default async function (
     }
 
     if (user.status === 'BLACKLISTED' && user.reason === 'Unspecified' && allImports.length === appealedImports.length) {
-        await db.updateUser(user.id, {status: 'APPEALED', appeals: {increment: 1}})
+        await db.updateUser(user.id, { status: 'APPEALED', appeals: { increment: 1 } })
         await actionAppeal(client, user.id)
         return false
     };
@@ -100,9 +100,7 @@ export default async function (
         sendEmbed({
             channel,
             embed: {
-                description: `:warning: User ${user.last_username} (${
-                    member.id
-                }) has been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()} / **User Type**: ${user.type.toLowerCase()}`,
+                description: `:warning: User ${user.last_username} (${member.id}) has been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()} / **User Type**: ${user.type.toLowerCase()}`,
                 author,
                 color: Colours.GREEN,
             },
@@ -115,23 +113,25 @@ export default async function (
     } else if (toDo === 'ROLE') {
         try {
             if (!punishments.roleId) throw new Error('Invalid role id set');
-            const oldRoles = member.roles.cache.map(x => x.id).join(',');
-            const hasBlacklisedAlready = member.roles.cache.find(x => x.id === punishments.roleId)
-            if (hasBlacklisedAlready) return;
+            const targetRole = member.guild.roles.cache.get(punishments.roleId);
+            if (!targetRole) throw new Error('Role not found in the server');
+            const hasBlacklistedAlready = member.roles.cache.has(punishments.roleId);
+            if (hasBlacklistedAlready) return;
+            const currentRoles = member.roles.cache.array();
+            currentRoles.push(targetRole);
 
-            await member.roles.set([punishments.roleId]);
+            await member.roles.set(currentRoles);
+            const roleIds = currentRoles.map((role) => role.id).join(',');
             await db.createArchiveRole({
                 id: member.id,
-                roles: oldRoles,
+                roles: roleIds,
                 Guild: { connect: { id: punishments.id } },
             });
 
             sendEmbed({
                 channel,
                 embed: {
-                    description: `:shield: User ${user.last_username} (${
-                        member.id
-                    }) has been punished with a ROLE.\nThey have been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()}`,
+                    description: `:shield: User ${user.last_username} (${member.id}) has been punished with a ROLE.\nThey have been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()}`,
                     author,
                     color: Colours.GREEN,
                 },
@@ -154,7 +154,7 @@ export default async function (
                 return sendEmbed({
                     channel,
                     embed: {
-                        description: `I tried to remove this users role and set them to \`${punishments.roleId}\`, however I encountered an error. \n> Debug: ${botRole} - ${memRole} - ${botCanMan}\n> Error ID: ${errorId}`,
+                        description: `I tried to add this user to \`${punishments.roleId}\`, however I encountered an error. \n> Debug: ${botRole} - ${memRole} - ${botCanMan}\n> Error ID: ${errorId}`,
                         author,
                         color: Colours.RED,
                     },
@@ -163,7 +163,7 @@ export default async function (
                 return sendEmbed({
                     channel,
                     embed: {
-                        description: `I tried to remove this users role and set them to \`${punishments.roleId}\`, however I encountered an error. \n> Error ID: ${errorId}`,
+                        description: `I tried to add this user to \`${punishments.roleId}\`, however I encountered an error. \n> Error ID: ${errorId}`,
                         author,
                         color: Colours.RED,
                     },
@@ -192,9 +192,7 @@ export default async function (
             sendEmbed({
                 channel,
                 embed: {
-                    description: `:shield: User ${user.last_username} (${
-                        member.id
-                    }) has been punished with a ${toDo}.\nThey have been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()}`,
+                    description: `:shield: User ${user.last_username} (${member.id}) has been punished with a ${toDo}.\nThey have been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()}`,
                     author,
                     color: Colours.GREEN,
                 },
