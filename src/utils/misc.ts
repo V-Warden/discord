@@ -79,7 +79,7 @@ export async function uploadText(text: string, time: string) {
         //console.log(e);
         logger.error({
             labels: { event: 'uploadText' },
-            message: e.response,
+            message: e,
         });
         return;
     }
