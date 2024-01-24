@@ -1,5 +1,6 @@
 import axios from 'axios';
 import FormData from 'form-data';
+import logger from './logger';
 
 export function generateErrorID(): string {
     return (Math.random() + 1).toString(36).substring(3);
@@ -75,7 +76,11 @@ export async function uploadText(text: string, time: string) {
 
         return response.request.res.responseUrl;
     } catch (e) {
-        console.log(e);
+        //console.log(e);
+        logger.error({
+            labels: { event: 'uploadText' },
+            message: e,
+        });
         return;
     }
 }
