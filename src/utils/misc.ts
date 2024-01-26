@@ -68,7 +68,7 @@ export async function uploadText(text: string, time: string) {
         formData.append('text', text);
 
         const response = await axios.request({
-            url: 'https://paste.iitranq.co.uk/paste/new',
+            url: 'https://paste.mk3ext.dev/paste/new',
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             data: formData,
