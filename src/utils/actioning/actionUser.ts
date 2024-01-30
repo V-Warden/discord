@@ -87,7 +87,7 @@ export default async function (
             content: `:shield: Warden
                     You are being automodded by ${member.guild.name} for being associated with ${realCount == 0 ? 1 : realCount} leaking, cheating or reselling discord servers.
                     You may attempt to appeal this via the Official Warden Discord:
-                    https://discord.gg/jeFeDRasfs`,
+                    https://discord.gg/MVNZR73Ghf`,
         });
     } catch (e) {
         logger.error({
