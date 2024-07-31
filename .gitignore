@@ -12,3 +12,4 @@ package-lock.json
 src/config.json
 rejections/
 exceptions/
+.DS_Store
