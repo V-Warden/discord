@@ -78,7 +78,7 @@ export class ExtendedClient extends Client {
 
             this.user?.setActivity({
                 type: ActivityType.Watching,
-                name: 'discord.gg/warden',
+                name: 'discord.gg/MVNZR73Ghf',
             });
         });
 

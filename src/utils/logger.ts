@@ -71,7 +71,7 @@ export async function logException(interaction: CommandInteraction | null, e: an
             sendEmbed({
                 interaction,
                 embed: {
-                    description: `\`🔴\` An unexpected error has occured\n> Error ID: \`${errorId}\`\n> Please report this in the [Warden Discord](https://discord.gg/warden)`,
+                    description: `\`🔴\` An unexpected error has occured\n> Error ID: \`${errorId}\`\n> Please report this in the [Warden Discord](https://discord.gg/MVNZR73Ghf)`,
                     color: Colours.RED,
                 },
                 ephemeral: true,
