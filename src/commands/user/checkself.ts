@@ -31,7 +31,7 @@ export default new Command({
             ephemeral: true,
             interaction,
             embed: {
-                description: `\`🔴\` You were found in the following servers:\`\`\`${badServers.join(
+                description: `\`🔴\` You were recently found in the following servers:\`\`\`${badServers.join(
                     '\n'
                 )}\`\`\``,
                 color: Colours.RED,
