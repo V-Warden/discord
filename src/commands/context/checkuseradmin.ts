@@ -80,11 +80,12 @@ export default new ContextMenu({
                 value.push(`Legacy Data\n> View data: <${response}>\n`);
             } else {
                 realCount += 1;
-                const date = new Date(x.createdAt);
+                const dateFirst = new Date(x.createdAt);
+                const dateLast = new Date(x.updatedAt);
                 value.push(
                     `${x.BadServer.name}\n> Type: ${x.type} \n> Roles: ${x.roles
                         .split(';')
-                        .join(', ')}\n> Added: ${date.toLocaleDateString()}\n`
+                        .join(', ')}\n> First seen: ${dateFirst.toLocaleDateString()}\n> Last seen: ${dateLast.toLocaleDateString()}\n`
                 );
             }
         }
