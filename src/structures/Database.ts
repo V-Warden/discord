@@ -219,6 +219,7 @@ export class Database {
                 roles: true,
                 type: true,
                 createdAt: true,
+                updatedAt: true,
             },
         });
     }
