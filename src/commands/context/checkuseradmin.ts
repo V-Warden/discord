@@ -90,19 +90,13 @@ export default new ContextMenu({
             }
         }
 
-        let avatar: string = user.avatar;
-
-        if (avatar === user.last_username) {
-            avatar = client.user?.defaultAvatarURL ?? '';
-        }
-
         const mainEmbed = {
             author: {
-                name: user.last_username,
-                icon_url: avatar,
+                name: user.id,
+                icon_url: '',
             },
             title: ':shield: User In Database',
-            thumbnail: { url: avatar },
+            thumbnail: { url: '' },
             description: `<@${user.id}> has been seen in ${realCount} bad Discord servers.`,
             color: Colours.RED,
         };

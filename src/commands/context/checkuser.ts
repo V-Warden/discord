@@ -43,17 +43,17 @@ export default new ContextMenu({
                 title: ':shield: User Blacklisted',
                 description: `<@${id}> has been ${reason}`,
                 author: {
-                    name: data.last_username,
-                    icon_url: data.avatar,
+                    name: id,
+                    icon_url: '',
                 },
                 thumbnail: {
-                    url: data.avatar,
+                    url: '',
                 },
                 color: Colours.RED,
                 fields: [
                     {
                         name: 'User Information',
-                        value: `> ID: ${id}\n> Name: ${data.last_username}\n> Status: ${capitalize(
+                        value: `> ID: ${id}\n> Status: ${capitalize(
                             data.status
                         )}\n> Type: ${capitalize(highest)}`,
                     },

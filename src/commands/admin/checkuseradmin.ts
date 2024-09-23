@@ -104,13 +104,13 @@ export default new Command({
 
         let avatar: string = user.avatar;
 
-        if (avatar === user.last_username) {
+        if (avatar === user.id) {
             avatar = client.user?.defaultAvatarURL ?? '';
         }
 
         const mainEmbed = {
             author: {
-                name: user.last_username,
+                name: 'Report',
                 icon_url: avatar,
             },
             title: ':shield: User In Database',
@@ -126,8 +126,8 @@ export default new Command({
         const commonField = {
             name: 'User Information',
             value: `> ID: ${user.id}\n> Status: ${capitalize(user.status)}\n> Type: ${capitalize(
-                user.type
-            )}\n> Highest Type: ${highestType}\n> History: ${historyResponse}\n> Notes: ${noteCount}\n> Appeals: ${
+                highestType
+            )}\n> History: ${historyResponse}\n> Notes: ${noteCount}\n> Appeals: ${
                 user.appeals
             }`,
             inline: false,

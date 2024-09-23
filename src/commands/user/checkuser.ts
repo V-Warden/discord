@@ -81,18 +81,16 @@ export default new Command({
             embed: {
                 title: ':shield: User Blacklisted',
                 description: `<@${id}> has been ${reason}`,
+                thumbnail: { url: '' },
                 author: {
-                    name: data.last_username,
-                    icon_url: data.avatar,
-                },
-                thumbnail: {
-                    url: data.avatar,
+                    name: id,
+                    icon_url: 'http://cdn.mk3ext.dev/vh5NME2rgr.png',
                 },
                 color: Colours.RED,
                 fields: [
                     {
                         name: 'User Information',
-                        value: `> ID: ${id}\n> Name: ${data.last_username}\n> Status: ${capitalize(
+                        value: `> ID: ${id}\n> Status: ${capitalize(
                             data.status
                         )}\n> Type: ${capitalize(highest)}`,
                     },
