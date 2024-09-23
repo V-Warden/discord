@@ -78,7 +78,7 @@ export default async function (
 
     const author = {
         name: `${member.id}`,
-        icon_url: member.displayAvatarURL(),
+        icon_url: '',
     };
 
     try {
@@ -129,9 +129,9 @@ export default async function (
             sendEmbed({
                 channel,
                 embed: {
-                    description: `:shield: User ${
+                    description: `:shield: User <@${
                         member.id
-                    } has been punished with a ROLE.\nThey have been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()}`,
+                    }> has been punished with a ROLE.\nThey have been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()}`,
                     author,
                     color: Colours.GREEN,
                 },

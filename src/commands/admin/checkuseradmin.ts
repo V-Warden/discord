@@ -102,19 +102,15 @@ export default new Command({
             }
         }
 
-        let avatar: string = user.avatar;
 
-        if (avatar === user.last_username) {
-            avatar = client.user?.defaultAvatarURL ?? '';
-        }
 
         const mainEmbed = {
             author: {
-                name: user.last_username,
-                icon_url: avatar,
+                name: 'Report',
+                icon_url: '',
             },
             title: ':shield: User In Database',
-            thumbnail: { url: avatar },
+            thumbnail: { url: '' },
             description: `<@${user.id}> has been seen in ${realCount} bad Discord servers.`,
             color: Colours.RED,
         };
@@ -126,8 +122,8 @@ export default new Command({
         const commonField = {
             name: 'User Information',
             value: `> ID: ${user.id}\n> Status: ${capitalize(user.status)}\n> Type: ${capitalize(
-                user.type
-            )}\n> Highest Type: ${highestType}\n> History: ${historyResponse}\n> Notes: ${noteCount}\n> Appeals: ${
+                highestType
+            )}\n> History: ${historyResponse}\n> Notes: ${noteCount}\n> Appeals: ${
                 user.appeals
             }`,
             inline: false,
@@ -152,7 +148,7 @@ export default new Command({
                     fields: [
                         ...[commonField],
                         {
-                            name: 'New Servers',
+                            name: 'Servers Found In',
                             value:
                                 value.length > 0
                                     ? value.join('\n')

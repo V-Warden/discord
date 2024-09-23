@@ -96,7 +96,7 @@ export default new Command({
             chunks.forEach((chunk: string[]) => {
                 pages.push({
                     author: {
-                        name: `${notes[0].user.last_username}'s Notes`,
+                        name: `<@${id}>'s Notes`,
                         icon_url: notes[0].user.avatar ?? 'http://cdn.mk3ext.dev/vh5NME2rgr.png',
                     },
                     description: `${chunk.join('\n')}`,
