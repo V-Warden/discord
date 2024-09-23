@@ -128,7 +128,7 @@ export default new ContextMenu({
                     fields: [
                         ...[commonField],
                         {
-                            name: 'New Servers',
+                            name: 'Servers Found In',
                             value:
                                 value.length > 0
                                     ? value.join('\n')
