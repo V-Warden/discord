@@ -77,7 +77,7 @@ export default async function (
     if (!channel) return false;
 
     const author = {
-        name: `${member.user.username}#${member.user.discriminator} / ${member.id}`,
+        name: `${member.id}`,
         icon_url: member.displayAvatarURL(),
     };
 
@@ -100,16 +100,16 @@ export default async function (
         sendEmbed({
             channel,
             embed: {
-                description: `:warning: User ${user.last_username} (${
+                description: `:warning: User ${
                     member.id
-                }) has been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()} / **User Type**: ${user.type.toLowerCase()}`,
+                } has been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()} / **User Type**: ${user.type.toLowerCase()}`,
                 author,
                 color: Colours.GREEN,
             },
         });
         logger.info({
             labels: { action: 'actionUser', guildId: member.guild.id },
-            message: `WARN (${channel.id}) - ${user.last_username} (${user.id}) - ${member.guild.id}`,
+            message: `WARN (${channel.id}) - ${user.id} - ${member.guild.id}`,
         });
 
     } else if (toDo === 'ROLE') {
@@ -129,9 +129,9 @@ export default async function (
             sendEmbed({
                 channel,
                 embed: {
-                    description: `:shield: User ${user.last_username} (${
+                    description: `:shield: User ${
                         member.id
-                    }) has been punished with a ROLE.\nThey have been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()}`,
+                    } has been punished with a ROLE.\nThey have been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()}`,
                     author,
                     color: Colours.GREEN,
                 },
@@ -139,7 +139,7 @@ export default async function (
 
             logger.info({
                 labels: { action: 'actionUser', guildId: member.guild.id },
-                message: `ROLE ADDED (${punishments.roleId}) - ${user.last_username} (${user.id}) - ${member.guild.id}`,
+                message: `ROLE ADDED (${punishments.roleId}) - ${user.id} - ${member.guild.id}`,
             });
 
             return true;
@@ -187,14 +187,14 @@ export default async function (
                 await db.createBan({ id: user.id, Guild: { connect: { id: punishments.id } } });
             logger.info({
                 labels: { action: 'actionUser', guildId: member.guild.id },
-                message: `${toDo}ED - ${user.last_username} (${user.id}) - ${member.guild.id}`,
+                message: `${toDo}ED - ${user.id} - ${member.guild.id}`,
             });
             sendEmbed({
                 channel,
                 embed: {
-                    description: `:shield: User ${user.last_username} (${
+                    description: `:shield: User ${
                         member.id
-                    }) has been punished with a ${toDo}.\nThey have been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()}`,
+                    } has been punished with a ${toDo}.\nThey have been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()}`,
                     author,
                     color: Colours.GREEN,
                 },
@@ -207,7 +207,7 @@ export default async function (
             sendEmbed({
                 channel,
                 embed: {
-                    description: `\`🔴\` I have failed to issue a ${toDo} against ${user.last_username} (${user.id}) due to insufficient permissions. \n> Error ID: ${errorId}`,
+                    description: `\`🔴\` I have failed to issue a ${toDo} against ${user.id} due to insufficient permissions. \n> Error ID: ${errorId}`,
                     author,
                     color: Colours.RED,
                 },
