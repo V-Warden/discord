@@ -102,7 +102,7 @@ export default async function (
             embed: {
                 description: `:warning: User ${
                     member.id
-                }) has been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()} / **User Type**: ${user.type.toLowerCase()}`,
+                } has been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()} / **User Type**: ${user.type.toLowerCase()}`,
                 author,
                 color: Colours.GREEN,
             },
