@@ -102,19 +102,15 @@ export default new Command({
             }
         }
 
-        let avatar: string = user.avatar;
 
-        if (avatar === user.id) {
-            avatar = client.user?.defaultAvatarURL ?? '';
-        }
 
         const mainEmbed = {
             author: {
                 name: 'Report',
-                icon_url: avatar,
+                icon_url: '',
             },
             title: ':shield: User In Database',
-            thumbnail: { url: avatar },
+            thumbnail: { url: '' },
             description: `<@${user.id}> has been seen in ${realCount} bad Discord servers.`,
             color: Colours.RED,
         };
