@@ -77,8 +77,8 @@ export default async function (
     if (!channel) return false;
 
     const author = {
-        name: `${member.id}`,
-        icon_url: member.displayAvatarURL(),
+        name: `<@${member.id}>`,
+        icon_url: '',
     };
 
     try {
