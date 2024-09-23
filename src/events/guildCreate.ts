@@ -33,7 +33,7 @@ export default new Event('guildCreate', async guild => {
                       I'm trying to make the CFX Community a better place.
                       \nMake sure to check my configuration settings by using \`/config\` command!
                       I also need to have the permissions to kick and ban members, with a role higher than them!
-                      \nIf you want to contribute to the project, use the Official Discord: <https://discord.gg/jeFeDRasfs>`,
+                      \nIf you want to contribute to the project, use the Official Discord: <https://discord.gg/MVNZR73Ghf>`,
                 color: Colours.GREEN,
             },
         });
