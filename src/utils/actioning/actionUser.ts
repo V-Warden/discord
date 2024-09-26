@@ -192,9 +192,9 @@ export default async function (
             sendEmbed({
                 channel,
                 embed: {
-                    description: `:shield: User ${
+                    description: `:shield: User <@${
                         member.id
-                    } has been punished with a ${toDo}.\nThey have been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()}`,
+                    }> has been punished with a ${toDo}.\nThey have been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()}`,
                     author,
                     color: Colours.GREEN,
                 },
