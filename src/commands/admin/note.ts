@@ -95,7 +95,7 @@ export default new Command({
             const pages: APIEmbed[] = [];
             chunks.forEach((chunk: string[]) => {
                 pages.push({
-                    description: `User: <@${id}> \n \n${chunk.join('\n')}`,
+                    description: `Users: <@${id}> \n \n${chunk.join('\n')}`,
                     color: Colours.RED,
                 });
             });
