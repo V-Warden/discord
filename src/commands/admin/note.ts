@@ -96,10 +96,10 @@ export default new Command({
             chunks.forEach((chunk: string[]) => {
                 pages.push({
                     author: {
-                        name: `<@${id}>'s Notes`,
+                        name: `${id}'s Notes`,
                         icon_url: notes[0].user.avatar ?? 'http://cdn.mk3ext.dev/vh5NME2rgr.png',
                     },
-                    description: `${chunk.join('\n')}`,
+                    description: `Users: <@${id}> \n \n${chunk.join('\n')}`,
                     color: Colours.RED,
                 });
             });
