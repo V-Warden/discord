@@ -69,7 +69,7 @@ export default new Command({
             await db.createUser({
                 id,
                 last_username: user?.username ? `${user.username}#${user.discriminator}` : 'unknown#0000',
-                avatar: user.avatarURL() ?? 'https://cdn.mk3ext.dev/yuva7/HaXeYOBA30.png',
+                avatar: user.avatarURL() ?? 'https://chibi.iitranq.co.uk/w70AB7OgtqiQ.png',
                 type,
                 status,
                 reason,
