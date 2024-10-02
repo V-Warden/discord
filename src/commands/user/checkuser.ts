@@ -81,11 +81,6 @@ export default new Command({
             embed: {
                 title: ':shield: User Blacklisted',
                 description: `<@${id}> has been ${reason}`,
-                thumbnail: { url: '' },
-                author: {
-                    name: id,
-                    icon_url: 'http://cdn.mk3ext.dev/vh5NME2rgr.png',
-                },
                 color: Colours.RED,
                 fields: [
                     {

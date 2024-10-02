@@ -42,13 +42,6 @@ export default new ContextMenu({
             embed: {
                 title: ':shield: User Blacklisted',
                 description: `<@${id}> has been ${reason}`,
-                author: {
-                    name: id,
-                    icon_url: '',
-                },
-                thumbnail: {
-                    url: '',
-                },
                 color: Colours.RED,
                 fields: [
                     {

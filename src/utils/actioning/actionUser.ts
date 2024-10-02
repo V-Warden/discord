@@ -75,7 +75,6 @@ export default async function (
     }
 
     if (!channel) return false;
-
     try {
         const chan = await member.createDM();
         let punishment = null;

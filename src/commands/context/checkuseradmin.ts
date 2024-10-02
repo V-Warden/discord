@@ -91,10 +91,6 @@ export default new ContextMenu({
         }
 
         const mainEmbed = {
-            author: {
-                name: user.id,
-                icon_url: '',
-            },
             title: ':shield: User In Database',
             thumbnail: { url: '' },
             description: `<@${user.id}> has been seen in ${realCount} bad Discord servers.`,

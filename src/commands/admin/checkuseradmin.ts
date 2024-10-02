@@ -101,10 +101,6 @@ export default new Command({
             }
         }
         const mainEmbed = {
-            author: {
-                name: 'Report',
-                icon_url: '',
-            },
             title: ':shield: User In Database',
             thumbnail: { url: '' },
             description: `<@${user.id}> has been seen in ${realCount} bad Discord servers.`,
