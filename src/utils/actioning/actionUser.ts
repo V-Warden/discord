@@ -76,11 +76,6 @@ export default async function (
 
     if (!channel) return false;
 
-    const author = {
-        name: `${member.id}`,
-        icon_url: '',
-    };
-
     try {
         const chan = await member.createDM();
         let punishment = null;
@@ -125,7 +120,6 @@ export default async function (
                 description: `:warning: User <@${
                     member.id
                 }> has been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()} / **User Type**: ${user.type.toLowerCase()}`,
-                author,
                 color: Colours.GREEN,
             },
         });
@@ -154,7 +148,6 @@ export default async function (
                     description: `:shield: User <@${
                         member.id
                     }> has been punished with a ROLE.\nThey have been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()}`,
-                    author,
                     color: Colours.GREEN,
                 },
             });
@@ -177,7 +170,6 @@ export default async function (
                     channel,
                     embed: {
                         description: `I tried to remove this users role and set them to \`${punishments.roleId}\`, however I encountered an error. \n> Debug: ${botRole} - ${memRole} - ${botCanMan}\n> Error ID: ${errorId}`,
-                        author,
                         color: Colours.RED,
                     },
                 });
@@ -186,7 +178,6 @@ export default async function (
                     channel,
                     embed: {
                         description: `I tried to remove this users role and set them to \`${punishments.roleId}\`, however I encountered an error. \n> Error ID: ${errorId}`,
-                        author,
                         color: Colours.RED,
                     },
                 });
@@ -217,7 +208,6 @@ export default async function (
                     description: `:shield: User <@${
                         member.id
                     }> has been punished with a ${toDo}.\nThey have been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()}`,
-                    author,
                     color: Colours.GREEN,
                 },
             });
@@ -230,7 +220,6 @@ export default async function (
                 channel,
                 embed: {
                     description: `\`🔴\` I have failed to issue a ${toDo} against ${user.id} due to insufficient permissions. \n> Error ID: ${errorId}`,
-                    author,
                     color: Colours.RED,
                 },
             });
