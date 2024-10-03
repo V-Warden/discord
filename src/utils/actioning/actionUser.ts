@@ -131,10 +131,19 @@ export default async function (
         try {
             if (!punishments.roleId) throw new Error('Invalid role id set');
             const oldRoles = member.roles.cache.map(x => x.id).join(',');
-            const hasBlacklisedAlready = member.roles.cache.find(x => x.id === punishments.roleId)
-            if (hasBlacklisedAlready) return;
 
-            await member.roles.set([punishments.roleId]);
+            const hasBlacklisedAlready = member.roles.cache.find(x => x.id === punishments.roleId);
+            if (hasBlacklisedAlready) return;
+            
+            // Get managed roles (linked roles)
+            const managedRoles = member.roles.cache.filter(role => role.managed).map(role => role.id);
+
+            // Combine the new role with the managed roles
+            const newRoles = [...managedRoles, punishments.roleId];
+
+            // Set the new roles
+            await member.roles.set(newRoles);
+
             await db.createArchiveRole({
                 id: member.id,
                 roles: oldRoles,
