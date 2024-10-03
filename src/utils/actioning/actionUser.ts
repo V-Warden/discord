@@ -77,11 +77,33 @@ export default async function (
     if (!channel) return false;
     try {
         const chan = await member.createDM();
+        let punishment = null;
+        switch (toDo) {
+            case 'WARN':
+                punishment = 'warned';
+                break;
+            case 'KICK':
+                punishment = 'kicked';
+                break;
+            case 'BAN':
+                punishment = 'banned';
+                break;
+            case 'ROLE':
+                punishment = 'given a role';
+                break;
+        }
+        let s = '';
+        let are = 'is';
+        if (realCount > 1 ){
+            s = 's';
+            are = 'is';
+        }
         await chan.send({
             content: `:shield: Warden
-                    You are being automodded by ${member.guild.name} for being associated with ${realCount == 0 ? 1 : realCount} leaking, cheating or reselling discord servers.
-                    You may attempt to appeal this via the Official Warden Discord:
-                    https://discord.gg/MVNZR73Ghf`,
+        You are automatically being **${punishment}** by **${member.guild.name}**.
+        This is because you are/were associated with ${realCount == 0 ? 1 : realCount} leaking, cheating or reselling Discord server${s}.
+        You may attempt to appeal this via the Official Warden Discord:
+        https://discord.gg/MVNZR73Ghf`,
         });
     } catch (e) {
         logger.error({
@@ -94,9 +116,9 @@ export default async function (
         sendEmbed({
             channel,
             embed: {
-                description: `:warning: User ${
+                description: `:warning: User <@${
                     member.id
-                } has been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()} / **User Type**: ${user.type.toLowerCase()}`,
+                }> has been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()} / **User Type**: ${user.type.toLowerCase()}`,
                 color: Colours.GREEN,
             },
         });

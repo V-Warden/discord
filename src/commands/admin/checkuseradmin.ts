@@ -28,7 +28,6 @@ export default new Command({
 
         const user = await db.getUser(id);
         if (!user) return sendSuccess(interaction, 'User not found in database');
-
         const [noteCount, imports, history] = await Promise.all([
             db.countNotes(id),
             db.getImports(id),
@@ -101,9 +100,6 @@ export default new Command({
                 );
             }
         }
-
-
-
         const mainEmbed = {
             title: ':shield: User In Database',
             thumbnail: { url: '' },
@@ -114,17 +110,21 @@ export default new Command({
         const types: UserType[] = imports.map(x => x.type);
         types.push(user.type);
         const highestType = db.findHighestType(types);
-
+        let comments = `> ID: ${user.id}\n> Status: ${capitalize(user.status)}\n> Type: ${capitalize(
+            highestType
+        )}\n> History: ${historyResponse}\n> Notes: ${noteCount}\n> Appeals: ${user.appeals}`;
+        if (user.status === 'PERM_BLACKLISTED') {
+            if (user.reason !== '' && user.reason !== null) {
+                comments = `> ID: ${user.id}\n> Status: ${capitalize(user.status)}\n > Reason: ${user.reason}\n>  Type: ${capitalize(
+                    highestType
+                )}\n> History: ${historyResponse}\n> Notes: ${noteCount}\n> Appeals: ${user.appeals}`;
+            }
+        }
         const commonField = {
             name: 'User Information',
-            value: `> ID: ${user.id}\n> Status: ${capitalize(user.status)}\n> Type: ${capitalize(
-                highestType
-            )}\n> History: ${historyResponse}\n> Notes: ${noteCount}\n> Appeals: ${
-                user.appeals
-            }`,
+            value: comments,
             inline: false,
         };
-
         if (value.length >= 5) {
             const chunked = chunk(value, 5);
             const pages: APIEmbed[] = [];
