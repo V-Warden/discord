@@ -20,6 +20,8 @@ export default async function (c: Client) {
 
     const result = await c.shard.broadcastEval(
         async (client, { dbGuilds }) => {
+            const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
             const output: any[] = [];
 
             await client.guilds.fetch();
@@ -40,12 +42,14 @@ export default async function (c: Client) {
                     const member = guild.members.cache.at(a);
                     if (!member) continue;
 
-                    client.emit('guildMemberAdd', member)
+                    client.emit('guildMemberAdd', member);
 
                     output.push({
                         labels: { action: 'globalscan', guildId: guild.id },
                         message: `Emitted guildMemberAdd for ${member.id}`,
                     });
+
+                    await delay(1000);
                 }
             }
 
