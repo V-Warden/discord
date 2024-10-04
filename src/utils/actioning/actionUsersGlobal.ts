@@ -19,13 +19,23 @@ export default async function (c: Client, ids: string[]) {
 
             const output: any[] = [];
 
-            await client.guilds.fetch();
+            try {
+                await client.guilds.fetch();
+            } catch (error) {
+                console.error('Error fetching guilds:', error);
+                return output;
+            }
 
             for (let i = 0; i < client.guilds.cache.size; i++) {
                 const guild = client.guilds.cache.at(i);
                 if (!guild) continue;
 
-                await guild.members.fetch();
+                try {
+                    await guild.members.fetch();
+                } catch (error) {
+                    console.error(`Error fetching members for guild ${guild.id}:`, error);
+                    continue;
+                }
 
                 for (let a = 0; a < guild.members.cache.size; a++) {
                     const member = guild.members.cache.at(a);
@@ -36,7 +46,7 @@ export default async function (c: Client, ids: string[]) {
                     }
                 }
 
-                await delay(500);
+                await delay(100);
             }
 
             return output;
