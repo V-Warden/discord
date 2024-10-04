@@ -25,19 +25,17 @@ export default async function (c: Client, ids: string[]) {
                 const guild = client.guilds.cache.at(i);
                 if (!guild) continue;
 
-                try {
-                    const members = await guild.members.fetch();
+                await guild.members.fetch();
 
-                    for (const member of members.values()) {
-                        if (userids.includes(member.id)) {
-                            client.emit('guildMemberAdd', member);
-                        }
+                for (let a = 0; a < guild.members.cache.size; a++) {
+                    const member = guild.members.cache.at(a);
+                    if (!member) continue;
+
+                    if (userids.includes(member.id)) {
+                        client.emit('guildMemberAdd', member);
                     }
-                } catch (e) {
-                    // Member not in guild
-                    continue;
                 }
-                
+
                 await delay(500);
             }
 
