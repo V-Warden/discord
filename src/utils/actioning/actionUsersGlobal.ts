@@ -2,19 +2,19 @@ import { Client } from 'discord.js';
 import logger from '../logger';
 
 /**
- * Actions a user globally, mainly used for forcecheck
+ * Actions users globally, mainly used for forcecheck
  * @param client Client
- * @param id Discord user id
+ * @param ids Array of Discord user ids
  */
-export default async function (c: Client, id: string) {
+export default async function (c: Client, ids: string[]) {
     if (!c.shard)
         return logger.warn({
-            labels: { userId: id },
+            labels: { userIds: ids.join(', ') },
             message: 'No shards online, unable to action appeal',
         });
 
     const result = await c.shard.broadcastEval(
-        async (client, { userid }) => {
+        async (client, { userids }) => {
             const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
             const output: any[] = [];
@@ -29,20 +29,29 @@ export default async function (c: Client, id: string) {
             for (let i = 0; i < client.guilds.cache.size; i++) {
                 const guild = client.guilds.cache.at(i);
                 if (!guild) continue;
+
                 try {
-                    const member = await guild.members.fetch(userid)
-                    client.emit('guildMemberAdd', member)
-                } catch (e) {
-                    // Member not in guild
-                    continue
+                    await guild.members.fetch();
+                } catch (error) {
+                    console.error(`Error fetching members for guild ${guild.id}:`, error);
+                    continue;
                 }
-                
+
+                for (let a = 0; a < guild.members.cache.size; a++) {
+                    const member = guild.members.cache.at(a);
+                    if (!member) continue;
+
+                    if (userids.includes(member.id)) {
+                        client.emit('guildMemberAdd', member);
+                    }
+                }
+
                 await delay(100);
             }
 
             return output;
         },
-        { context: { userid: id } }
+        { context: { userids: ids } }
     );
 
     for (let index = 0; index < result.length; index++) {
