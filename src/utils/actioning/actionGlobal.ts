@@ -50,7 +50,11 @@ export default async function (c: Client) {
                     });
                 }
 
-                await delay(100);
+                const memberCount = guild.members.cache.size;
+                const calculatedDelay = Math.min(memberCount * 0.1, 2000);
+                const delayTime = Math.max(calculatedDelay, 100);
+
+                await delay(delayTime);
             }
 
             return output;

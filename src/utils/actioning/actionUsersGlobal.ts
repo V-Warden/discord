@@ -31,7 +31,7 @@ export default async function (c: Client, ids: string[]) {
                 if (!guild) continue;
 
                 try {
-                    await guild.members.fetch();
+                    await guild.members.fetch({ user: userids });
                 } catch (error) {
                     console.error(`Error fetching members for guild ${guild.id}:`, error);
                     continue;
