@@ -19,16 +19,19 @@ export default async function (c: Client, id: string) {
 
             const output: any[] = [];
 
-            const guilds = await client.guilds.fetch();
+            await client.guilds.fetch();
 
-            for (const guildData of guilds.values()) {
+            for (let i = 0; i < client.guilds.cache.size; i++) {
+                const guild = client.guilds.cache.at(i);
+                if (!guild) continue;
                 try {
-                    const guild = await client.guilds.fetch(guildData.id);
-                    const member = await guild.members.fetch(userid);
-                    client.emit('guildMemberAdd', member);
+                    const member = await guild.members.fetch(userid)
+                    client.emit('guildMemberAdd', member)
                 } catch (e) {
-                    continue;
+                    // Member not in guild
+                    continue
                 }
+                
                 await delay(500);
             }
 
@@ -37,9 +40,9 @@ export default async function (c: Client, id: string) {
         { context: { userid: id } }
     );
 
-    for (const res of result) {
-        for (const log of res) {
-            logger.info(log);
+    for (let index = 0; index < result.length; index++) {
+        for (let i = 0; i < result.length; i++) {
+            logger.info(result[index][i]);
         }
     }
 

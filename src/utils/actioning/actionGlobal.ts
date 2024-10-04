@@ -48,9 +48,9 @@ export default async function (c: Client) {
                         labels: { action: 'globalscan', guildId: guild.id },
                         message: `Emitted guildMemberAdd for ${member.id}`,
                     });
-
-                    await delay(1000);
                 }
+
+                await delay(500);
             }
 
             return output;
