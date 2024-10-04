@@ -19,7 +19,12 @@ export default async function (c: Client, id: string) {
 
             const output: any[] = [];
 
-            await client.guilds.fetch();
+            try {
+                await client.guilds.fetch();
+            } catch (error) {
+                console.error('Error fetching guilds:', error);
+                return output;
+            }
 
             for (let i = 0; i < client.guilds.cache.size; i++) {
                 const guild = client.guilds.cache.at(i);
@@ -32,7 +37,7 @@ export default async function (c: Client, id: string) {
                     continue
                 }
                 
-                await delay(500);
+                await delay(100);
             }
 
             return output;

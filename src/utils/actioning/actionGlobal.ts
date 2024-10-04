@@ -50,7 +50,7 @@ export default async function (c: Client) {
                     });
                 }
 
-                await delay(500);
+                await delay(100);
             }
 
             return output;
