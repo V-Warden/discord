@@ -80,7 +80,11 @@ export default async function (c: Client, id: string): Promise<boolean> {
                     try {
                         const guild: Guild = await client.guilds.fetch(element.guild);
                         const member: GuildMember = await guild.members.fetch(element.id);
-                        await member.roles.set(element.roles.split(','));
+                        const managedRoles = member.roles.cache.filter(role => role.managed).map(role => role.id);
+                        const returnRoles = element.roles.split(',');
+                        const uniqueRoles = new Set([...returnRoles, ...managedRoles]);
+
+                        await member.roles.set([...uniqueRoles]);
 
                         output.push({
                             labels: { action: 'actionAppeal', guildId: guild.id },
