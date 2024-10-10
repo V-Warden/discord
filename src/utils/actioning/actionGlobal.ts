@@ -24,7 +24,12 @@ export default async function (c: Client) {
 
             const output: any[] = [];
 
-            await client.guilds.fetch();
+            try {
+                await client.guilds.fetch();
+            } catch (error) {
+                console.error('Error fetching guilds:', error);
+                return output;
+            }
 
             const guilds = client.guilds.cache.map(x => x.id);
             const guildSettings = dbGuilds.filter(x => guilds.some(a => a === x.id));
@@ -36,7 +41,13 @@ export default async function (c: Client) {
                 const settings = guildSettings.find(x => x.id === guild.id);
                 if (!settings) continue;
 
-                await guild.members.fetch();
+                try {
+                    await guild.members.fetch();
+                } catch (error) {
+                    console.error(`Error fetching members for guild ${guild.id}:`, error);
+                    console.error('Stopping globalscan to prevent more rate limit');
+                    break;
+                }
 
                 for (let a = 0; a < guild.members.cache.size; a++) {
                     const member = guild.members.cache.at(a);
@@ -50,7 +61,11 @@ export default async function (c: Client) {
                     });
                 }
 
-                await delay(100);
+                const memberCount = guild.members.cache.size;
+                const calculatedDelay = Math.min(memberCount * 0.1, 2000);
+                const delayTime = Math.max(calculatedDelay, 100);
+
+                await delay(delayTime);
             }
 
             return output;
