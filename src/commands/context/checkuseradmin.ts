@@ -104,7 +104,7 @@ export default new ContextMenu({
             highestType
         )}\n> History: ${historyResponse}\n> Notes: ${noteCount}\n> Appeals: ${user.appeals}`;
         if (user.status === 'PERM_BLACKLISTED') {
-            if (user.reason !== '' && user.reason !== null) {
+            if (user.reason !== '' && user.reason !== null && user.reason !== 'Unspecified') {
                 comments = `> ID: ${user.id}\n> Status: ${capitalize(user.status)}\n > Reason: ${user.reason}\n>  Type: ${capitalize(
                     highestType
                 )}\n> History: ${historyResponse}\n> Notes: ${noteCount}\n> Appeals: ${user.appeals}`;
