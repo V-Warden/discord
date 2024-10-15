@@ -5,23 +5,21 @@ import {
     Client,
     ClientEvents,
     Collection,
+    GatewayIntentBits,
     Invite,
 } from 'discord.js';
-import glob from 'glob';
-import { promisify } from 'util';
+import { glob } from 'glob';
 import { Event } from './Event';
 import { RegisterCommandsOptions, CommandType, MenuType } from '../@types';
 import path from 'path';
 import logger from '../utils/logger';
-
-const globPromise = promisify(glob);
 
 export class ExtendedClient extends Client {
     commands: Collection<string, CommandType> = new Collection();
     contextmenus: Collection<string, MenuType> = new Collection();
 
     constructor() {
-        super({ intents: 519, waitGuildTimeout: 1000 });
+        super({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
     }
 
     start() {
@@ -35,11 +33,11 @@ export class ExtendedClient extends Client {
 
     async registerCommands({ commands, guildId }: RegisterCommandsOptions) {
         if (guildId) {
-            this.guilds.cache.get(guildId)?.commands.set(commands);
-            logger.info({ labels: { guildId }, message: 'Registering commands' });
+            await this.guilds.cache.get(guildId)?.commands.set(commands);
+            logger.info({ message: 'Registering guildSpecfic' });
         } else {
-            this.application?.commands.set(commands);
-            logger.info({ message: 'Registering global commands' });
+            await this.application?.commands.set(commands);
+            logger.info({ message: 'Registering globalCommands' });
         }
     }
 
@@ -49,9 +47,9 @@ export class ExtendedClient extends Client {
         const guildSpecfic: ApplicationCommandDataResolvable[] = [];
 
         const root = path.join(__dirname, '..');
-        const commandFiles = await globPromise('/commands/*/*{.ts,.js}', { root });
+        const commandFiles = await this.getFiles(path.join(root, 'commands'));
 
-        commandFiles.forEach(async filePath => {
+        for (const filePath of commandFiles) {
             const command: CommandType | MenuType = await this.importFile(filePath);
             if (!command.name) return;
 
@@ -65,13 +63,14 @@ export class ExtendedClient extends Client {
             } else {
                 this.contextmenus.set(command.name, command as MenuType);
             }
-        });
+        }
 
-        this.on('ready', () => {
-            // this.registerCommands({
-            //     commands: globalCommands,
-            // });
-            this.registerCommands({
+        this.on('ready', async () => {
+            await this.registerCommands({
+                commands: globalCommands,
+            });
+
+            await this.registerCommands({
                 commands: guildSpecfic,
                 guildId: process.env.guildId,
             });
@@ -83,22 +82,24 @@ export class ExtendedClient extends Client {
         });
 
         // Events
-        const eventFiles = await globPromise('/events/*{.ts,.js}', { root });
+        const eventFiles = await this.getFiles(path.join(root, 'events'));
         logger.info({ message: 'Registering events' });
-        eventFiles.forEach(async filePath => {
+        for (const filePath of eventFiles) {
             const event: Event<keyof ClientEvents> = await this.importFile(filePath);
             this.on(event.event, event.run);
-        });
+        }
+    }
+
+    async getFiles(dir: string): Promise<string[]> {
+        const pattern = `${dir}/**/*.{ts,js}`;
+        return await glob(pattern, {});
     }
 
     async isValidInvite(invite: string): Promise<undefined | Invite> {
-        let server: Invite | undefined = undefined;
         try {
-            server = await this.fetchInvite(invite);
+            return await this.fetchInvite(invite);
         } catch {
-            // Invalid invite
+            return undefined;
         }
-
-        return server;
     }
 }
