@@ -19,7 +19,15 @@ export class ExtendedClient extends Client {
     contextmenus: Collection<string, MenuType> = new Collection();
 
     constructor() {
-        super({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
+        super({
+            intents: [
+                GatewayIntentBits.Guilds,
+                GatewayIntentBits.GuildMembers,
+                GatewayIntentBits.GuildBans,
+                GatewayIntentBits.GuildMessages,
+            ],
+            waitGuildTimeout: 1000,
+        });
     }
 
     start() {
