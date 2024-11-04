@@ -71,7 +71,7 @@ export default new Command({
                     await channel.send({
                         embeds: [
                             {
-                                title: ':shield: Notification from Warden staff',
+                                title: ':shield: Notification from Warden management',
                                 description: `${smessage}`,
                                 color: 0xFFA500,
                             },
