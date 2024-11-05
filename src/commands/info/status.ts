@@ -4,12 +4,16 @@ import sendEmbed from '../../utils/messages/sendEmbed';
 import { formatSeconds } from '../../utils/misc';
 import db from '../../utils/database';
 import { sendError } from '../../utils/messages';
+import { totalQueue, processedMessage } from '../../utils/queues/queueActionReceive';
+
+// Store the bot start time
+const botStartTime = Date.now();
 
 export default new Command({
     name: 'status',
     description: 'Shows bot status and stats about its services',
     run: async ({ interaction, client }) => {
-        const uptime = process.uptime();
+        const uptime = Math.floor((Date.now() - botStartTime) / 1000);
 
         // Could optimise this by caching result and storing for x minutes?
         const blacklistedUsersPromise = db.countAllBlacklistedUsers();
@@ -54,6 +58,16 @@ export default new Command({
                     {
                         name: 'Blacklisted Servers',
                         value: `I have ${blacklistedServers.toLocaleString()} blacklisted servers`,
+                        inline: false,
+                    },
+                    {
+                        name: 'Queue Length',
+                        value: `I have ${await totalQueue()} users in the queue`,
+                        inline: false,
+                    },
+                    {
+                        name: 'Queue Processed',
+                        value: `I have processed ${await processedMessage()} users`,
                         inline: false,
                     },
                     {

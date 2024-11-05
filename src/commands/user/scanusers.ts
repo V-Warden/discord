@@ -7,12 +7,26 @@ import { sendError, sendSuccess } from '../../utils/messages';
 import sendEmbed from '../../utils/messages/sendEmbed';
 import db from '../../utils/database';
 
+const cooldowns = new Map<string, number>();
+const COOLDOWN_TIME = 30 * 60 * 1000;
+
 export default new Command({
     name: 'scanusers',
     description: 'Initiates a guild scan',
     defaultMemberPermissions: 'Administrator',
     run: async ({ interaction, client }) => {
         if (!interaction.guild) return sendError(interaction, 'Must be used in a guild');
+
+        const guildId = interaction.guild.id;
+        const now = Date.now();
+        const cooldown = cooldowns.get(guildId);
+
+        if (cooldown && now < cooldown) {
+            const remainingTime = Math.ceil((cooldown - now) / 1000 / 60);
+            return sendError(interaction, `You can use this command again in ${remainingTime} minutes`);
+        }
+
+        cooldowns.set(guildId, now + COOLDOWN_TIME);
 
         const guild = await client.guilds.fetch(interaction.guild.id);
 

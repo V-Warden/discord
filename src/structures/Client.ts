@@ -13,6 +13,7 @@ import { Event } from './Event';
 import { RegisterCommandsOptions, CommandType, MenuType } from '../@types';
 import path from 'path';
 import logger from '../utils/logger';
+import { startReceiver } from '../utils/queues/queueActionReceive';
 
 export class ExtendedClient extends Client {
     commands: Collection<string, CommandType> = new Collection();
@@ -86,6 +87,10 @@ export class ExtendedClient extends Client {
             this.user?.setActivity({
                 type: ActivityType.Watching,
                 name: 'discord.gg/MVNZR73Ghf',
+            });
+
+            startReceiver(this).catch((e) => {
+                logger.error({ message: 'Error starting receiver', error: e });
             });
         });
 

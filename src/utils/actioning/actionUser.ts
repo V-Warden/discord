@@ -6,7 +6,7 @@ import sendEmbed from '../messages/sendEmbed';
 import { getPunishment } from './utils';
 import db from '../database';
 import actionAppeal from './actionAppeal';
-import { generateErrorID } from '../misc';
+import queueActionSend from '../queues/queueActionSend';
 
 /**
  * Actions a user on a specific guild
@@ -15,7 +15,7 @@ import { generateErrorID } from '../misc';
  * @param punishments guild punishments
  * @param user
  */
-export default async function (
+export default async function actionUser(
     client: Client,
     guild: Guild,
     logChannel: string,
@@ -75,42 +75,6 @@ export default async function (
     }
 
     if (!channel) return false;
-    try {
-        const chan = await member.createDM();
-        let punishment = null;
-        switch (toDo) {
-            case 'WARN':
-                punishment = 'warned';
-                break;
-            case 'KICK':
-                punishment = 'kicked';
-                break;
-            case 'BAN':
-                punishment = 'banned';
-                break;
-            case 'ROLE':
-                punishment = 'given a role';
-                break;
-        }
-        let s = '';
-        let are = 'is';
-        if (realCount > 1 ){
-            s = 's';
-            are = 'is';
-        }
-        await chan.send({
-            content: `:shield: Warden
-        You are automatically being **${punishment}** by **${member.guild.name}**.
-        This is because you are/were associated with ${realCount == 0 ? 1 : realCount} leaking, cheating or reselling Discord server${s}.
-        You may attempt to appeal this via the Official Warden Discord:
-        https://discord.gg/MVNZR73Ghf`,
-        });
-    } catch (e) {
-        logger.error({
-            labels: { action: 'actionUser', userId: user.id, guildId: member.guild.id },
-            message: 'Unable to create DM with user',
-        });
-    }
 
     if (toDo === 'WARN') {
         sendEmbed({
@@ -122,11 +86,15 @@ export default async function (
                 color: Colours.GREEN,
             },
         });
+        
         logger.info({
             labels: { action: 'actionUser', guildId: member.guild.id },
-            message: `WARN (${channel.id}) - ${user.id} - ${member.guild.id}`,
+            message: `Queued - ${toDo} - ${user.id} - ${member.guild.id}`,
         });
 
+        queueActionSend(user.id, member.guild.id, toDo);
+
+        return true;
     } else if (toDo === 'ROLE') {
         try {
             if (!punishments.roleId) throw new Error('Invalid role id set');
@@ -165,8 +133,9 @@ export default async function (
                 message: `ROLE ADDED (${punishments.roleId}) - ${user.id} - ${member.guild.id}`,
             });
 
-            return true;
+            queueActionSend(user.id, member.guild.id, toDo);
 
+            return true;
         } catch (e: any) {
             const errorId = await logException(null, e);
             const botRole = await guild?.members?.me?.roles?.highest.position;
@@ -192,50 +161,45 @@ export default async function (
             }
         }
     } else if (toDo === 'KICK' || toDo === 'BAN') {
-        let action = null;
-        if (toDo === 'BAN') {
-            action = member.ban({ reason: `Warden - User Type ${user.type}` });
-        } else if (toDo === 'KICK') {
-            action = member.kick(`Warden - User Type ${user.type}`);
-        }
+        queueActionSend(user.id, member.guild.id, toDo);
 
-        if (!action) return false;
+        logger.info({
+            labels: { action: 'actionUser', guildId: member.guild.id },
+            message: `Queued - ${toDo} - ${user.id} - ${member.guild.id}`,
+        });
 
-        try {
-            await action;
+        if (punishments.roleId) {
+            const hasBlacklisedAlready = member.roles.cache.find(x => x.id === punishments.roleId);
+            if (hasBlacklisedAlready) return;
+            
+            // Get managed roles (linked roles)
+            const managedRoles = member.roles.cache.filter(role => role.managed).map(role => role.id);
 
-            if (toDo === 'BAN')
-                await db.createBan({ id: user.id, Guild: { connect: { id: punishments.id } } });
-            logger.info({
-                labels: { action: 'actionUser', guildId: member.guild.id },
-                message: `${toDo}ED - ${user.id} - ${member.guild.id}`,
-            });
-            sendEmbed({
-                channel,
-                embed: {
-                    description: `:shield: User <@${
-                        member.id
-                    }> has been punished with a ${toDo}.\nThey have been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()}`,
-                    color: Colours.GREEN,
-                },
-            });
-            return true;
-        } catch (e) {
+            // Combine the new role with the managed roles
+            const newRoles = [...managedRoles, punishments.roleId];
 
-            const errorId = generateErrorID()
+            // Set the new roles
+            await member.roles.set(newRoles);
 
             sendEmbed({
                 channel,
                 embed: {
-                    description: `\`🔴\` I have failed to issue a ${toDo} against ${user.id} due to insufficient permissions. \n> Error ID: ${errorId}`,
-                    color: Colours.RED,
+                    description: `:shield: User <@${member.id}> has been detected in ${realCount == 0 ? 1 : realCount} bad discord servers and has been queued for ${toDo}.\n**User Status**: ${user.status.toLowerCase()}`,
+                    color: Colours.YELLOW,
                 },
             });
-            return logger.error({
-                labels: { action: 'actionUser', guildId: member.guild.id, errorId: errorId },
-                message: e,
+        } else {
+            sendEmbed({
+                channel,
+                embed: {
+                    description: `:shield: User <@${member.id}> has been detected in ${realCount == 0 ? 1 : realCount} bad discord servers and has been queued for ${toDo}.\n**User Status**: ${user.status.toLowerCase()}\n\nPlease configure a punishment role through Warden to prevent interactions until the action is completed.`,
+                    color: Colours.YELLOW,
+                },
             });
         }
+
+        return true;
     }
+
     return true;
 }
