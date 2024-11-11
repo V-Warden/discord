@@ -99,7 +99,7 @@ export default new Command({
 
         return sendSuccess(
             interaction,
-            `**User:** <@${id}> **Status:** Successfully upserted`
+            `**User:** <@${id}> (${id}) **Status:** Successfully upserted`
         );
     },
 });

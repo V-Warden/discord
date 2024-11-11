@@ -1,5 +1,5 @@
 import { Command } from '../../structures/Command';
-import actionGlobal from '../../utils/actioning/actionGlobal';
+// import actionGlobal from '../../utils/actioning/actionGlobal';
 import { sendSuccess } from '../../utils/messages';
 
 export default new Command({
@@ -7,8 +7,7 @@ export default new Command({
     description: 'Initiates a global scan',
     main: true,
     defaultMemberPermissions: 'Administrator',
-    run: async ({ interaction, client }) => {
-        sendSuccess(interaction, 'Globally scanning..');
-        return actionGlobal(client);
+    run: async ({ interaction }) => {
+        sendSuccess(interaction, 'Global scan is disabled');
     },
 });
