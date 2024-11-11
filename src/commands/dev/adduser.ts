@@ -68,8 +68,8 @@ export default new Command({
         } else {
             await db.createUser({
                 id,
-                last_username: user?.username ? `${user.username}#${user.discriminator}` : 'unknown#0000',
-                avatar: user.avatarURL() ?? 'https://chibi.iitranq.co.uk/w70AB7OgtqiQ.png',
+                last_username: 'unknown#0000',
+                avatar: 'https://chibi.iitranq.co.uk/w70AB7OgtqiQ.png',
                 type,
                 status,
                 reason,
@@ -99,7 +99,7 @@ export default new Command({
 
         return sendSuccess(
             interaction,
-            `Successfully upserted user ${user.username}#${user.discriminator} (${id})`
+            `**User:** <@${id}> **Status:** Successfully upserted`
         );
     },
 });
