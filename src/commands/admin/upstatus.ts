@@ -72,7 +72,7 @@ export default new Command({
         
         return sendSuccess(
             interaction,
-            ` Successfully changed ${id} status to \`${status}\` and type to \`${type}\``
+            ` Successfully changed <@${id}> status to \`${status}\` and type to \`${type}\``
         );
     },
 });
