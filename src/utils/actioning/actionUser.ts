@@ -1,12 +1,13 @@
-import { Punish, Punishments, Users } from '@prisma/client';
 import { Client, Guild, TextChannel, PermissionsBitField } from 'discord.js';
 import { Colours } from '../../@types/Colours';
-import logger, { logException } from '../logger';
-import sendEmbed from '../messages/sendEmbed';
+import { generateErrorID } from '../../utils/misc';
 import { getPunishment } from './utils';
-import db from '../database';
+import { Punish, Punishments, Users } from '@prisma/client';
 import actionAppeal from './actionAppeal';
+import db from '../database';
+import logger, { logException } from '../logger';
 import queueActionSend from '../queues/queueActionSend';
+import sendEmbed from '../messages/sendEmbed';
 
 /**
  * Actions a user on a specific guild
@@ -27,22 +28,22 @@ export default async function actionUser(
     if (member.user.bot) return false;
 
     const importsPromise = db.getImports(user.id);
-    const allImportsPromise = db.getAllImports(user.id)
-    const appealedImportsPromise = db.getAppealedImports(user.id)
+    const allImportsPromise = db.getAllImports(user.id);
+    const appealedImportsPromise = db.getAppealedImports(user.id);
 
-    const [imports, allImports, appealedImports] = await Promise.all([importsPromise, allImportsPromise, appealedImportsPromise])
+    const [imports, allImports, appealedImports] = await Promise.all([importsPromise, allImportsPromise, appealedImportsPromise]);
 
     if (allImports.length === 0) {
-        await actionAppeal(client, user.id)
-        await db.deleteUser(user.id)
+        await actionAppeal(client, user.id);
+        await db.deleteUser(user.id);
         return false;
     }
 
     if (user.status === 'BLACKLISTED' && user.reason === 'Unspecified' && allImports.length === appealedImports.length) {
-        await db.updateUser(user.id, {status: 'APPEALED', appeals: {increment: 1}})
-        await actionAppeal(client, user.id)
-        return false
-    };
+        await db.updateUser(user.id, { status: 'APPEALED', appeals: { increment: 1 } });
+        await actionAppeal(client, user.id);
+        return false;
+    }
 
     let realCount = 0;
     try {
@@ -59,10 +60,11 @@ export default async function actionUser(
             realCount = imports.length;
         }
     } catch (e) {
-        return logger.error({
+        logger.error({
             labels: { action: 'actionUser', userId: user.id, guildId: member.guild.id },
             message: e,
         });
+        return false;
     }
 
     const toDo: Punish = getPunishment(user.type, punishments);
@@ -76,23 +78,35 @@ export default async function actionUser(
 
     if (!channel) return false;
 
-    if (toDo === 'WARN') {
+    await queueActionSend(user.id, member.guild.id, toDo).catch(e => {
+        const errorId = generateErrorID();
+        logger.error({
+            labels: { action: 'actionUser', guildId: member.guild.id },
+            message: e instanceof Error ? e.message : JSON.stringify(e),
+        });
+
         sendEmbed({
             channel,
             embed: {
-                description: `:warning: User <@${
-                    member.id
-                }> has been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()} / **User Type**: ${user.type.toLowerCase()}`,
-                color: Colours.GREEN,
+                description: `\`🔴\` An unexpected error has occurred\n> Error ID: \`${errorId}\`\n> Please try again later. If this issue persists, please contact support [Warden Discord](https://discord.gg/MVNZR73Ghf)`,
+                color: Colours.RED,
             },
         });
-        
+    });
+
+    if (toDo === 'WARN') {
         logger.info({
             labels: { action: 'actionUser', guildId: member.guild.id },
             message: `Queued - ${toDo} - ${user.id} - ${member.guild.id}`,
         });
 
-        queueActionSend(user.id, member.guild.id, toDo);
+        sendEmbed({
+            channel,
+            embed: {
+                description: `:warning: User <@${member.id}> has been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()} / **User Type**: ${user.type.toLowerCase()}`,
+                color: Colours.GREEN,
+            },
+        });
 
         return true;
     } else if (toDo === 'ROLE') {
@@ -100,9 +114,9 @@ export default async function actionUser(
             if (!punishments.roleId) throw new Error('Invalid role id set');
             const oldRoles = member.roles.cache.map(x => x.id).join(',');
 
-            const hasBlacklisedAlready = member.roles.cache.find(x => x.id === punishments.roleId);
-            if (hasBlacklisedAlready) return;
-            
+            const hasBlacklistedAlready = member.roles.cache.find(x => x.id === punishments.roleId);
+            if (hasBlacklistedAlready) return false;
+
             // Get managed roles (linked roles)
             const managedRoles = member.roles.cache.filter(role => role.managed).map(role => role.id);
 
@@ -118,22 +132,18 @@ export default async function actionUser(
                 Guild: { connect: { id: punishments.id } },
             });
 
-            sendEmbed({
-                channel,
-                embed: {
-                    description: `:shield: User <@${
-                        member.id
-                    }> has been punished with a ROLE.\nThey have been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()}`,
-                    color: Colours.GREEN,
-                },
-            });
-
             logger.info({
                 labels: { action: 'actionUser', guildId: member.guild.id },
                 message: `ROLE ADDED (${punishments.roleId}) - ${user.id} - ${member.guild.id}`,
             });
 
-            queueActionSend(user.id, member.guild.id, toDo);
+            sendEmbed({
+                channel,
+                embed: {
+                    description: `:shield: User <@${member.id}> has been punished with a ROLE.\nThey have been seen in ${realCount == 0 ? 1 : realCount} bad discord servers.\n**User Status**: ${user.status.toLowerCase()}`,
+                    color: Colours.GREEN,
+                },
+            });
 
             return true;
         } catch (e: any) {
@@ -143,35 +153,34 @@ export default async function actionUser(
             if (typeof botRole === 'undefined' || typeof memRole === 'undefined' || typeof punishments.roleId === 'undefined') return;
             const botCanMan = await guild?.members?.me?.permissions?.has(PermissionsBitField?.Flags.ManageRoles);
             if (typeof botCanMan === 'boolean' && typeof botRole == 'number' && typeof memRole == 'number') {
-                return sendEmbed({
+                sendEmbed({
                     channel,
                     embed: {
-                        description: `I tried to remove this users role and set them to \`${punishments.roleId}\`, however I encountered an error. \n> Debug: ${botRole} - ${memRole} - ${botCanMan}\n> Error ID: ${errorId}`,
+                        description: `I tried to remove this user's role and set them to \`${punishments.roleId}\`, however I encountered an error. \n> Debug: ${botRole} - ${memRole} - ${botCanMan}\n> Error ID: ${errorId}`,
                         color: Colours.RED,
                     },
                 });
             } else {
-                return sendEmbed({
+                sendEmbed({
                     channel,
                     embed: {
-                        description: `I tried to remove this users role and set them to \`${punishments.roleId}\`, however I encountered an error. \n> Error ID: ${errorId}`,
+                        description: `I tried to remove this user's role and set them to \`${punishments.roleId}\`, however I encountered an error. \n> Error ID: ${errorId}`,
                         color: Colours.RED,
                     },
                 });
             }
+            return false;
         }
     } else if (toDo === 'KICK' || toDo === 'BAN') {
-        queueActionSend(user.id, member.guild.id, toDo);
-
         logger.info({
             labels: { action: 'actionUser', guildId: member.guild.id },
             message: `Queued - ${toDo} - ${user.id} - ${member.guild.id}`,
         });
 
         if (punishments.roleId) {
-            const hasBlacklisedAlready = member.roles.cache.find(x => x.id === punishments.roleId);
-            if (hasBlacklisedAlready) return;
-            
+            const hasBlacklistedAlready = member.roles.cache.find(x => x.id === punishments.roleId);
+            if (hasBlacklistedAlready) return false;
+
             // Get managed roles (linked roles)
             const managedRoles = member.roles.cache.filter(role => role.managed).map(role => role.id);
 
@@ -188,6 +197,8 @@ export default async function actionUser(
                     color: Colours.YELLOW,
                 },
             });
+
+            return true;
         } else {
             sendEmbed({
                 channel,
@@ -196,9 +207,9 @@ export default async function actionUser(
                     color: Colours.YELLOW,
                 },
             });
-        }
 
-        return true;
+            return true;
+        }
     }
 
     return true;
