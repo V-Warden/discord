@@ -184,7 +184,7 @@ export default async function actionUser(
             sendEmbed({
                 channel,
                 embed: {
-                    description: `:shield: User <@${member.id}> has been seen in ${realCount == 0 ? 1 : realCount} bad discord servers and has been queued for ${toDo}.\n**User Status**: ${user.status.toLowerCase()}`,
+                    description: `:shield: User <@${member.id}> has been seen in ${realCount == 0 ? 1 : realCount} bad discord servers and has been queued for a ${toDo}.\n**User Status**: ${user.status.toLowerCase()}`,
                     color: Colours.YELLOW,
                 },
             });
@@ -192,7 +192,7 @@ export default async function actionUser(
             sendEmbed({
                 channel,
                 embed: {
-                    description: `:shield: User <@${member.id}> has been seen in ${realCount == 0 ? 1 : realCount} bad discord servers and has been queued for ${toDo}.\n**User Status**: ${user.status.toLowerCase()}\n\nPlease configure a punishment role through Warden to prevent interactions until the action is completed.`,
+                    description: `:shield: User <@${member.id}> has been seen in ${realCount == 0 ? 1 : realCount} bad discord servers and has been queued for a ${toDo}.\n**User Status**: ${user.status.toLowerCase()}\n\nPlease configure a punishment role through Warden to prevent interactions until the action is completed.`,
                     color: Colours.YELLOW,
                 },
             });

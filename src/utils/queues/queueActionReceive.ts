@@ -5,7 +5,6 @@ import db from '../database';
 import sendEmbed from '../messages/sendEmbed';
 import { generateErrorID } from '../misc';
 import { Colours } from '../../@types/Colours';
-import { set } from 'lodash'
 
 const USERNAME = process.env.RABBITMQ_USER;
 const PASSWORD = process.env.RABBITMQ_PASS;
@@ -220,19 +219,26 @@ async function processMessage(client: Client, msg: amqp.ConsumeMessage | null) {
         });
 
         messageQueue.push(async () => {
-            await dmUser(client, id, guildId, punishment);
-            if (punishment === 'BAN' || punishment === 'KICK') await actionUser(client, id, guildId, punishment);
-            channel!.ack(msg);
+            try {
+                await dmUser(client, id, guildId, punishment);
+                if (punishment === 'BAN' || punishment === 'KICK') await actionUser(client, id, guildId, punishment);
+                channel!.ack(msg);
 
-            messageCount++;
+                messageCount++;
 
-            // Wait 500ms between each dmUser
-            await new Promise(resolve => setTimeout(resolve, 500));
+                // Wait 500ms between each dmUser
+                await new Promise(resolve => setTimeout(resolve, 500));
 
-            // Every 10 DMs, wait 10s seconds
-            if (messageCount % 10 === 0) {
-                logger.info({ message: `Processed ${messageCount} users, waiting 10 seconds` });
-                await new Promise(resolve => setTimeout(resolve, 10000));
+                // Every 10 DMs, wait 10s seconds
+                if (messageCount % 10 === 0) {
+                    logger.info({ message: `Processed ${messageCount} users, waiting 10 seconds` });
+                    await new Promise(resolve => setTimeout(resolve, 10000));
+                }
+            } catch (error) {
+                logger.error({
+                    labels: { action: 'processMessage', guildId: guildId },
+                    message: `Error processing message for user ${id}: ${error}`,
+                });
             }
         });
     }
