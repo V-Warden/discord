@@ -1,9 +1,10 @@
-import { Command } from '../../structures/Command';
-import { chunk } from 'lodash';
 import { APIEmbed } from 'discord.js';
+import { chunk } from 'lodash';
 import { Colours } from '../../@types/Colours';
-import sendPagination from '../../utils/messages/sendPagination';
+import { Command } from '../../structures/Command';
 import db from '../../utils/database';
+import logger from '../../utils/logger';
+import sendPagination from '../../utils/messages/sendPagination';
 
 export default new Command({
     name: 'badservers',
@@ -25,6 +26,12 @@ export default new Command({
                 color: Colours.RED,
             });
         });
+
+        logger.info({
+            labels: { command: 'badservers', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+            message: `${interaction?.user?.tag} requested bad servers list`,
+        });
+
         return sendPagination(interaction, pages, 60000);
     },
 });

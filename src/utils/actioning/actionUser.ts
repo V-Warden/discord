@@ -62,7 +62,7 @@ export default async function actionUser(
     } catch (e) {
         logger.error({
             labels: { action: 'actionUser', userId: user.id, guildId: member.guild.id },
-            message: e,
+            message: e instanceof Error ? e.message : JSON.stringify(e),
         });
         return false;
     }
@@ -88,7 +88,7 @@ export default async function actionUser(
         sendEmbed({
             channel,
             embed: {
-                description: `\`🔴\` An unexpected error has occurred\n> Error ID: \`${errorId}\`\n> Please try again later. If this issue persists, please contact support [Warden Discord](https://discord.gg/MVNZR73Ghf)`,
+                description: `\`🔴\` An unexpected error has occured\n> Error ID: \`${errorId}\`\n> Please report this in the [Warden Discord](https://discord.gg/MVNZR73Ghf)`,
                 color: Colours.RED,
             },
         });
@@ -96,8 +96,8 @@ export default async function actionUser(
 
     if (toDo === 'WARN') {
         logger.info({
-            labels: { action: 'actionUser', guildId: member.guild.id },
-            message: `Queued - ${toDo} - ${user.id} - ${member.guild.id}`,
+            labels: { action: 'actionUser', userId: user.id, guildId: member.guild.id },
+            message: `${member.user.username} (${user.id}) was found in ${member.guild.name} (${member.guild.id}) and has been queued for a direct message`,
         });
 
         sendEmbed({
@@ -134,7 +134,7 @@ export default async function actionUser(
 
             logger.info({
                 labels: { action: 'actionUser', guildId: member.guild.id },
-                message: `ROLE ADDED (${punishments.roleId}) - ${user.id} - ${member.guild.id}`,
+                message: `${member.user.username} (${user.id}) was found in ${member.guild.name} (${member.guild.id}) has been given the role ${punishments.roleId} and has been queued for a direct message`,
             });
 
             sendEmbed({
@@ -174,7 +174,7 @@ export default async function actionUser(
     } else if (toDo === 'KICK' || toDo === 'BAN') {
         logger.info({
             labels: { action: 'actionUser', guildId: member.guild.id },
-            message: `Queued - ${toDo} - ${user.id} - ${member.guild.id}`,
+            message: `${member.user.username} (${user.id}) was found in ${member.guild.name} (${member.guild.id}) and has been queued for a ${toDo} and direct message`,
         });
 
         if (punishments.roleId) {

@@ -6,6 +6,7 @@ import { mapAnyType } from '../../utils/misc';
 import { sendError } from '../../utils/messages';
 import { UserType, UserStatus } from '@prisma/client';
 import db from '../../utils/database';
+import logger from '../../utils/logger';
 import sendPagination from '../../utils/messages/sendPagination';
 
 export default new Command({
@@ -130,6 +131,11 @@ export default new Command({
             color: Colours.GREEN,
             fields: chunk,
         }));
+
+        logger.info({
+            labels: { command: 'multiadduser', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+            message: `${interaction?.user?.tag} added ${ids.length} users to the database`,
+        });
 
         sendPagination(interaction, pages, 180000);
         return;

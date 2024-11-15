@@ -1,12 +1,13 @@
 import { ApplicationCommandOptionType } from 'discord.js';
-import { UserType } from '@prisma/client';
+import { capitalize } from '../../utils/misc';
+import { Colours } from '../../@types/Colours';
 import { Command } from '../../structures/Command';
 import { sendSuccess } from '../../utils/messages';
-import sendEmbed from '../../utils/messages/sendEmbed';
-import { Colours } from '../../@types/Colours';
-import { capitalize } from '../../utils/misc';
-import db from '../../utils/database';
+import { UserType } from '@prisma/client';
 import actionAppeal from '../../utils/actioning/actionAppeal';
+import db from '../../utils/database';
+import logger from '../../utils/logger';
+import sendEmbed from '../../utils/messages/sendEmbed';
 
 export default new Command({
     name: 'checkuser',
@@ -58,7 +59,13 @@ export default new Command({
             allImports.length === appealedImports.length
         ) {
             await db.updateUser(data.id, { status: 'APPEALED', appeals: { increment: 1 } });
-            await actionAppeal(client, data.id);
+            await actionAppeal(client, data.id).catch(e => {
+                logger.error({
+                    labels: { command: 'checkuser', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                });
+            });
+            
             return sendSuccess(
                 interaction,
                 'No results found for this ID.\n> They are either fine or not yet listed.'
@@ -75,6 +82,11 @@ export default new Command({
         } else {
             reason = 'blacklisted by Warden.';
         }
+
+        logger.info({
+            labels: { command: 'checkuser', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+            message: `${interaction?.user?.tag} checked ${id}`,
+        });
 
         return sendEmbed({
             interaction,

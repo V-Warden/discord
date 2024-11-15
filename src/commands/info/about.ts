@@ -1,11 +1,17 @@
 import { Colours } from '../../@types/Colours';
 import { Command } from '../../structures/Command';
+import logger from '../../utils/logger';
 import sendEmbed from '../../utils/messages/sendEmbed';
 
 export default new Command({
     name: 'about',
     description: 'Information about this bot, its purpose and author',
     run: async ({ interaction }) => {
+        logger.info({
+            labels: { command: 'about', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+            message: `${interaction?.user?.tag} requested information about the bot`,
+        });
+        
         return sendEmbed({
             interaction,
             embed: {

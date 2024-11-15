@@ -38,13 +38,13 @@ export default new Command({
             return sendError(interaction, 'You must provide either a name, id or invite to check');
 
         let lookup: any;
-        if (invite) {
-            logger.info({
-                labels: { event: 'checkserver', guildId: interaction?.guild?.id },
-                message: `Checkserver requested by ${interaction?.user?.id} against ${invite}`,
+        if (invite) {        
+            const inv = await client.fetchInvite(invite).then(inv => inv).catch(e => {
+                logger.error({
+                    labels: { command: 'checkserver', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                });
             });
-            
-            const inv = await client.fetchInvite(invite).then(inv => inv).catch(() => null);
             if (!inv) return sendError(interaction, 'Invalid invite or invite has expired');
 
             lookup = { id: inv?.guild?.id };
@@ -65,6 +65,11 @@ export default new Command({
         if (!server) return sendSuccess(interaction, 'Server not found in the database');
 
         const addedBy = /^\d+$/.test(server.addedBy) ? `<@${server.addedBy}>` : server.addedBy;
+
+        logger.info({
+            labels: { command: 'checkserver', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+            message: `${interaction?.user?.tag} checked server ${server.id}`,
+        });
 
         return sendEmbed({
             interaction,

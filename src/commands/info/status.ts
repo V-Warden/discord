@@ -1,10 +1,11 @@
 import { Colours } from '../../@types/Colours';
 import { Command } from '../../structures/Command';
-import sendEmbed from '../../utils/messages/sendEmbed';
 import { formatSeconds } from '../../utils/misc';
-import db from '../../utils/database';
 import { sendError } from '../../utils/messages';
 import { totalQueue, processedMessage } from '../../utils/queues/queueActionReceive';
+import db from '../../utils/database';
+import logger from '../../utils/logger';
+import sendEmbed from '../../utils/messages/sendEmbed';
 
 // Store the bot start time
 const botStartTime = Date.now();
@@ -34,11 +35,17 @@ export default new Command({
         if (!res) return sendError(interaction, 'No shards available..?');
 
         const guilds = res.reduce((a, b) => a + b.guilds, 0);
+
+        logger.info({
+            labels: { command: 'status', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+            message: `${interaction?.user?.tag} requested bot status`,
+        });
+
         return sendEmbed({
             interaction,
             embed: {
                 title: ':desktop: Bot Status',
-                color: Colours.GREEN,
+                color: Colours.BLUE,
                 fields: [
                     {
                         name: 'Shard Count',

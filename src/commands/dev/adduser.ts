@@ -1,9 +1,10 @@
-import { UserType, UserStatus } from '@prisma/client';
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Command } from '../../structures/Command';
-import db from '../../utils/database';
-import { sendError, sendSuccess } from '../../utils/messages';
 import { mapAnyType } from '../../utils/misc';
+import { sendError, sendSuccess } from '../../utils/messages';
+import { UserType, UserStatus } from '@prisma/client';
+import db from '../../utils/database';
+import logger from '../../utils/logger';
 
 export default new Command({
     name: 'adduser',
@@ -56,7 +57,12 @@ export default new Command({
         const isBadServer = await db.getBadServer({ id: server });
         if (!isBadServer) return sendError(interaction, 'Server is not blacklisted');
 
-        const user = await client.users.fetch(id);
+        const user = await client.users.fetch(id).catch(e => {
+            logger.error({
+                labels: { command: 'adduser', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                message: e instanceof Error ? e.message : JSON.stringify(e),
+            });
+        });
         if (!user) return sendError(interaction, 'Invalid id provided');
 
         const count = await db.userExist(id);
@@ -96,6 +102,11 @@ export default new Command({
                 },
             });
         }
+
+        logger.info({
+            labels: { command: 'adduser', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+            message: `${interaction?.user?.tag} added user ${id} to the database`,
+        });
 
         return sendSuccess(
             interaction,

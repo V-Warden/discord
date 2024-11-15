@@ -1,10 +1,10 @@
-import { Bans, Roles } from '@prisma/client';
 import { ApplicationCommandOptionType } from 'discord.js';
+import { Bans, Roles } from '@prisma/client';
 import { Command } from '../../structures/Command';
-import db from '../../utils/database';
-import logger from '../../utils/logger';
 import { logException } from '../../utils/logger';
 import { sendError, sendSuccess } from '../../utils/messages';
+import db from '../../utils/database';
+import logger from '../../utils/logger';
 
 export default new Command({
     name: 'forceexport',
@@ -24,8 +24,8 @@ export default new Command({
 
         if (!client.shard) {
             logger.warn({
-                labels: { userId: id },
-                message: 'No shards online, unable to action appeal',
+                labels: { command: 'forceexport', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                message: 'No shards online, unable to run this command',
             });
             return sendError(interaction, 'No shards online, unable to run this command');
         }
@@ -97,6 +97,11 @@ export default new Command({
                     const rolesPromise = db.createArchiveRoles(result[i].roles);
                     await Promise.all([bansPromise, rolesPromise]);
 
+                    logger.info({
+                        labels: { command: 'forceexport', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: `${interaction?.user?.tag} forcefully exported ${result[i].bans.length} bans and ${result[i].roles.length} role punishments`,
+                    });
+
                     sendSuccess(
                         interaction,
                         `Successfully exported \`${result[i].bans.length}\` bans and \`${result[i].roles.length}\` role punishments`
@@ -104,8 +109,8 @@ export default new Command({
                     break;
                 } catch (e) {
                     logger.warn({
-                        labels: { command: 'forceexport', guildId: id },
-                        message: e,
+                        labels: { command: 'forceexport', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: e instanceof Error ? e.message : JSON.stringify(e),
                     });
                 }
             }

@@ -42,10 +42,14 @@ export class ExtendedClient extends Client {
 
     async registerCommands({ commands, guildId }: RegisterCommandsOptions) {
         if (guildId) {
-            await this.guilds.cache.get(guildId)?.commands.set(commands);
+            await this.guilds.cache.get(guildId)?.commands.set(commands).catch((e) => {
+                logger.error({ message: 'Error registering guild commands', error: e instanceof Error ? e.message : JSON.stringify(e) });
+            });
             logger.info({ message: 'Registering guildSpecfic' });
         } else {
-            await this.application?.commands.set(commands);
+            await this.application?.commands.set(commands).catch((e) => {
+                logger.error({ message: 'Error registering global commands', error: e instanceof Error ? e.message : JSON.stringify(e) });
+            });
             logger.info({ message: 'Registering globalCommands' });
         }
     }
@@ -77,11 +81,15 @@ export class ExtendedClient extends Client {
         this.on('ready', async () => {
             await this.registerCommands({
                 commands: globalCommands,
+            }).catch((e) => {
+                logger.error({ message: 'Error registering global commands', error: e instanceof Error ? e.message : JSON.stringify(e) });
             });
 
             await this.registerCommands({
                 commands: guildSpecfic,
                 guildId: process.env.guildId,
+            }).catch((e) => {
+                logger.error({ message: 'Error registering guild commands', error: e instanceof Error ? e.message : JSON.stringify(e) });
             });
 
             this.user?.setActivity({
@@ -90,7 +98,7 @@ export class ExtendedClient extends Client {
             });
 
             startReceiver(this).catch((e) => {
-                logger.error({ message: 'Error starting receiver', error: e });
+                logger.error({ message: 'Error starting receiver', error: e instanceof Error ? e.message : JSON.stringify(e) });
             });
         });
 
@@ -112,6 +120,7 @@ export class ExtendedClient extends Client {
         try {
             return await this.fetchInvite(invite);
         } catch {
+            logger.error({ message: 'Invalid invite' });
             return undefined;
         }
     }

@@ -1,11 +1,17 @@
 import { Colours } from '../../@types/Colours';
 import { Command } from '../../structures/Command';
+import logger from '../../utils/logger';
 import sendEmbed from '../../utils/messages/sendEmbed';
 
 export default new Command({
     name: 'invite',
     description: 'Shares the link to invite this bot to your own discord',
     run: async ({ interaction }) => {
+        logger.info({
+            labels: { command: 'invite', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+            message: `${interaction?.user?.tag} requested the invite link`,
+        });
+
         return sendEmbed({
             interaction,
             embed: {

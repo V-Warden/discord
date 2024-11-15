@@ -1,7 +1,8 @@
 import { ApplicationCommandOptionType, ChannelType, TextChannel } from 'discord.js';
 import { Command } from '../../structures/Command';
-import db from '../../utils/database';
 import { sendError, sendSuccess } from '../../utils/messages';
+import db from '../../utils/database';
+import logger from '../../utils/logger';
 
 export default new Command({
     name: 'fixguild',
@@ -19,10 +20,20 @@ export default new Command({
     run: async ({ interaction, client }) => {
         const id = interaction.options.get('id')?.value as string;
 
-        const guild = await client.guilds.fetch(id);
+        const guild = await client.guilds.fetch(id).catch(e => {
+            logger.error({
+                labels: { command: 'fixguild', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                message: e instanceof Error ? e.message : JSON.stringify(e),
+            });
+        });
         if (!guild) return sendError(interaction, 'Invalid guild id provided');
 
-        await guild.channels.fetch();
+        await guild.channels.fetch().catch(e => {
+            logger.error({
+                labels: { command: 'fixguild', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                message: e instanceof Error ? e.message : JSON.stringify(e),
+            });
+        });
         const channel = guild.channels.cache
             .filter(chan => chan?.type === ChannelType.GuildText)
             .first() as TextChannel;
@@ -36,6 +47,12 @@ export default new Command({
                 create: {},
             },
         });
+
+        logger.info({
+            labels: { command: 'fixguild', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+            message: `${interaction?.user?.tag} successfully created guild ${guild.name} (${guild.id})`,
+        });
+
         return sendSuccess(interaction, `Successfully created guild ${guild.name} (${guild.id})`);
     },
 });

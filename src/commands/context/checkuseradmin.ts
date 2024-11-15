@@ -1,14 +1,15 @@
-import { Users } from '@prisma/client';
 import { APIEmbed, ApplicationCommandType } from 'discord.js';
 import { capitalize, chunk } from 'lodash';
 import { Colours } from '../../@types/Colours';
 import { ContextMenu } from '../../structures/ContextMenu';
+import { sendSuccess, sendWarning } from '../../utils/messages';
+import { uploadText } from '../../utils/misc';
+import { Users } from '@prisma/client';
 import actionAppeal from '../../utils/actioning/actionAppeal';
 import db from '../../utils/database';
-import { sendSuccess, sendWarning } from '../../utils/messages';
+import logger from '../../utils/logger';
 import sendEmbed from '../../utils/messages/sendEmbed';
 import sendPagination from '../../utils/messages/sendPagination';
-import { uploadText } from '../../utils/misc';
 
 export default new ContextMenu({
     name: 'Check User Status (Admin)',
@@ -28,7 +29,12 @@ export default new ContextMenu({
 
         let historyResponse;
         if (history.length > 0) {
-            historyResponse = await uploadText(JSON.stringify(history, null, 4), '1h');
+            historyResponse = await uploadText(JSON.stringify(history, null, 4), '1h').catch(e => {
+                logger.error({
+                    labels: { command: 'checkuseradmin', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                });
+            });
         } else {
             historyResponse = 'No prior history';
         }
@@ -51,7 +57,12 @@ export default new ContextMenu({
             allImports.length === appealedImports.length
         ) {
             await db.updateUser(user.id, { status: 'APPEALED', appeals: { increment: 1 } });
-            await actionAppeal(client, user.id);
+            await actionAppeal(client, user.id).catch(e => {
+                logger.error({
+                    labels: { command: 'checkuseradmin', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                });
+            });
             return sendWarning(
                 interaction,
                 `User is apart of a unblacklisted server, correcting status and appealing\n\n> History: <${historyResponse}>\n> Notes: ${noteCount}`
@@ -75,7 +86,12 @@ export default new ContextMenu({
                 const roles = parsed['roles'].split(';');
                 const newData = [{ names, roles }];
 
-                const response = await uploadText(JSON.stringify(newData, null, 4), '1h');
+                const response = await uploadText(JSON.stringify(newData, null, 4), '1h').catch(e => {
+                    logger.error({
+                        labels: { command: 'checkuseradmin', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: e instanceof Error ? e.message : JSON.stringify(e),
+                    });
+                });
 
                 value.push(`Legacy Data\n> View data: <${response}>\n`);
             } else {
@@ -94,7 +110,7 @@ export default new ContextMenu({
             title: ':shield: User In Database',
             thumbnail: { url: '' },
             description: `<@${user.id}> has been seen in ${realCount} bad Discord servers.`,
-            color: Colours.RED,
+            color: Colours.BLUE,
         };
 
         const types = imports.map(x => x.type);
@@ -115,6 +131,12 @@ export default new ContextMenu({
             value: comments,
             inline: false,
         };
+
+        logger.info({
+            labels: { command: 'checkuseradmin', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+            message: `${interaction?.user?.tag} checked ${user.id}`,
+        });
+
         if (value.length >= 5) {
             const chunked = chunk(value, 5);
             const pages: APIEmbed[] = [];
@@ -122,7 +144,7 @@ export default new ContextMenu({
             chunked.forEach(chunk => {
                 pages.push({
                     ...mainEmbed,
-                    fields: [...[commonField], ...[{ name: 'New Servers', value: chunk.join('\n') }]],
+                    fields: [...[commonField], ...[{ name: 'Servers Found In', value: chunk.join('\n') }]],
                 });
             });
             sendPagination(interaction, pages, 180000);
@@ -138,7 +160,7 @@ export default new ContextMenu({
                             value:
                                 value.length > 0
                                     ? value.join('\n')
-                                    : `> User was upstatus'd therefore no new servers\n> Reason: ${user.reason}`,
+                                    : `> User was upstatus'd therefore no servers found in\n> Reason: ${user.reason}`,
                         },
                     ],
                 },

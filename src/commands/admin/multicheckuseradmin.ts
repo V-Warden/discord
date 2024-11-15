@@ -1,10 +1,11 @@
 import { APIEmbed, ApplicationCommandOptionType } from 'discord.js';
+import { chunk } from 'lodash';
 import { Colours } from '../../@types/Colours';
 import { Command } from '../../structures/Command';
 import { sendError } from '../../utils/messages';
 import db from '../../utils/database';
+import logger from '../../utils/logger';
 import sendPagination from '../../utils/messages/sendPagination';
-import { chunk } from 'lodash';
 
 export default new Command({
     name: 'multicheckuseradmin',
@@ -59,6 +60,11 @@ export default new Command({
             color: Colours.RED,
             fields: chunk,
         }));
+
+        logger.info({
+            labels: { command: 'multicheckuseradmin', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+            message: `${interaction?.user?.tag} requested multi check on ${ids.length} users`,
+        });
 
         sendPagination(interaction, pages, 180000);
         return;

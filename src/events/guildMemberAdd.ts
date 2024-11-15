@@ -1,9 +1,9 @@
 import { ChannelType, GuildMember, TextChannel } from 'discord.js';
-import { Event } from '../structures/Event';
 import { client } from '../bot';
+import { Event } from '../structures/Event';
 import actionUser from '../utils/actioning/actionUser';
-import logger from '../utils/logger';
 import db from '../utils/database';
+import logger from '../utils/logger';
 
 export default new Event('guildMemberAdd', async (member: GuildMember) => {
     if (member.user.bot) return false;
@@ -13,14 +13,18 @@ export default new Event('guildMemberAdd', async (member: GuildMember) => {
 
     if (!settings) {
         try {
-            logger.error({ guildId: guild.id, message: 'Guild has no settings, creating' });
+            logger.error({
+                labels: { event: 'guildMemberAdd', guildId: guild.id },
+                message: 'Guild has no settings, creating'
+            });
+            
             await guild.channels.fetch();
             const channel = guild.channels.cache
                 .filter(chan => chan?.type === ChannelType.GuildText)
                 .first() as TextChannel;
             if (!channel)
                 return logger.error({
-                    guildId: guild.id,
+                    labels: { event: 'guildMemberAdd', guildId: guild.id },
                     message: 'Guild has no text channels, cancelling creation',
                 });
 
@@ -34,8 +38,8 @@ export default new Event('guildMemberAdd', async (member: GuildMember) => {
             });
         } catch (e) {
             logger.error({
-                labels: { guildId: guild.id },
-                message: e,
+                labels: { event: 'guildMemberAdd', guildId: guild.id },
+                message: e instanceof Error ? e.message : JSON.stringify(e),
             });
         }
         return false;
