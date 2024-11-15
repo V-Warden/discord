@@ -1,7 +1,8 @@
 import { Colours } from '../../@types/Colours';
 import { Command } from '../../structures/Command';
-import sendEmbed from '../../utils/messages/sendEmbed';
 import db from '../../utils/database';
+import logger from '../../utils/logger';
+import sendEmbed from '../../utils/messages/sendEmbed';
 
 export default new Command({
     name: 'checkself',
@@ -27,14 +28,19 @@ export default new Command({
             badServers.push(x.BadServer.name);
         }
 
+        logger.info({
+            labels: { command: 'checkself', userId: interaction.user.id, guildId: interaction?.guild?.id },
+            message: `${interaction?.user?.tag} checked themselves for bad servers`,
+        });
+
         return sendEmbed({
             ephemeral: true,
             interaction,
             embed: {
-                description: `\`🔴\` You were recently found in the following servers:\`\`\`${badServers.join( 
+                description: `:notepad_spiral: You were found in the following servers:\`\`\`${badServers.join( 
                     '\n'
                 )}\`\`\`\n ⚠️ *This does not mean you are still a part of these servers. You could have been indexed while you were still in them at some point in the past. Warden does not actively track users in blacklisted servers.*`,
-                color: Colours.RED,
+                color: Colours.YELLOW,
             },
         });
     },

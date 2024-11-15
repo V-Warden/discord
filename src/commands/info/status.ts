@@ -1,15 +1,20 @@
 import { Colours } from '../../@types/Colours';
 import { Command } from '../../structures/Command';
-import sendEmbed from '../../utils/messages/sendEmbed';
 import { formatSeconds } from '../../utils/misc';
-import db from '../../utils/database';
 import { sendError } from '../../utils/messages';
+import { totalQueue, processedMessage } from '../../utils/queues/queueActionReceive';
+import db from '../../utils/database';
+import logger from '../../utils/logger';
+import sendEmbed from '../../utils/messages/sendEmbed';
+
+// Store the bot start time
+const botStartTime = Date.now();
 
 export default new Command({
     name: 'status',
     description: 'Shows bot status and stats about its services',
     run: async ({ interaction, client }) => {
-        const uptime = process.uptime();
+        const uptime = Math.floor((Date.now() - botStartTime) / 1000);
 
         // Could optimise this by caching result and storing for x minutes?
         const blacklistedUsersPromise = db.countAllBlacklistedUsers();
@@ -30,11 +35,17 @@ export default new Command({
         if (!res) return sendError(interaction, 'No shards available..?');
 
         const guilds = res.reduce((a, b) => a + b.guilds, 0);
+
+        logger.info({
+            labels: { command: 'status', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+            message: `${interaction?.user?.tag} requested bot status`,
+        });
+
         return sendEmbed({
             interaction,
             embed: {
                 title: ':desktop: Bot Status',
-                color: Colours.GREEN,
+                color: Colours.BLUE,
                 fields: [
                     {
                         name: 'Shard Count',
@@ -54,6 +65,16 @@ export default new Command({
                     {
                         name: 'Blacklisted Servers',
                         value: `I have ${blacklistedServers.toLocaleString()} blacklisted servers`,
+                        inline: false,
+                    },
+                    {
+                        name: 'Queue Length',
+                        value: `I have ${await totalQueue()} users in the queue`,
+                        inline: false,
+                    },
+                    {
+                        name: 'Queue Processed',
+                        value: `I have processed ${await processedMessage()} users`,
                         inline: false,
                     },
                     {

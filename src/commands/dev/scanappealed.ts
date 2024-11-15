@@ -22,8 +22,8 @@ export default new Command({
         const id = interaction.options.get('id')?.value as string;
         if (!client.shard) {
             logger.warn({
-                labels: { userId: id },
-                message: 'No shards online, unable to action appeal',
+                labels: { command: 'scanappealed', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                message: 'No shards online, unable to run this command',
             });
             return sendError(interaction, 'No shards online, unable to run this command');
         }
@@ -33,13 +33,28 @@ export default new Command({
 
         const result = await client.shard.broadcastEval(
             async (c, { guildId }) => {
-                await c.guilds.fetch();
+                await c.guilds.fetch().catch(e => {
+                    logger.error({
+                        labels: { command: 'scanappealed', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: e instanceof Error ? e.message : JSON.stringify(e),
+                    });
+                });
 
                 const guild = c.guilds.cache.find(x => x.id === guildId);
                 if (!guild) return { guild: false };
 
-                await guild.bans.fetch();
-                await guild.members.fetch();
+                await guild.bans.fetch().catch(e => {
+                    logger.error({
+                        labels: { command: 'scanappealed', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: e instanceof Error ? e.message : JSON.stringify(e),
+                    });
+                });
+                await guild.members.fetch().catch(e => {
+                    logger.error({
+                        labels: { command: 'scanappealed', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: e instanceof Error ? e.message : JSON.stringify(e),
+                    });
+                });
 
                 const bans = guild.bans.cache.map(x => {
                     return { id: x.user.id, reason: x.reason };
@@ -77,7 +92,12 @@ export default new Command({
 
         const res = await client.shard.broadcastEval(
             async (c, { guildId, users }) => {
-                await c.guilds.fetch();
+                await c.guilds.fetch().catch(e => {
+                    logger.error({
+                        labels: { command: 'scanappealed', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: e instanceof Error ? e.message : JSON.stringify(e),
+                    });
+                });
 
                 const guild = c.guilds.cache.find(x => x.id === guildId);
                 if (!guild) return { guild: false };
@@ -92,8 +112,8 @@ export default new Command({
                         count += 1;
                     } catch (e) {
                         logger.warn({
-                            labels: { command: 'scanappealed', guildId: id },
-                            message: e,
+                            labels: { command: 'scanappealed', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                            message: e instanceof Error ? e.message : JSON.stringify(e),
                         });
                     }
                 }
@@ -112,6 +132,12 @@ export default new Command({
 
             try {
                 await db.removeAllBans({ id: { in: res[x].unbanned }, guild: id });
+
+                logger.info({
+                    labels: { command: 'scanappealed', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                    message: res[x].message,
+                });
+
                 sendSuccess(interaction, `${res[x].message}`);
             } catch (e) {
                 sendSuccess(
@@ -122,8 +148,8 @@ SELECT b.id, b.guild FROM Bans b INNER JOIN Users u WHERE u.id = b.id AND b.guil
 \`\`\``
                 );
                 logger.warn({
-                    labels: { command: 'scanappealed', guildId: id },
-                    message: e,
+                    labels: { command: 'scanappealed', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                    message: e instanceof Error ? e.message : JSON.stringify(e),
                 });
             }
         }

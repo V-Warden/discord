@@ -1,8 +1,9 @@
 import { ApplicationCommandType, Invite, MessageContextMenuCommandInteraction } from 'discord.js';
-import { ServerType, BadServers } from '@prisma/client';
 import { ContextMenu } from '../../structures/ContextMenu';
 import { sendError, sendSuccess } from '../../utils/messages';
+import { ServerType, BadServers } from '@prisma/client';
 import db from '../../utils/database';
+import logger from '../../utils/logger';
 
 export default new ContextMenu({
     name: 'Blacklist Server',
@@ -17,7 +18,15 @@ export default new ContextMenu({
         const invite = split[0].replaceAll(' ', '');
         const type = split[1].replaceAll(' ', '').toUpperCase() as ServerType;
         const reason = split[2];
-        const server: undefined | Invite = await client.isValidInvite(invite);
+        let server: Invite | undefined;
+        try {
+            server = await client.isValidInvite(invite);
+        } catch (e) {
+            logger.error({
+                labels: { command: 'bsm', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                message: e instanceof Error ? e.message : JSON.stringify(e),
+            });
+        }
 
         if (!server?.guild) return sendError(interaction, 'Unknown Server');
 
@@ -58,9 +67,14 @@ export default new ContextMenu({
                 },
             });
 
+            logger.info({
+                labels: { command: 'bsm', guildId: interaction?.guild?.id },
+                message: `${interaction?.user?.tag} blacklisted server ${server.guild.name} (${server.guild.id}) as type ${type}`,
+            });
+
             return sendSuccess(
                 interaction,
-                `Successfully added \`${server.guild.id}\` - \`${server.guild.name}\` as a \`${type}\` bad server`,
+                `Successfully added bad server ${server.guild.name} (${server.guild.id}) as type ${type}`,
                 false
             );
         }

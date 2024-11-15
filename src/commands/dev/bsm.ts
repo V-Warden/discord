@@ -1,9 +1,10 @@
-import { BadServers, ServerType, UserStatus } from '@prisma/client';
 import { ApplicationCommandOptionType, Invite } from 'discord.js';
+import { BadServers, ServerType, UserStatus } from '@prisma/client';
 import { Command } from '../../structures/Command';
+import { sendError, sendSuccess } from '../../utils/messages';
 import actionAppeal from '../../utils/actioning/actionAppeal';
 import db from '../../utils/database';
-import { sendError, sendSuccess } from '../../utils/messages';
+import logger from '../../utils/logger';
 
 export default new Command({
     name: 'bsm',
@@ -76,7 +77,15 @@ export default new Command({
             const invite = interaction.options.get('invite')?.value as string;
             const type = interaction.options.get('type')?.value as ServerType;
             const reason = interaction.options.get('reason')?.value as string;
-            const server: undefined | Invite = await client.isValidInvite(invite);
+            let server: Invite | undefined;
+            try {
+                server = await client.isValidInvite(invite);
+            } catch (e) {
+                logger.error({
+                    labels: { command: 'bsm', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                });
+            }
 
             if (!server?.guild) return sendError(interaction, 'Unknown Server');
 
@@ -148,7 +157,12 @@ export default new Command({
                         },
                     });
                     await Promise.all([appealPromise, updatePromise]);
-                    await actionAppeal(client, User.id);
+                    await actionAppeal(client, User.id).catch(e => {
+                        logger.error({
+                            labels: { command: 'bsm', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                            message: e instanceof Error ? e.message : JSON.stringify(e),
+                        });
+                    });
                     await db.deleteUser(User.id);
                 } else {
                     const unappealedImports = await db.countUnappealedImports(User.id);
@@ -165,7 +179,12 @@ export default new Command({
                                     },
                                 });
                                 await Promise.all([appealPromise, updatePromise]);
-                                await actionAppeal(client, User.id);
+                                await actionAppeal(client, User.id).catch(e => {
+                                    logger.error({
+                                        labels: { command: 'bsm', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                        message: e instanceof Error ? e.message : JSON.stringify(e),
+                                    });
+                                });
                             } else {
                                 await db.appealSpecificImport(User.id, serverId);
                             }
@@ -175,6 +194,12 @@ export default new Command({
             }
 
             await db.deleteBadServer(serverId);
+
+            logger.info({
+                labels: { command: 'bsm', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                message: `${interaction?.user?.tag} removed ${serverId}`,
+            });
+            
             return true;
         } else return sendError(interaction, 'Invalid sub command');
     },

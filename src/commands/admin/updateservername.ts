@@ -1,8 +1,9 @@
-import { BadServers } from '@prisma/client';
 import { ApplicationCommandOptionType, Invite } from 'discord.js';
+import { BadServers } from '@prisma/client';
 import { Command } from '../../structures/Command';
-import db from '../../utils/database';
 import { sendError, sendSuccess } from '../../utils/messages';
+import db from '../../utils/database';
+import logger from '../../utils/logger';
 
 export default new Command({
     name: 'updateservername',
@@ -20,7 +21,15 @@ export default new Command({
     run: async ({ interaction, client }) => {
         const invite = interaction.options.get('invite')?.value as string;
 
-        const server: undefined | Invite = await client.isValidInvite(invite);
+        let server: Invite | undefined;
+        try {
+            server = await client.isValidInvite(invite);
+        } catch (e) {
+            logger.error({
+                labels: { command: 'updateservername', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                message: e instanceof Error ? e.message : JSON.stringify(e),
+            });
+        }
 
         if (!server?.guild) return sendError(interaction, 'Unknown Server');
 
@@ -41,6 +50,11 @@ export default new Command({
             name: server.guild?.name,
             oldNames: newOldNames.join('<>'),
             invite,
+        });
+
+        logger.info({
+            labels: { command: 'updateservername', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+            message: `${interaction?.user?.tag} updated server name ${exists.name} to ${server.guild?.name}`,
         });
 
         return sendSuccess(

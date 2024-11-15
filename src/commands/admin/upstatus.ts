@@ -66,13 +66,13 @@ export default new Command({
         }
 
         logger.info({
-            labels: { action: 'upstatus', guildId: interaction?.guild?.id },
-            message: `${interaction.user.id} updated ${id} to ${status} and ${type}`,
+            labels: { command: 'upstatus', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+            message: `${interaction?.user?.tag} updated ${id} to status: ${status}, type: ${type}${appeals ? `, appeals: ${appeals}` : ''}, with reason: ${reason}`,
         });
         
         return sendSuccess(
             interaction,
-            ` Successfully changed ${id} status to \`${status}\` and type to \`${type}\``
+            ` Successfully changed <@${id}> (${id}) status to \`${status}\` and type to \`${type}\``
         );
     },
 });

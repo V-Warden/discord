@@ -11,7 +11,7 @@ import { Bans, Roles } from '@prisma/client';
 export default async function (c: Client, id: string): Promise<boolean> {
     if (!c.shard) {
         logger.warn({
-            labels: { userId: id },
+            labels: { action: 'actionAppeal', userId: id },
             message: 'No shards online, unable to action appeal',
         });
         return false;
@@ -30,7 +30,12 @@ export default async function (c: Client, id: string): Promise<boolean> {
         async (client, { id, bans, roles }) => {
             const output = [];
 
-            await client.guilds.fetch();
+            await client.guilds.fetch().catch(e => {
+                output.push({
+                    labels: { action: 'actionAppeal' },
+                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                });
+            });
 
             const guilds = client.guilds.cache.map(x => x.id);
             const guildBans: Bans[] = bans.filter(x => guilds.some(a => a === x.guild));
@@ -63,7 +68,7 @@ export default async function (c: Client, id: string): Promise<boolean> {
                     } catch (e) {
                         output.push({
                             labels: { action: 'actionAppeal' },
-                            message: e,
+                            message: e instanceof Error ? e.message : JSON.stringify(e),
                         });
                     }
                 }
@@ -93,7 +98,7 @@ export default async function (c: Client, id: string): Promise<boolean> {
                     } catch (e) {
                         output.push({
                             labels: { action: 'actionAppeal' },
-                            message: e,
+                            message: e instanceof Error ? e.message : JSON.stringify(e),
                         });
                     }
                 }

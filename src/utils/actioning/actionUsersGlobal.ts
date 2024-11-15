@@ -9,7 +9,7 @@ import logger from '../logger';
 export default async function (c: Client, ids: string[]) {
     if (!c.shard)
         return logger.warn({
-            labels: { userIds: ids.join(', ') },
+            labels: { action: 'actionUsersGlobal' },
             message: 'No shards online, unable to action appeal',
         });
 
@@ -43,6 +43,11 @@ export default async function (c: Client, ids: string[]) {
 
                     if (userids.includes(member.id)) {
                         client.emit('guildMemberAdd', member);
+
+                        output.push({
+                            labels: { action: 'actionUsersGlobal', userId: member.id },
+                            message: `Actioning user globally in guild ${guild.id}`,
+                        });
                     }
                 }
 

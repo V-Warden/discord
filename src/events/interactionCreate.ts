@@ -1,7 +1,7 @@
 import { CommandInteractionOptionResolver } from 'discord.js';
 import { client } from '../bot';
 import { Event } from '../structures/Event';
-import { logException } from '../utils/logger';
+import logger from '../utils/logger';
 
 export default new Event('interactionCreate', async interaction => {
     // Chat Input Commands
@@ -18,7 +18,10 @@ export default new Event('interactionCreate', async interaction => {
                 interaction: interaction,
             });
         } catch (e) {
-            logException(interaction, e);
+            logger.error({
+                labels: { event: 'interactionCreate', command: interaction.commandName },
+                message: e instanceof Error ? e.message : JSON.stringify(e),
+            });
         }
     }
     // Context Menu Commands
@@ -32,7 +35,10 @@ export default new Event('interactionCreate', async interaction => {
                 interaction,
             });
         } catch (e) {
-            logException(interaction, e);
+            logger.error({
+                labels: { event: 'interactionCreate', command: interaction.commandName },
+                message: e instanceof Error ? e.message : JSON.stringify(e),
+            });
         }
     }
     return;

@@ -23,6 +23,11 @@ export default new Event('guildCreate', async guild => {
             },
         });
 
+        logger.info({
+            labels: { event: 'guildCreate', guildId: guild.id },
+            message: `Warden joined a new guild: ${guild.name}`,
+        });
+
         await sendEmbed({
             channel,
             embed: {
@@ -39,8 +44,8 @@ export default new Event('guildCreate', async guild => {
         });
     } catch (e) {
         logger.error({
-            labels: { guildId: guild.id },
-            message: e,
+            labels: { event: 'guildCreate', guildId: guild.id },
+            message: e instanceof Error ? e.message : JSON.stringify(e),
         });
     }
     return true;

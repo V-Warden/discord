@@ -1,10 +1,11 @@
-import { UserType } from '@prisma/client';
 import { ApplicationCommandType } from 'discord.js';
 import { capitalize } from 'lodash';
 import { Colours } from '../../@types/Colours';
 import { ContextMenu } from '../../structures/ContextMenu';
-import db from '../../utils/database';
 import { sendSuccess } from '../../utils/messages';
+import { UserType } from '@prisma/client';
+import db from '../../utils/database';
+import logger from '../../utils/logger';
 import sendEmbed from '../../utils/messages/sendEmbed';
 
 export default new ContextMenu({
@@ -36,13 +37,18 @@ export default new ContextMenu({
         } else {
             reason = 'blacklisted by Warden.';
         }
+        
+        logger.info({
+            labels: { command: 'checkuser', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+            message: `${interaction?.user?.tag} checked ${id}`,
+        });
 
         return sendEmbed({
             interaction,
             embed: {
                 title: ':shield: User Blacklisted',
                 description: `<@${id}> has been ${reason}`,
-                color: Colours.RED,
+                color: Colours.BLUE,
                 fields: [
                     {
                         name: 'User Information',
