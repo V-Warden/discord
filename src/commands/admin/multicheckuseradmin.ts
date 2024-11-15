@@ -57,7 +57,7 @@ export default new Command({
         const chunkedFields = chunk(fields, 10);
         const pages: APIEmbed[] = chunkedFields.map(chunk => ({
             title: ':shield: Multi CUA',
-            color: Colours.RED,
+            color: Colours.BLUE,
             fields: chunk,
         }));
 

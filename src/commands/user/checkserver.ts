@@ -75,7 +75,7 @@ export default new Command({
             interaction,
             embed: {
                 title: ':shield: Server Blacklisted',
-                color: Colours.RED,
+                color: Colours.BLUE,
                 fields: [
                     {
                         name: 'Server Information',

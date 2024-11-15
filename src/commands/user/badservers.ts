@@ -23,7 +23,7 @@ export default new Command({
                     icon_url: interaction.guild?.iconURL() ?? 'http://cdn.mk3ext.dev/vh5NME2rgr.png',
                 },
                 description: `\`\`\`ID                 | Name\n${chunk.join('\n')}\`\`\``,
-                color: Colours.RED,
+                color: Colours.BLUE,
             });
         });
 

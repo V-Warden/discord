@@ -18,7 +18,7 @@ export default new Command({
                 title: 'Invite Me',
                 description: `If you would like to invite me to your own discord: [Click Me](https://discord.com/api/oauth2/authorize?client_id=874059310869655662&permissions=8&scope=bot%20applications.commands)
                           \nI will need kick, ban and manage role permissions as well as a role higher than the users I am acting on.`,
-                color: Colours.GREEN,
+                color: Colours.BLUE,
             },
         });
     },

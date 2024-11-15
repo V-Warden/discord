@@ -180,7 +180,7 @@ export default new Command({
                             value: `Other -> \`${guild.punishments?.other}\`\nLeaker -> \`${guild.punishments?.leaker}\`\nCheater -> \`${guild.punishments?.cheater}\`\nSupporter -> \`${guild.punishments?.supporter}\`\nOwner -> \`${guild.punishments?.owner}\``,
                         },
                     ],
-                    color: Colours.GREEN,
+                    color: Colours.BLUE,
                 },
             });
         }

@@ -22,7 +22,7 @@ export default new Command({
                           \nI am the frontend for a database of users in Leaking and Cheating Discord servers, with settings to prevent those users from entering your discord server.
                           \nYou can join the Official Discord for more information: <https://discord.com/invite/MVNZR73Ghf>
                           \nFeel free to contribute here: <https://github.com/V-Warden/discord>`,
-                color: Colours.GREEN,
+                color: Colours.BLUE,
             },
         });
     },

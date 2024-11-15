@@ -93,7 +93,7 @@ export default new Command({
             embed: {
                 title: ':shield: User Blacklisted',
                 description: `<@${id}> has been ${reason}`,
-                color: Colours.RED,
+                color: Colours.BLUE,
                 fields: [
                     {
                         name: 'User Information',
