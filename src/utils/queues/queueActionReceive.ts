@@ -60,8 +60,8 @@ async function dmUser(client: Client, id: string, guildId: string, toDo: string)
         }
     } catch (e) {
         return logger.error({
-            labels: { action: 'actionUser', userId: id, guildId: member.guild.id },
-            message: e,
+            labels: { queue: 'queueActionReceive', userId: id, guildId: member.guild.id },
+            message: e instanceof Error ? e.message : JSON.stringify(e),
         });
     }
 
@@ -93,12 +93,12 @@ async function dmUser(client: Client, id: string, guildId: string, toDo: string)
         });
 
         logger.info({
-            labels: { action: 'actionUser', guildId: member.guild.id },
+            labels: { queue: 'queueActionReceive', guildId: member.guild.id },
             message: `Successfully send DM to user ${id}`,
         });
     } catch (e) {
         logger.error({
-            labels: { action: 'actionUser', guildId: member.guild.id },
+            labels: { queue: 'queueActionReceive', guildId: member.guild.id },
             message: `Unable to create DM with user ${id}`,
         });
     }
@@ -139,8 +139,8 @@ async function actionUser(client: Client, id: string, guildId: string, toDo: str
         }
     } catch (e) {
         return logger.error({
-            labels: { action: 'actionUser', userId: id, guildId: member.guild.id },
-            message: e,
+            labels: { queue: 'queueActionReceive', userId: id, guildId: member.guild.id },
+            message: e instanceof Error ? e.message : JSON.stringify(e),
         });
     }
 
@@ -175,7 +175,7 @@ async function actionUser(client: Client, id: string, guildId: string, toDo: str
             await db.createBan({ id: user.id, Guild: { connect: { id: punishments?.id } } });
         
         logger.info({
-            labels: { action: 'actionUser', guildId: member.guild.id },
+            labels: { queue: 'queueActionReceive', guildId: member.guild.id },
             message: `Successfully ${toDo} user ${id}`,
         });
 
@@ -202,8 +202,8 @@ async function actionUser(client: Client, id: string, guildId: string, toDo: str
         });
         
         return logger.error({
-            labels: { action: 'actionUser', guildId: member.guild.id, errorId: errorId },
-            message: e,
+            labels: { queue: 'queueActionReceive', guildId: member.guild.id, errorId: errorId },
+            message: e instanceof Error ? e.message : JSON.stringify(e),
         });
     }
 }
@@ -214,7 +214,7 @@ async function processMessage(client: Client, msg: amqp.ConsumeMessage | null) {
         const { id, guildId, punishment } = JSON.parse(content);
 
         logger.info({ 
-            action: 'actionUser', guildId: guildId,
+            queue: 'queueActionReceive', guildId: guildId,
             message: `Processing ${id} from queue with ${punishment}`
         });
 
@@ -236,7 +236,7 @@ async function processMessage(client: Client, msg: amqp.ConsumeMessage | null) {
                 }
             } catch (error) {
                 logger.error({
-                    labels: { action: 'processMessage', guildId: guildId },
+                    labels: { queue: 'queueActionReceive', guildId: guildId },
                     message: `Error processing message for user ${id}: ${error}`,
                 });
             }
