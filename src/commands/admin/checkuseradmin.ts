@@ -113,13 +113,28 @@ export default new Command({
                 realCount += 1;
                 const dateFirst = new Date(x.createdAt);
                 const dateLast = new Date(x.updatedAt);
-                value.push(
-                    `${x.BadServer.name}\n> Type: ${x.type} \n> Roles: ${x.roles
-                        .split(';')
-                        .join(
-                            ', '
-                        )}\n> First seen: ${dateFirst.toLocaleDateString()}\n> Last seen: ${dateLast.toLocaleDateString()}\n`
-                );
+                if (x.roles.length > 200) {
+                    const formattedRoles = x.roles.split(',').map(role => role.trim());
+
+                    const response = await uploadText(JSON.stringify(formattedRoles, null, 4), '1h').catch(e => {
+                        logger.error({
+                            labels: { command: 'checkuseradmin', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                            message: e instanceof Error ? e.message : JSON.stringify(e),
+                        });
+                    });
+
+                    value.push(
+                        `${x.BadServer.name}\n> Type: ${x.type} \n> Roles: <${response}>\n> First seen: ${dateFirst.toLocaleDateString()}\n> Last seen: ${dateLast.toLocaleDateString()}\n`
+                    );
+                } else {
+                    value.push(
+                        `${x.BadServer.name}\n> Type: ${x.type} \n> Roles: ${x.roles
+                            .split(';')
+                            .join(
+                                ', '
+                            )}\n> First seen: ${dateFirst.toLocaleDateString()}\n> Last seen: ${dateLast.toLocaleDateString()}\n`
+                    );
+                }
             }
         }
         const mainEmbed = {
