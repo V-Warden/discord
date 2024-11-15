@@ -213,13 +213,13 @@ async function processMessage(client: Client, msg: amqp.ConsumeMessage | null) {
         const content = msg.content.toString();
         const { id, guildId, punishment } = JSON.parse(content);
 
-        logger.info({ 
-            queue: 'queueActionReceive', userId: id, guildId: guildId,
-            message: `Processing user from queue with ${punishment}`
-        });
-
         messageQueue.push(async () => {
             try {
+                logger.info({ 
+                    labels: { queue: 'queueActionReceive', userId: id, guildId: guildId },
+                    message: `Processing user from queue with ${punishment}`
+                });
+
                 await dmUser(client, id, guildId, punishment);
                 if (punishment === 'BAN' || punishment === 'KICK') await actionUser(client, id, guildId, punishment);
                 channel!.ack(msg);
