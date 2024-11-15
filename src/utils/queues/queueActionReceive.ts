@@ -93,13 +93,13 @@ async function dmUser(client: Client, id: string, guildId: string, toDo: string)
         });
 
         logger.info({
-            labels: { queue: 'queueActionReceive', guildId: member.guild.id },
-            message: `Successfully send DM to user ${id}`,
+            labels: { queue: 'queueActionReceive', userId: id, guildId: member.guild.id },
+            message: `Successfully send DM to user`,
         });
     } catch (e) {
         logger.error({
-            labels: { queue: 'queueActionReceive', guildId: member.guild.id },
-            message: `Unable to create DM with user ${id}`,
+            labels: { queue: 'queueActionReceive', userId: id, guildId: member.guild.id },
+            message: `Unable to create DM with user`,
         });
     }
 
@@ -175,8 +175,8 @@ async function actionUser(client: Client, id: string, guildId: string, toDo: str
             await db.createBan({ id: user.id, Guild: { connect: { id: punishments?.id } } });
         
         logger.info({
-            labels: { queue: 'queueActionReceive', guildId: member.guild.id },
-            message: `Successfully ${toDo} user ${id}`,
+            labels: { queue: 'queueActionReceive', userId: id, guildId: member.guild.id },
+            message: `Successfully ${toDo} user`,
         });
 
         sendEmbed({
@@ -214,8 +214,8 @@ async function processMessage(client: Client, msg: amqp.ConsumeMessage | null) {
         const { id, guildId, punishment } = JSON.parse(content);
 
         logger.info({ 
-            queue: 'queueActionReceive', guildId: guildId,
-            message: `Processing ${id} from queue with ${punishment}`
+            queue: 'queueActionReceive', userId: id, guildId: guildId,
+            message: `Processing user from queue with ${punishment}`
         });
 
         messageQueue.push(async () => {
