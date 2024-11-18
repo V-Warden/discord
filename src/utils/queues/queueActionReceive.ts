@@ -215,7 +215,6 @@ async function processMessage(client: Client, msg: amqp.ConsumeMessage | null) {
 
         messageQueue.push(async () => {
             try {
-                
                 logger.info({ 
                     labels: { queue: 'queueActionReceive', userId: id, guildId: guildId },
                     message: `Processing user from queue with ${punishment}`
