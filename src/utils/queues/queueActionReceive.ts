@@ -215,11 +215,12 @@ async function processMessage(client: Client, msg: amqp.ConsumeMessage | null) {
 
         messageQueue.push(async () => {
             try {
+                
                 logger.info({ 
                     labels: { queue: 'queueActionReceive', userId: id, guildId: guildId },
                     message: `Processing user from queue with ${punishment}`
                 });
-
+                
                 await dmUser(client, id, guildId, punishment);
                 if (punishment === 'BAN' || punishment === 'KICK') await actionUser(client, id, guildId, punishment);
                 channel!.ack(msg);
@@ -235,6 +236,8 @@ async function processMessage(client: Client, msg: amqp.ConsumeMessage | null) {
                     await new Promise(resolve => setTimeout(resolve, 10000));
                 }
             } catch (error) {
+                channel!.ack(msg);
+
                 logger.error({
                     labels: { queue: 'queueActionReceive', guildId: guildId },
                     message: `Error processing message for user ${id}: ${error}`,
