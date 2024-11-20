@@ -14,7 +14,6 @@ import { RegisterCommandsOptions, CommandType, MenuType } from '../@types';
 import path from 'path';
 import logger from '../utils/logger';
 import { startReceiver } from '../utils/queues/queueActionReceive';
-import {lruInfinity, setCache} from '../utils/cache';
 
 export class ExtendedClient extends Client {
     commands: Collection<string, CommandType> = new Collection();
@@ -97,9 +96,6 @@ export class ExtendedClient extends Client {
                 type: ActivityType.Watching,
                 name: 'discord.gg/MVNZR73Ghf',
             });
-
-            const botStartTime = Date.now();
-            await setCache('botStartTime', botStartTime, lruInfinity);
 
             startReceiver(this).catch((e) => {
                 logger.error({ message: 'Error starting receiver', error: e instanceof Error ? e.message : JSON.stringify(e) });
