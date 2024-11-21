@@ -5,6 +5,7 @@ import db from '../database';
 import sendEmbed from '../messages/sendEmbed';
 import { generateErrorID } from '../misc';
 import { Colours } from '../../@types/Colours';
+import {lruInfinity, setCache, getCache} from '../../utils/cache';
 
 const USERNAME = process.env.RABBITMQ_USER;
 const PASSWORD = process.env.RABBITMQ_PASS;
@@ -12,7 +13,6 @@ const HOST = process.env.RABBITMQ_HOST;
 
 let connection: amqp.Connection | null = null;
 let channel: amqp.Channel | null = null;
-let messageCount = 0;
 const messageQueue: (() => Promise<void>)[] = [];
 
 async function getChannel() {
@@ -208,10 +208,19 @@ async function actionUser(client: Client, id: string, guildId: string, toDo: str
     }
 }
 
+async function updateTotalQueue() {
+    if (channel) {
+        const queue = 'actionUser';
+        const queueInfo = await channel.checkQueue(queue);
+        await setCache('actionQueue', queueInfo.messageCount, lruInfinity);
+    }
+}
+
 async function processMessage(client: Client, msg: amqp.ConsumeMessage | null) {
     if (msg) {
         const content = msg.content.toString();
         const { id, guildId, punishment } = JSON.parse(content);
+        await setCache('consumerCount', (await getCache('consumerCount', lruInfinity) || 0) + 1, lruInfinity);
 
         messageQueue.push(async () => {
             try {
@@ -224,10 +233,14 @@ async function processMessage(client: Client, msg: amqp.ConsumeMessage | null) {
                 if (punishment === 'BAN' || punishment === 'KICK') await actionUser(client, id, guildId, punishment);
                 channel!.ack(msg);
 
-                messageCount++;
-
-                // Wait 500ms between each dmUser
-                await new Promise(resolve => setTimeout(resolve, 500));
+                const getMessages = await getCache('actionMessages', lruInfinity);
+                const messageCount = getMessages ? getMessages + 1 : 1;
+                await setCache('actionMessages', messageCount, lruInfinity);
+                await updateTotalQueue();
+                await setCache('consumerCount', (await getCache('consumerCount', lruInfinity) || 0) - 1, lruInfinity);
+                
+                // Wait 1s between each dmUser
+                await new Promise(resolve => setTimeout(resolve, 1000));
 
                 // Every 10 DMs, wait 10s seconds
                 if (messageCount % 10 === 0) {
@@ -236,6 +249,12 @@ async function processMessage(client: Client, msg: amqp.ConsumeMessage | null) {
                 }
             } catch (error) {
                 channel!.ack(msg);
+
+                const getMessages = await getCache('actionMessages', lruInfinity);
+                const messageCount = getMessages ? getMessages + 1 : 1;
+                await setCache('actionMessages', messageCount, lruInfinity);
+                await updateTotalQueue();
+                await setCache('consumerCount', (await getCache('consumerCount', lruInfinity) || 0) - 1, lruInfinity);
 
                 logger.error({
                     labels: { queue: 'queueActionReceive', guildId: guildId },
@@ -261,7 +280,8 @@ async function totalQueue() {
     if (channel) {
         const queue = 'actionUser';
         const queueInfo = await channel.checkQueue(queue);
-        return queueInfo.messageCount + messageQueue.length;
+        await setCache('actionQueue', queueInfo.messageCount, lruInfinity);
+        return queueInfo.messageCount + (await getCache('consumerCount', lruInfinity) || 0);
     }
 
     return 0;
@@ -271,10 +291,6 @@ async function logQueueStatus() {
     if (channel) {
         logger.info({ message: `Total users to be actioned left in queue: ${await totalQueue()}` });
     }
-}
-
-function processedMessage() {
-    return messageCount;
 }
 
 async function startReceiver(client: Client) {
@@ -289,4 +305,4 @@ async function startReceiver(client: Client) {
     processQueue().catch(console.error);
 }
 
-export { startReceiver, totalQueue, processedMessage };
+export { startReceiver };
