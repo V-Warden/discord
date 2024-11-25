@@ -6,7 +6,8 @@ import {
     CommandInteraction,
     ComponentType,
 } from 'discord.js';
-import { logException } from '../logger';
+import logger from '../logger';
+
 
 export default async function (interaction: CommandInteraction, pages: APIEmbed[], time = 60000) {
     try {
@@ -89,20 +90,33 @@ export default async function (interaction: CommandInteraction, pages: APIEmbed[
 
                 collector.resetTimer();
             } catch (e) {
-                console.log(e);
+                logger.error({
+                    labels: { action: 'sendPagination', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                });
             }
         });
 
         collector.on('end', async i => {
-            await currentPage.edit({
-                embeds: [pages[index]],
-                components: [],
-            });
+            try {
+                await currentPage.edit({
+                    embeds: [pages[index]],
+                    components: [],
+                });
+            } catch (e) {
+                logger.error({
+                    labels: { action: 'sendPagination', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                });
+            }
         });
 
         return currentPage;
     } catch (e) {
-        logException(interaction, e);
+        logger.error({
+            labels: { action: 'sendPagination', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+            message: e instanceof Error ? e.message : JSON.stringify(e),
+        });
     }
     return;
 }
