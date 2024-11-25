@@ -81,7 +81,7 @@ export default new Command({
 
             logger.info({
                 labels: { command: 'scanusers', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                message: `${interaction?.user?.tag} has initiated a scan with a total of ${memberMap.length} members, ${actioned} blacklisted users have been actioned accordingly`,
+                message: `${interaction?.user?.tag} (${interaction?.user?.id}) has initiated a scan with a total of ${memberMap.length} members, ${actioned} blacklisted users have been actioned accordingly`,
             });
 
             sendEmbed({
