@@ -237,7 +237,8 @@ async function processMessage(client: Client, msg: amqp.ConsumeMessage | null) {
                 const messageCount = getMessages ? getMessages + 1 : 1;
                 await setCache('actionMessages', messageCount, lruInfinity);
                 await updateTotalQueue();
-                await setCache('consumerCount', (await getCache('consumerCount', lruInfinity) || 0) - 1, lruInfinity);
+                const consumerCount = await getCache('consumerCount', lruInfinity) || 0;
+                await setCache('consumerCount', consumerCount > 0 ? consumerCount - 1 : consumerCount, lruInfinity);
                 
                 // Wait 1s between each dmUser
                 await new Promise(resolve => setTimeout(resolve, 1000));
@@ -254,7 +255,8 @@ async function processMessage(client: Client, msg: amqp.ConsumeMessage | null) {
                 const messageCount = getMessages ? getMessages + 1 : 1;
                 await setCache('actionMessages', messageCount, lruInfinity);
                 await updateTotalQueue();
-                await setCache('consumerCount', (await getCache('consumerCount', lruInfinity) || 0) - 1, lruInfinity);
+                const consumerCount = await getCache('consumerCount', lruInfinity) || 0;
+                await setCache('consumerCount', consumerCount > 0 ? consumerCount - 1 : consumerCount, lruInfinity);
 
                 logger.error({
                     labels: { queue: 'queueActionReceive', guildId: guildId },
