@@ -20,7 +20,8 @@ export default new Command({
         },
     ],
     run: async ({ interaction, client }) => {
-        const id = interaction.options.getUser('user')?.id as string;
+        const member = interaction.options.getUser('user');
+        const id = member?.id as string;
         if (!id) return sendError(interaction, 'Invalid user or id provided');
 
         const user = await db.getUser(id);
@@ -45,7 +46,7 @@ export default new Command({
 
         logger.info({
             labels: { command: 'appeal', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-            message: `${interaction?.user?.tag} appealed ${id}`,
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) appealed ${member?.tag} (${id})`,
         });
 
         return actionAppeal(client, id);

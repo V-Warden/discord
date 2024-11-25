@@ -97,7 +97,7 @@ export default async function actionUser(
     if (toDo === 'WARN') {
         logger.info({
             labels: { action: 'actionUser', userId: user.id, guildId: member.guild.id },
-            message: `${member.user.username} (${user.id}) was found in ${member.guild.name} (${member.guild.id}) and has been queued for a direct message`,
+            message: `${member.user.username} (${user.id}) was seen in ${member.guild.name} (${member.guild.id}) and has been queued for a direct message`,
         });
 
         sendEmbed({
@@ -134,7 +134,7 @@ export default async function actionUser(
 
             logger.info({
                 labels: { action: 'actionUser', guildId: member.guild.id },
-                message: `${member.user.username} (${user.id}) was found in ${member.guild.name} (${member.guild.id}) has been given the role ${punishments.roleId} and has been queued for a direct message`,
+                message: `${member.user.username} (${user.id}) was seen in ${member.guild.name} (${member.guild.id}) has been given the role ${punishments.roleId} and has been queued for a direct message`,
             });
 
             sendEmbed({
@@ -174,7 +174,7 @@ export default async function actionUser(
     } else if (toDo === 'KICK' || toDo === 'BAN') {
         logger.info({
             labels: { action: 'actionUser', guildId: member.guild.id },
-            message: `${member.user.username} (${user.id}) was found in ${member.guild.name} (${member.guild.id}) and has been queued for a ${toDo} and direct message`,
+            message: `${member.user.username} (${user.id}) was seen in ${member.guild.name} (${member.guild.id}) and has been queued for a ${toDo} and direct message`,
         });
 
         if (punishments.roleId) {
