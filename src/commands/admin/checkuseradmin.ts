@@ -25,7 +25,8 @@ export default new Command({
         },
     ],
     run: async ({ interaction, client }) => {
-        const id = interaction.options.getUser('user')?.id as string;
+        const member = interaction.options.getUser('user');
+        const id = member?.id as string;
 
         const user = await db.getUser(id);
         if (!user) return sendSuccess(interaction, 'User not found in database');
@@ -165,7 +166,7 @@ export default new Command({
 
         logger.info({
             labels: { command: 'checkuseradmin', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-            message: `${interaction?.user?.tag} checked user ${user.id}`,
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) checked user ${member?.tag} (${user.id})`,
         });
 
         if (value.length >= 5) {

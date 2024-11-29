@@ -51,6 +51,7 @@ export default new Command({
         const type = interaction.options.get('type')?.value as UserType;
         const server = interaction.options.get('server')?.value as string;
         const reason = interaction.options.get('reason')?.value as string;
+        const member = await client.users.fetch(id).catch(() => null);
 
         if (id?.length < 17 || id?.length > 20) return sendError(interaction, 'Invalid ID provided');
 
@@ -105,7 +106,7 @@ export default new Command({
 
         logger.info({
             labels: { command: 'adduser', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-            message: `${interaction?.user?.tag} added user ${id} to the database`,
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) added user ${member?.tag} (${id}) to the database`,
         });
 
         return sendSuccess(

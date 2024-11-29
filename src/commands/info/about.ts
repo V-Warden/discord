@@ -9,7 +9,7 @@ export default new Command({
     run: async ({ interaction }) => {
         logger.info({
             labels: { command: 'about', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-            message: `${interaction?.user?.tag} requested information about the bot`,
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) requested information about the bot`,
         });
         
         return sendEmbed({

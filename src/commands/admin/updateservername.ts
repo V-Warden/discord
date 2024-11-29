@@ -54,7 +54,7 @@ export default new Command({
 
         logger.info({
             labels: { command: 'updateservername', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-            message: `${interaction?.user?.tag} updated server name ${exists.name} to ${server.guild?.name}`,
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) updated server name ${exists.name} to ${server.guild?.name}`,
         });
 
         return sendSuccess(

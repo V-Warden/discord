@@ -45,7 +45,7 @@ export default new Command({
         await db.increaseAppealsStaff(interaction.user.id);
 
         logger.info({
-            labels: { command: 'appeal', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+            labels: { command: 'appeal', userId: interaction?.user?.id, userTag: interaction?.user?.tag, guildId: interaction?.guild?.id },
             message: `${interaction?.user?.tag} (${interaction?.user?.id}) appealed ${member?.tag} (${id})`,
         });
 

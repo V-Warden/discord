@@ -30,7 +30,7 @@ export default new Command({
 
         logger.info({
             labels: { command: 'checkself', userId: interaction.user.id, guildId: interaction?.guild?.id },
-            message: `${interaction?.user?.tag} checked themselves for bad servers`,
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) checked themselves for bad servers`,
         });
 
         return sendEmbed({

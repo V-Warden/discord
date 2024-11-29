@@ -8,8 +8,9 @@ export default new ContextMenu({
     type: ApplicationCommandType.User,
     main: true,
     defaultMemberPermissions: 'Administrator',
-    run: async ({ interaction }) => {
+    run: async ({ interaction, client }) => {
         const id = interaction.targetId;
+        const user = await client.users.fetch(id).catch(() => null);
 
         const member = await interaction.guild?.members.fetch(id).catch(e => {
             logger.error({
@@ -28,7 +29,7 @@ export default new ContextMenu({
 
         logger.info({
             labels: { command: 'remind', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-            message: `${interaction?.user?.tag} reminded ${id}`,
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) reminded ${user?.tag} (${id}`,
         });
 
         return false;

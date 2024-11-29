@@ -70,7 +70,7 @@ export default new Command({
 
         logger.info({
             labels: { command: 'checkserveradmin', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-            message: `${interaction?.user?.tag} checked server ${server.id}`,
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) checked server ${server.id}`,
         });
 
         return sendEmbed({

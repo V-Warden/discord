@@ -12,9 +12,12 @@ export default new ContextMenu({
     name: 'Check User Status',
     type: ApplicationCommandType.User,
     main: true,
-    run: async ({ interaction }) => {
+    run: async ({ interaction, client }) => {
         const id = interaction.targetId;
+        const member = await client.users.fetch(id).catch(() => null);
+
         const data = await db.getUser(id);
+
         if (!data || data.status === 'WHITELISTED')
             return sendSuccess(
                 interaction,
@@ -40,7 +43,7 @@ export default new ContextMenu({
         
         logger.info({
             labels: { command: 'checkuser', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-            message: `${interaction?.user?.tag} checked ${id}`,
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) checked ${member?.tag} (${id})`,
         });
 
         return sendEmbed({

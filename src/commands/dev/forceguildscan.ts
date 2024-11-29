@@ -85,7 +85,7 @@ export default new Command({
 
         logger.info({
             labels: { command: 'forceguildscan', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-            message: `${interaction?.user?.tag} forcefully ran a scan on ${id}`,
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) forcefully ran a scan on ${id}`,
         });
 
         return sendSuccess(interaction, 'Successfully ran');

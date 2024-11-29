@@ -29,7 +29,7 @@ export default new Command({
 
         logger.info({
             labels: { command: 'badservers', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-            message: `${interaction?.user?.tag} requested bad servers list`,
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) requested bad servers list`,
         });
 
         return sendPagination(interaction, pages, 60000);

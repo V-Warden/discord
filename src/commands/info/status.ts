@@ -52,7 +52,7 @@ export default new Command({
 
         logger.info({
             labels: { command: 'status', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-            message: `${interaction?.user?.tag} requested bot status`,
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) requested bot status`,
         });
 
         return sendEmbed({

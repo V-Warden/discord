@@ -21,7 +21,8 @@ export default new Command({
         },
     ],
     run: async ({ interaction, client }) => {
-        const id = interaction.options.getUser('user')?.id as string;
+        const member = interaction.options.getUser('user');
+        const id = member?.id as string;
         const bot = interaction.options.getUser('user')?.bot as boolean;
 
         if (bot === true)
@@ -85,7 +86,7 @@ export default new Command({
 
         logger.info({
             labels: { command: 'checkuser', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-            message: `${interaction?.user?.tag} checked ${id}`,
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) checked ${member?.tag} (${id})`,
         });
 
         return sendEmbed({

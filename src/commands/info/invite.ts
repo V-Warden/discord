@@ -9,7 +9,7 @@ export default new Command({
     run: async ({ interaction }) => {
         logger.info({
             labels: { command: 'invite', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-            message: `${interaction?.user?.tag} requested the invite link`,
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) requested the invite link`,
         });
 
         return sendEmbed({
