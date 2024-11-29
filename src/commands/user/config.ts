@@ -135,7 +135,7 @@ export default new Command({
 
             logger.info({
                 labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                message: `${interaction?.user?.tag} viewed settings`,
+                message: `${interaction?.user?.tag} (${interaction?.user?.id}) viewed settings`,
             });
 
             return sendEmbed({
@@ -239,7 +239,7 @@ export default new Command({
 
         logger.info({
             labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-            message: `${interaction?.user?.tag} updated ${subCommandGroup} ${subCommand}`,
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) updated ${subCommandGroup} ${subCommand}`,
         });
 
         return sendSuccess(interaction, msg);

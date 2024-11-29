@@ -7,7 +7,7 @@ export default new Command({
     run: async ({ interaction }) => {
         logger.info({
             labels: { command: 'ping', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-            message: `${interaction?.user?.tag} pinged the bot`,
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) pinged the bot`,
         });
 
         return interaction.followUp('Volumed is very cool!');

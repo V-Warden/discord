@@ -197,7 +197,7 @@ export default new Command({
 
             logger.info({
                 labels: { command: 'bsm', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                message: `${interaction?.user?.tag} removed ${serverId}`,
+                message: `${interaction?.user?.tag} (${interaction?.user?.id}) removed ${serverId}`,
             });
             
             return true;

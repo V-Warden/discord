@@ -50,7 +50,7 @@ export default new Command({
 
         logger.info({
             labels: { command: 'fixguild', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-            message: `${interaction?.user?.tag} successfully created guild ${guild.name} (${guild.id})`,
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) successfully created guild ${guild.name} (${guild.id})`,
         });
 
         return sendSuccess(interaction, `Successfully created guild ${guild.name} (${guild.id})`);

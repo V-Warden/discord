@@ -68,8 +68,8 @@ export default new ContextMenu({
             });
 
             logger.info({
-                labels: { command: 'bsm', guildId: interaction?.guild?.id },
-                message: `${interaction?.user?.tag} blacklisted server ${server.guild.name} (${server.guild.id}) as type ${type}`,
+                labels: { command: 'bsm', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                message: `${interaction?.user?.tag} (${interaction?.user?.id}) blacklisted server ${server.guild.name} (${server.guild.id}) as type ${type}`,
             });
 
             return sendSuccess(

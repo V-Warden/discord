@@ -13,6 +13,7 @@ export default new ContextMenu({
     defaultMemberPermissions: 'Administrator',
     run: async ({ interaction, client }) => {
         const id = interaction.targetId;
+        const member = await client.users.fetch(id).catch(() => null);
 
         const user = await db.getUser(id);
 
@@ -31,8 +32,8 @@ export default new ContextMenu({
         sendSuccess(interaction, `Successfully appealed <@${id}> (${id})`, false);
 
         logger.info({
-            labels: { command: 'appeal', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-            message: `${interaction?.user?.tag} appealed ${id}`,
+            labels: { command: 'appeal', userId: interaction?.user?.id, userTag: interaction?.user?.tag, guildId: interaction?.guild?.id },
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) appealed ${member?.tag} (${id})`,
         });
 
         await db.increaseAppealsStaff(interaction.user.id);

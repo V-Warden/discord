@@ -134,7 +134,7 @@ export default new Command({
 
         logger.info({
             labels: { command: 'multiadduser', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-            message: `${interaction?.user?.tag} added ${ids.length} users to the database`,
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) added ${ids.length} users to the database`,
         });
 
         sendPagination(interaction, pages, 180000);

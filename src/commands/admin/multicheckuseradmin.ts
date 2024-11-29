@@ -63,7 +63,7 @@ export default new Command({
 
         logger.info({
             labels: { command: 'multicheckuseradmin', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-            message: `${interaction?.user?.tag} requested multi check on ${ids.length} users`,
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) requested multi check on ${ids.length} users`,
         });
 
         sendPagination(interaction, pages, 180000);

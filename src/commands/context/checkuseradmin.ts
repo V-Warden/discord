@@ -17,6 +17,7 @@ export default new ContextMenu({
     main: true,
     run: async ({ interaction, client }) => {
         const id: any = interaction.targetId;
+        const member = await client.users.fetch(id).catch(() => null);
 
         const user: Users | null = await db.getUser(id);
         if (!user) return sendSuccess(interaction, 'User not found in database');
@@ -68,7 +69,6 @@ export default new ContextMenu({
                 `User is apart of a unblacklisted server, correcting status and appealing\n\n> History: <${historyResponse}>\n> Notes: ${noteCount}`
             );
         }
-
 
         const value = [];
         let realCount = 0;
@@ -151,7 +151,7 @@ export default new ContextMenu({
 
         logger.info({
             labels: { command: 'checkuseradmin', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-            message: `${interaction?.user?.tag} checked ${user.id}`,
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) checked ${member?.tag} (${user.id})`,
         });
 
         if (value.length >= 5) {

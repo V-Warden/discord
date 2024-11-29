@@ -69,7 +69,7 @@ export default new Command({
 
             logger.info({
                 labels: { command: 'export', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                message: `${interaction?.user?.tag} exported ${bansImport.length} bans and ${roleImport.length} role punishments`,
+                message: `${interaction?.user?.tag} (${interaction?.user?.id}) exported ${bansImport.length} bans and ${roleImport.length} role punishments`,
             });
 
             return sendSuccess(

@@ -99,7 +99,7 @@ export default new Command({
 
                     logger.info({
                         labels: { command: 'forceexport', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                        message: `${interaction?.user?.tag} forcefully exported ${result[i].bans.length} bans and ${result[i].roles.length} role punishments`,
+                        message: `${interaction?.user?.tag} (${interaction?.user?.id}) forcefully exported ${result[i].bans.length} bans and ${result[i].roles.length} role punishments`,
                     });
 
                     sendSuccess(

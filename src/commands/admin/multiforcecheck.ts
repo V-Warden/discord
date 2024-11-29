@@ -46,7 +46,7 @@ export default new Command({
 
         logger.info({
             labels: { command: 'multiforcecheck', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-            message: `${interaction?.user?.tag} successfully force checked ${ids.length} users`,
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) successfully force checked ${ids.length} users`,
         });
 
         sendSuccess(interaction, 'Force check successfully completed');
