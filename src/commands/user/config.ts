@@ -98,6 +98,10 @@ export default new Command({
             })
         } else if (subCommand === 'settings') {
             // configure settings
+            logger.info({
+                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured settings`,
+            })
 
             const currentSettingsRows = async (guild: any): Promise<ActionRowBuilder<MessageActionRowComponentBuilder>[]> => {
                 const currentSettings = {
@@ -515,6 +519,10 @@ export default new Command({
             return
         } else if (subCommand === 'punishments') {
             // configure punishments
+            logger.info({
+                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured punishments`,
+            })
 
             const currentPunishmentRows = async (guild: any): Promise<ActionRowBuilder<MessageActionRowComponentBuilder>[]> => {
                 const currentSettings = {
