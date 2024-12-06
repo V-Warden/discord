@@ -111,7 +111,7 @@ export default new Command({
 
             logger.info({
                 labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured settings`,
+                message: `${interaction?.user?.tag} (${interaction?.user?.id}) opened configured settings`,
             })
 
             const currentSettingsRows = async (guild: any): Promise<ActionRowBuilder<MessageActionRowComponentBuilder>[]> => {
@@ -647,7 +647,7 @@ export default new Command({
             
             logger.info({
                 labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured punishments`,
+                message: `${interaction?.user?.tag} (${interaction?.user?.id}) opened configured punishments`,
             })
 
             const currentPunishmentRows = async (guild: any): Promise<ActionRowBuilder<MessageActionRowComponentBuilder>[]> => {
