@@ -1,8 +1,9 @@
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Colours } from '../../@types/Colours';
 import { Command } from '../../structures/Command';
-import db from '../../utils/database';
 import { sendError, sendSuccess } from '../../utils/messages';
+import db from '../../utils/database';
+import logger from '../../utils/logger';
 import sendEmbed from '../../utils/messages/sendEmbed';
 
 export default new Command({
@@ -40,7 +41,12 @@ export default new Command({
 
         let lookup: any;
         if (invite) {
-            const inv = await client.fetchInvite(invite);
+            const inv = await client.fetchInvite(invite).catch(e => {
+                logger.error({
+                    labels: { command: 'checkserveradmin', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                });    
+            });
             if (!inv) return sendError(interaction, 'Invalid invite or invite has expired');
 
             lookup = { id: inv?.guild?.id };
@@ -62,25 +68,53 @@ export default new Command({
 
         const addedBy = /^\d+$/.test(server.addedBy) ? `<@${server.addedBy}>` : server.addedBy;
 
+        logger.info({
+            labels: { command: 'checkserveradmin', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) checked server ${server.id}`,
+        });
+
         return sendEmbed({
             interaction,
             embed: {
                 title: ':shield: Server Blacklisted',
-                color: Colours.RED,
+                color: Colours.BLUE,
                 fields: [
                     {
-                        name: 'Server Information',
-                        value: `**ID**: ${server.id} / **Name**: ${server.name}\n
-                              **Details**: ${server.type.toLowerCase()}\n
-                              **Date Added**: ${server.createdAt
-                                  .toISOString()
-                                  .replace(/T/, ' ')
-                                  .replace(/\..+/, '')}\n
-                                  **Added By**: ${addedBy}\n
-                                  **Reason**: ${server.reason}\n
-                                  **Invite**: <${server.invite}>\n`,
+                        name: 'Server ID',
+                        value: server.id,
+                        inline: true,
                     },
-                ],
+                    {
+                        name: 'Server Name',
+                        value: server.name,
+                        inline: true,
+                    },
+                    {
+                        name: 'Details',
+                        value: server.type.toLowerCase(),
+                        inline: true,
+                    },
+                    {
+                        name: 'Date Added',
+                        value: server.createdAt.toISOString().replace(/T/, ' ').replace(/\..+/, ''),
+                        inline: true,
+                    },
+                    {
+                        name: 'Added By',
+                        value: addedBy,
+                        inline: true,
+                    },
+                    {
+                        name: 'Reason',
+                        value: server.reason,
+                        inline: false,
+                    },
+                    {
+                        name: 'Invite',
+                        value: `${server.invite}`,
+                        inline: false,
+                    },
+                ]
             },
         });
     },

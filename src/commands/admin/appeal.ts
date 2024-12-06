@@ -1,10 +1,10 @@
-import { UserStatus } from '@prisma/client';
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Command } from '../../structures/Command';
-import actionAppeal from '../../utils/actioning/actionAppeal';
-import logger from '../../utils/logger';
-import db from '../../utils/database';
 import { sendError, sendSuccess } from '../../utils/messages';
+import { UserStatus } from '@prisma/client';
+import actionAppeal from '../../utils/actioning/actionAppeal';
+import db from '../../utils/database';
+import logger from '../../utils/logger';
 
 export default new Command({
     name: 'appeal',
@@ -20,7 +20,8 @@ export default new Command({
         },
     ],
     run: async ({ interaction, client }) => {
-        const id = interaction.options.getUser('user')?.id as string;
+        const member = interaction.options.getUser('user');
+        const id = member?.id as string;
         if (!id) return sendError(interaction, 'Invalid user or id provided');
 
         const user = await db.getUser(id);
@@ -44,8 +45,8 @@ export default new Command({
         await db.increaseAppealsStaff(interaction.user.id);
 
         logger.info({
-            labels: { action: 'appeal', guildId: interaction?.guild?.id },
-            message: `${interaction?.user?.id} appealed ${id} from ${interaction?.guild?.id}`,
+            labels: { command: 'appeal', userId: interaction?.user?.id, userTag: interaction?.user?.tag, guildId: interaction?.guild?.id },
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) appealed ${member?.tag} (${id})`,
         });
 
         return actionAppeal(client, id);

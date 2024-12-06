@@ -1,9 +1,10 @@
-import { UserType, UserStatus } from '@prisma/client';
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Command } from '../../structures/Command';
-import db from '../../utils/database';
-import { sendError, sendSuccess } from '../../utils/messages';
 import { mapAnyType } from '../../utils/misc';
+import { sendError, sendSuccess } from '../../utils/messages';
+import { UserType, UserStatus } from '@prisma/client';
+import db from '../../utils/database';
+import logger from '../../utils/logger';
 
 export default new Command({
     name: 'adduser',
@@ -50,13 +51,19 @@ export default new Command({
         const type = interaction.options.get('type')?.value as UserType;
         const server = interaction.options.get('server')?.value as string;
         const reason = interaction.options.get('reason')?.value as string;
+        const member = await client.users.fetch(id).catch(() => null);
 
         if (id?.length < 17 || id?.length > 20) return sendError(interaction, 'Invalid ID provided');
 
         const isBadServer = await db.getBadServer({ id: server });
         if (!isBadServer) return sendError(interaction, 'Server is not blacklisted');
 
-        const user = await client.users.fetch(id);
+        const user = await client.users.fetch(id).catch(e => {
+            logger.error({
+                labels: { command: 'adduser', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                message: e instanceof Error ? e.message : JSON.stringify(e),
+            });
+        });
         if (!user) return sendError(interaction, 'Invalid id provided');
 
         const count = await db.userExist(id);
@@ -68,8 +75,8 @@ export default new Command({
         } else {
             await db.createUser({
                 id,
-                last_username: user?.username ? `${user.username}#${user.discriminator}` : 'unknown#0000',
-                avatar: user.avatarURL() ?? 'https://chibi.iitranq.co.uk/w70AB7OgtqiQ.png',
+                last_username: 'unknown#0000',
+                avatar: 'https://chibi.iitranq.co.uk/w70AB7OgtqiQ.png',
                 type,
                 status,
                 reason,
@@ -97,9 +104,14 @@ export default new Command({
             });
         }
 
+        logger.info({
+            labels: { command: 'adduser', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) added user ${member?.tag} (${id}) to the database`,
+        });
+
         return sendSuccess(
             interaction,
-            `Successfully upserted user ${user.username}#${user.discriminator} (${id})`
+            `**User:** <@${id}> (${id}) **Status:** Successfully upserted`
         );
     },
 });

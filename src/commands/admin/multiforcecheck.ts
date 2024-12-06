@@ -1,8 +1,9 @@
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Command } from '../../structures/Command';
+import { sendError, sendSuccess } from '../../utils/messages';
 import actionUsersGlobal from '../../utils/actioning/actionUsersGlobal';
 import db from '../../utils/database';
-import { sendError, sendSuccess } from '../../utils/messages';
+import logger from '../../utils/logger';
 
 export default new Command({
     name: 'multiforcecheck',
@@ -36,7 +37,18 @@ export default new Command({
         }
 
         sendSuccess(interaction, 'Requested force check on all shards');
-        await actionUsersGlobal(client, ids);
+        await actionUsersGlobal(client, ids).catch(e => {
+            logger.error({
+                labels: { command: 'multiforcecheck', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                message: e instanceof Error ? e.message : JSON.stringify(e),
+            });
+        });
+
+        logger.info({
+            labels: { command: 'multiforcecheck', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) successfully force checked ${ids.length} users`,
+        });
+
         sendSuccess(interaction, 'Force check successfully completed');
 
         return false;

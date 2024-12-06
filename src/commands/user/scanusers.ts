@@ -7,6 +7,9 @@ import { sendError, sendSuccess } from '../../utils/messages';
 import sendEmbed from '../../utils/messages/sendEmbed';
 import db from '../../utils/database';
 
+const cooldowns = new Map<string, number>();
+const COOLDOWN_TIME = 30 * 60 * 1000;
+
 export default new Command({
     name: 'scanusers',
     description: 'Initiates a guild scan',
@@ -14,7 +17,26 @@ export default new Command({
     run: async ({ interaction, client }) => {
         if (!interaction.guild) return sendError(interaction, 'Must be used in a guild');
 
-        const guild = await client.guilds.fetch(interaction.guild.id);
+        const guildId = interaction.guild.id;
+        const now = Date.now();
+        const cooldown = cooldowns.get(guildId);
+
+        if (cooldown && now < cooldown) {
+            const remainingTime = Math.ceil((cooldown - now) / 1000 / 60);
+            return sendError(interaction, `You can use this command again in ${remainingTime} minutes`);
+        }
+
+        cooldowns.set(guildId, now + COOLDOWN_TIME);
+
+        const guild = await client.guilds.fetch(interaction.guild.id).catch(e => {
+            logger.error({
+                labels: { command: 'scanusers', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                message: e instanceof Error ? e.message : JSON.stringify(e),
+            });
+            return undefined;
+        });
+
+        if (!guild) return sendError(interaction, 'Failed to fetch guild');
 
         const settings = await db.getGuild(
             { id: interaction.guild.id },
@@ -22,11 +44,6 @@ export default new Command({
         );
         if (!settings) return sendError(interaction, 'Unable to find guild in database');
         if (!settings.punishments?.enabled) return sendError(interaction, 'Punishments are not enabled');
-
-        logger.info({
-            labels: { action: 'scanusers', guildId: interaction?.guild?.id },
-            message: `Scanusers requested by ${interaction.user.id} in ${interaction.guild.id}`,
-        });
 
         await guild.members.fetch().then(async members => {
             const memberMap = members.filter(x => !x.user.bot).map(x => x.id);
@@ -53,13 +70,18 @@ export default new Command({
                     settings.logChannel,
                     settings.punishments,
                     user
-                );
+                ).catch(e => {
+                    logger.error({
+                        labels: { command: 'scanusers', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: e instanceof Error ? e.message : JSON.stringify(e),
+                    });
+                });
                 if (result) actioned += 1;
             }
 
             logger.info({
-                labels: { action: 'scanusers', guildId: interaction?.guild?.id },
-                message: `Successfully actioned ${actioned} users, scanning complete`,
+                labels: { command: 'scanusers', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                message: `${interaction?.user?.tag} (${interaction?.user?.id}) has initiated a scan with a total of ${memberMap.length} members, ${actioned} blacklisted users have been actioned accordingly`,
             });
 
             sendEmbed({
@@ -71,7 +93,15 @@ export default new Command({
             });
 
             return true;
+        }).catch(e => {
+            logger.error({
+                labels: { command: 'scanusers', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                message: e instanceof Error ? e.message : JSON.stringify(e),
+            });
+
+            return sendError(interaction, 'Failed to fetch members');
         });
+        
         return false;
     },
 });

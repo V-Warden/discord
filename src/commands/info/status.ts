@@ -1,25 +1,44 @@
 import { Colours } from '../../@types/Colours';
 import { Command } from '../../structures/Command';
-import sendEmbed from '../../utils/messages/sendEmbed';
 import { formatSeconds } from '../../utils/misc';
-import db from '../../utils/database';
 import { sendError } from '../../utils/messages';
+import db from '../../utils/database';
+import logger from '../../utils/logger';
+import sendEmbed from '../../utils/messages/sendEmbed';
+import {lruInfinity, lru1Hour, setCache, getCache, hasCache} from '../../utils/cache';
 
 export default new Command({
     name: 'status',
     description: 'Shows bot status and stats about its services',
     run: async ({ interaction, client }) => {
-        const uptime = process.uptime();
+        const botStartTime = Number(await getCache('botStartTime', lruInfinity));
+        const uptime = Math.floor((Date.now() - botStartTime) / 1000);
 
-        // Could optimise this by caching result and storing for x minutes?
-        const blacklistedUsersPromise = db.countAllBlacklistedUsers();
-        const blacklistedServersPromise = db.countAllBlacklistedServers();
+        const getBlacklistedData = async () => {
+            const hasBlacklistedUsers = await hasCache('blacklistedUsers', lru1Hour) 
+            const hasBlacklistedServers = await hasCache('blacklistedServers', lru1Hour);
 
-        const [blacklistedUsers, blacklistedServers] = await Promise.all([
-            blacklistedUsersPromise,
-            blacklistedServersPromise,
-        ]);
-        // ---- //
+            if (!hasBlacklistedUsers || !hasBlacklistedServers) {
+                logger.info({
+                    labels: { command: 'status', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                    message: `Blacklisted data not found in cache, fetching from database`,
+                });
+                const blacklistedUsersPromise = db.countAllBlacklistedUsers();
+                const blacklistedServersPromise = db.countAllBlacklistedServers();
+
+                const [blacklistedUsers, blacklistedServers] = await Promise.all([
+                    blacklistedUsersPromise,
+                    blacklistedServersPromise,
+                ]);
+
+                await setCache('blacklistedUsers', blacklistedUsers, lru1Hour);
+                await setCache('blacklistedServers', blacklistedServers, lru1Hour);
+            }
+        }
+        await getBlacklistedData();
+
+        const blacklistedUsers = Number(await getCache('blacklistedUsers', lru1Hour));
+        const blacklistedServers = Number(await getCache('blacklistedServers', lru1Hour));
 
         const res = await client.shard?.broadcastEval(client => {
             return {
@@ -30,11 +49,17 @@ export default new Command({
         if (!res) return sendError(interaction, 'No shards available..?');
 
         const guilds = res.reduce((a, b) => a + b.guilds, 0);
+
+        logger.info({
+            labels: { command: 'status', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) requested bot status`,
+        });
+
         return sendEmbed({
             interaction,
             embed: {
                 title: ':desktop: Bot Status',
-                color: Colours.GREEN,
+                color: Colours.BLUE,
                 fields: [
                     {
                         name: 'Shard Count',
@@ -54,6 +79,16 @@ export default new Command({
                     {
                         name: 'Blacklisted Servers',
                         value: `I have ${blacklistedServers.toLocaleString()} blacklisted servers`,
+                        inline: false,
+                    },
+                    {
+                        name: 'Queue Length',
+                        value: `I have ${(await getCache('actionQueue', lruInfinity) || 0) + (await getCache('consumerCount', lruInfinity) || 0)} users in the queue`,
+                        inline: false,
+                    },
+                    {
+                        name: 'Queue Processed',
+                        value: `I have processed ${await getCache('actionMessages', lruInfinity) || 0} users`,
                         inline: false,
                     },
                     {

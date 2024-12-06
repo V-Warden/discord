@@ -1,10 +1,11 @@
 import { APIEmbed, ApplicationCommandOptionType } from 'discord.js';
-import { Command } from '../../structures/Command';
-import { sendError, sendSuccess } from '../../utils/messages';
 import { chunk } from 'lodash';
 import { Colours } from '../../@types/Colours';
-import sendPagination from '../../utils/messages/sendPagination';
+import { Command } from '../../structures/Command';
+import { sendError, sendSuccess } from '../../utils/messages';
 import db from '../../utils/database';
+import logger from '../../utils/logger';
+import sendPagination from '../../utils/messages/sendPagination';
 
 export default new Command({
     name: 'note',
@@ -68,6 +69,11 @@ export default new Command({
 
             await db.createNote(id, note, interaction.user.id);
 
+            logger.info({
+                labels: { command: 'note', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                message: `${interaction?.user?.tag} added note to ${id}`,
+            });
+
             return sendSuccess(
                 interaction,
                 `Successfully added the following note to <@${id}>\`\`\`${note}\`\`\``
@@ -76,6 +82,11 @@ export default new Command({
             const nId = interaction.options.get('nid')?.value as number;
 
             await db.deleteNote(nId);
+
+            logger.info({
+                labels: { command: 'note', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                message: `${interaction?.user?.tag} deleted note ${nId}`,
+            });
 
             return sendSuccess(interaction, 'Successfully deleted note');
         } else if (subcommand === 'view') {
@@ -96,8 +107,13 @@ export default new Command({
             chunks.forEach((chunk: string[]) => {
                 pages.push({
                     description: `User: <@${id}> \n \n${chunk.join('\n')}`,
-                    color: Colours.RED,
+                    color: Colours.BLUE,
                 });
+            });
+
+            logger.info({
+                labels: { command: 'note', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                message: `${interaction?.user?.tag} (${interaction?.user?.id}) requested notes for ${id}`,
             });
 
             return sendPagination(interaction, pages, 60000);

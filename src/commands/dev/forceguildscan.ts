@@ -1,8 +1,8 @@
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Command } from '../../structures/Command';
+import { sendError, sendSuccess } from '../../utils/messages';
 import db from '../../utils/database';
 import logger from '../../utils/logger';
-import { sendError, sendSuccess } from '../../utils/messages';
 
 export default new Command({
     name: 'forceguildscan',
@@ -22,13 +22,18 @@ export default new Command({
 
         if (!client.shard) {
             logger.warn({
-                labels: { userId: id },
+                labels: { command: 'forceguildscan', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
                 message: 'No shards online, unable to action appeal',
             });
             return sendError(interaction, 'No shards online, unable to run this command');
         }
 
-        const settings = await db.getGuild({ id: id }, { punishments: true });
+        const settings = await db.getGuild({ id: id }, { punishments: true }).catch(e => {
+            logger.error({
+                labels: { command: 'forceguildscan', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                message: e instanceof Error ? e.message : JSON.stringify(e),
+            });
+        });
         if (!settings) return sendError(interaction, 'Unable to find guild in the database');
 
         const punishRole = settings.punishments?.roleId;
@@ -38,12 +43,22 @@ export default new Command({
             async (client, { guild }) => {
                 const output: any[] = [];
 
-                await client.guilds.fetch();
+                await client.guilds.fetch().catch(e => {
+                    logger.error({
+                        labels: { command: 'forceguildscan', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: e instanceof Error ? e.message : JSON.stringify(e),
+                    });
+                });
 
                 const g = client.guilds.cache.get(guild);
                 if (!g) return output;
 
-                await g.members.fetch();
+                await g.members.fetch().catch(e => {
+                    logger.error({
+                        labels: { command: 'forceguildscan', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: e instanceof Error ? e.message : JSON.stringify(e),
+                    });
+                });
 
                 for (let a = 0; a < g.members.cache.size; a++) {
                     const member = g.members.cache.at(a);
@@ -52,7 +67,7 @@ export default new Command({
                     client.emit('guildMemberAdd', member);
 
                     output.push({
-                        labels: { action: 'forceguildscan', guildId: g.id },
+                        labels: { command: 'forceguildscan', guildId: g.id },
                         message: `Emitted guildMemberAdd for ${member.id}`,
                     });
                 }
@@ -67,6 +82,12 @@ export default new Command({
                 logger.info(result[index][i]);
             }
         }
+
+        logger.info({
+            labels: { command: 'forceguildscan', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) forcefully ran a scan on ${id}`,
+        });
+
         return sendSuccess(interaction, 'Successfully ran');
     },
 });

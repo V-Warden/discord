@@ -7,8 +7,9 @@ import { generateErrorID } from './misc';
 
 require('dotenv').config();
 
-const consoleFormat = format.printf(({ level, message, timestamp }) => {
-    return `[${timestamp}] [${level}] | ${JSON.stringify(message)}`;
+const consoleFormat = format.printf(({ level, labels, message, timestamp }) => {
+    const labelString = labels ? Object.entries(labels).map(([key, value]) => `${key}: ${value}`).join(', ') : '';
+    return `[${timestamp}] [${level}] | ${JSON.stringify(`${labelString ? `${labelString}, message: ` : ''}${message}`)}`;
 });
 
 const transport_logs: any = [

@@ -9,7 +9,7 @@ import logger from '../logger';
 export default async function (c: Client) {
     if (!c.shard)
         return logger.warn({
-            labels: { command: 'globalscan' },
+            labels: { action: 'globalscan' },
             message: 'No shards online, unable to perform globalscan',
         });
 

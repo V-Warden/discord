@@ -6,7 +6,7 @@ import logger from '../../utils/logger';
 
 export default new Command({
     name: 'export',
-    description: 'Export VVarden data to database',
+    description: 'Export Warden data to database',
     defaultMemberPermissions: 'Administrator',
     run: async ({ interaction }) => {
         if (!interaction.guild) return sendError(interaction, 'Must be used in a guild');
@@ -18,8 +18,18 @@ export default new Command({
         const punishRole = settings.punishments?.roleId;
         if (!punishRole) return sendError(interaction, 'Invalid punish role set');
 
-        await interaction.guild.bans.fetch();
-        await interaction.guild.members.fetch();
+        await interaction.guild.bans.fetch().catch(e => {
+            logger.error({
+                labels: { command: 'export', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                message: e instanceof Error ? e.message : JSON.stringify(e),
+            });
+        });
+        await interaction.guild.members.fetch().catch(e => {
+            logger.error({
+                labels: { command: 'export', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                message: e instanceof Error ? e.message : JSON.stringify(e),
+            });
+        });
 
         const bans = interaction.guild.bans.cache.map(x => {
             return { id: x.user.id, reason: x.reason };
@@ -57,14 +67,19 @@ export default new Command({
         try {
             await Promise.all([db.createBans(bansImport), db.createArchiveRoles(roleImport)]);
 
+            logger.info({
+                labels: { command: 'export', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                message: `${interaction?.user?.tag} (${interaction?.user?.id}) exported ${bansImport.length} bans and ${roleImport.length} role punishments`,
+            });
+
             return sendSuccess(
                 interaction,
                 `Successfully exported \`${bansImport.length}\` bans and \`${roleImport.length}\` role punishments`
             );
         } catch (e) {
             logger.warn({
-                labels: { command: 'export', guildId: interaction.guild.id },
-                message: e,
+                labels: { command: 'export', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                message: e instanceof Error ? e.message : JSON.stringify(e),
             });
             return sendError(interaction, 'Unable to export data\n> This command can only be used once');
         }

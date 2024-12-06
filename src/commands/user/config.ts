@@ -1,11 +1,12 @@
-import { Punish, UserType } from '@prisma/client';
 import { ApplicationCommandOptionType, ChannelType } from 'discord.js';
+import { capitalize, mapAnyType } from '../../utils/misc';
 import { Colours } from '../../@types/Colours';
 import { Command } from '../../structures/Command';
+import { Punish, UserType } from '@prisma/client';
 import { sendError, sendSuccess } from '../../utils/messages';
-import sendEmbed from '../../utils/messages/sendEmbed';
-import { capitalize, mapAnyType } from '../../utils/misc';
 import db from '../../utils/database';
+import logger from '../../utils/logger';
+import sendEmbed from '../../utils/messages/sendEmbed';
 
 export default new Command({
     name: 'config',
@@ -121,17 +122,21 @@ export default new Command({
     run: async ({ interaction, client }) => {
         const subCommandGroup = interaction.options.getSubcommandGroup();
         const subCommand = interaction.options.getSubcommand();
-        console.log(subCommandGroup, subCommand);
 
         if (subCommand === 'settings') {
             // view settings
             const guild = await db.getGuild(
-                { id: interaction.guild?.id },
+                { id: interaction?.guild?.id },
                 { punishments: true, logChannel: true }
             );
 
             if (!guild || !guild.punishments)
                 return sendError(interaction, 'This guild is not registered, please raise a support ticket');
+
+            logger.info({
+                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                message: `${interaction?.user?.tag} (${interaction?.user?.id}) viewed settings`,
+            });
 
             return sendEmbed({
                 interaction,
@@ -175,7 +180,7 @@ export default new Command({
                             value: `Other -> \`${guild.punishments?.other}\`\nLeaker -> \`${guild.punishments?.leaker}\`\nCheater -> \`${guild.punishments?.cheater}\`\nSupporter -> \`${guild.punishments?.supporter}\`\nOwner -> \`${guild.punishments?.owner}\``,
                         },
                     ],
-                    color: Colours.GREEN,
+                    color: Colours.BLUE,
                 },
             });
         }
@@ -186,13 +191,13 @@ export default new Command({
                 const value = interaction.options.getBoolean('value') as boolean;
                 if (subCommand === 'actioning') {
                     msg = `Toggled actioning to \`${value}\``;
-                    await db.updatePunishments({ id: interaction.guild?.id }, { enabled: value });
+                    await db.updatePunishments({ id: interaction?.guild?.id }, { enabled: value });
                 } else if (subCommand === 'unban') {
                     msg = `Toggled unban to \`${value}\``;
-                    await db.updatePunishments({ id: interaction.guild?.id }, { unban: value });
+                    await db.updatePunishments({ id: interaction?.guild?.id }, { unban: value });
                 } else if (subCommand === 'globalscan') {
                     msg = `Toggled globalscan to \`${value}\``;
-                    await db.updatePunishments({ id: interaction.guild?.id }, { globalCheck: value });
+                    await db.updatePunishments({ id: interaction?.guild?.id }, { globalCheck: value });
                 }
                 break;
             }
@@ -202,12 +207,12 @@ export default new Command({
                     if (value?.type !== ChannelType.GuildText)
                         return sendError(interaction, 'Logging channel must be a text channel');
 
-                    await db.updateGuild({ id: interaction.guild?.id }, { logChannel: value.id });
+                    await db.updateGuild({ id: interaction?.guild?.id }, { logChannel: value.id });
                     msg = `Successfully updated \`${subCommand}\` to \`${value.name}\`\n> Make sure I have permissions to send messages in here`;
                 } else if (subCommand === 'punishrole') {
                     const value = interaction.options.getRole('role');
 
-                    await db.updatePunishments({ id: interaction.guild?.id }, { roleId: value?.id });
+                    await db.updatePunishments({ id: interaction?.guild?.id }, { roleId: value?.id });
                     msg = `Successfully updated \`${subCommand}\` to \`${value?.name}\`\n> Make sure I have permissions to assign and remove this role`;
                 } else if (subCommand === 'action') {
                     const type = interaction.options.getString('type') as UserType;
@@ -225,12 +230,17 @@ export default new Command({
                     } else if (type === 'SUPPORTER') {
                         data = { supporter: punish };
                     }
-                    await db.updatePunishments({ id: interaction.guild?.id }, data);
+                    await db.updatePunishments({ id: interaction?.guild?.id }, data);
                     msg = `Successfully updated \`${capitalize(type)}\` to \`${capitalize(punish)}\``;
                 }
                 break;
             }
         }
+
+        logger.info({
+            labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) updated ${subCommandGroup} ${subCommand}`,
+        });
 
         return sendSuccess(interaction, msg);
     },

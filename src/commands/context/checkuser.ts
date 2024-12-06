@@ -1,19 +1,23 @@
-import { UserType } from '@prisma/client';
 import { ApplicationCommandType } from 'discord.js';
 import { capitalize } from 'lodash';
 import { Colours } from '../../@types/Colours';
 import { ContextMenu } from '../../structures/ContextMenu';
-import db from '../../utils/database';
 import { sendSuccess } from '../../utils/messages';
+import { UserType } from '@prisma/client';
+import db from '../../utils/database';
+import logger from '../../utils/logger';
 import sendEmbed from '../../utils/messages/sendEmbed';
 
 export default new ContextMenu({
     name: 'Check User Status',
     type: ApplicationCommandType.User,
     main: true,
-    run: async ({ interaction }) => {
+    run: async ({ interaction, client }) => {
         const id = interaction.targetId;
+        const member = await client.users.fetch(id).catch(() => null);
+
         const data = await db.getUser(id);
+
         if (!data || data.status === 'WHITELISTED')
             return sendSuccess(
                 interaction,
@@ -36,13 +40,18 @@ export default new ContextMenu({
         } else {
             reason = 'blacklisted by Warden.';
         }
+        
+        logger.info({
+            labels: { command: 'checkuser', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) checked ${member?.tag} (${id})`,
+        });
 
         return sendEmbed({
             interaction,
             embed: {
                 title: ':shield: User Blacklisted',
                 description: `<@${id}> has been ${reason}`,
-                color: Colours.RED,
+                color: Colours.BLUE,
                 fields: [
                     {
                         name: 'User Information',

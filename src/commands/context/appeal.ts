@@ -1,10 +1,10 @@
-import { UserStatus } from '@prisma/client';
 import { ApplicationCommandType } from 'discord.js';
 import { ContextMenu } from '../../structures/ContextMenu';
+import { sendError, sendSuccess } from '../../utils/messages';
+import { UserStatus } from '@prisma/client';
 import actionAppeal from '../../utils/actioning/actionAppeal';
 import db from '../../utils/database';
 import logger from '../../utils/logger';
-import { sendError, sendSuccess } from '../../utils/messages';
 
 export default new ContextMenu({
     name: 'Appeal User',
@@ -13,6 +13,7 @@ export default new ContextMenu({
     defaultMemberPermissions: 'Administrator',
     run: async ({ interaction, client }) => {
         const id = interaction.targetId;
+        const member = await client.users.fetch(id).catch(() => null);
 
         const user = await db.getUser(id);
 
@@ -31,8 +32,8 @@ export default new ContextMenu({
         sendSuccess(interaction, `Successfully appealed <@${id}> (${id})`, false);
 
         logger.info({
-            labels: { action: 'appeal', guildId: interaction?.guild?.id },
-            message: `${interaction?.user?.id} appealed ${id} from ${interaction?.guild?.id}`,
+            labels: { command: 'appeal', userId: interaction?.user?.id, userTag: interaction?.user?.tag, guildId: interaction?.guild?.id },
+            message: `${interaction?.user?.tag} (${interaction?.user?.id}) appealed ${member?.tag} (${id})`,
         });
 
         await db.increaseAppealsStaff(interaction.user.id);
