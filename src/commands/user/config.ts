@@ -9,6 +9,7 @@ import {
     ActionRowBuilder,
     MessageActionRowComponentBuilder,
     ComponentType,
+    TextChannel,
 } from 'discord.js'
 import { Colours } from '../../@types/Colours'
 import { Command } from '../../structures/Command'
@@ -98,6 +99,16 @@ export default new Command({
             })
         } else if (subCommand === 'settings') {
             // configure settings
+            const settings = await db.getGuild({ id: interaction?.guild?.id }, { logChannel: true })
+
+            let channel: TextChannel | false
+
+            try {
+                channel = (await interaction?.guild?.channels.fetch(settings?.logChannel ?? '')) as TextChannel
+            } catch (error) {
+                channel = false
+            }
+
             logger.info({
                 labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
                 message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured settings`,
@@ -284,6 +295,22 @@ export default new Command({
                 })
             }
 
+            if (!channel) {
+                interaction.followUp({
+                    embeds: [
+                        new EmbedBuilder()
+                            .setDescription(`\`🟡\` The log channel is not set, please set it before continuing.`)
+                            .setColor(Colours.YELLOW),
+                    ],
+                    ephemeral: true,
+                }).catch(e => {
+                    logger.error({
+                        labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: e instanceof Error ? e.message : JSON.stringify(e),
+                    })
+                })
+            }
+
             collectorStringSelect.on('collect', async (interaction) => {
                 if (interaction.customId === 'config_actioning') {
                     const embedError = new EmbedBuilder()
@@ -317,6 +344,17 @@ export default new Command({
                                 labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
                                 message: e instanceof Error ? e.message : JSON.stringify(e),
                             })
+                        })
+                        if (channel) sendEmbed({
+                            channel,
+                            embed: {
+                                description: `\`🟢\` Actioning has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
+                                color: Colours.GREEN,
+                            },
+                        })
+                        logger.info({
+                            labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                            message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured settings actioning to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
                         })
                         return
                     } else {
@@ -366,6 +404,17 @@ export default new Command({
                                 message: e instanceof Error ? e.message : JSON.stringify(e),
                             })
                         })
+                        if (channel) sendEmbed({
+                            channel,
+                            embed: {
+                                description: `\`🟢\` Unban has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
+                                color: Colours.GREEN,
+                            },
+                        })
+                        logger.info({
+                            labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                            message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured settings unban to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
+                        })
                         return
                     } else {
                         await interaction.reply(
@@ -414,6 +463,17 @@ export default new Command({
                                 message: e instanceof Error ? e.message : JSON.stringify(e),
                             })
                         })
+                        if (channel) sendEmbed({
+                            channel,
+                            embed: {
+                                description: `\`🟢\` Global Scan has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
+                                color: Colours.GREEN,
+                            },
+                        })
+                        logger.info({
+                            labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                            message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured settings global scan to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
+                        })
                         return
                     } else {
                         await interaction.reply(
@@ -460,12 +520,28 @@ export default new Command({
 
                     if (selected) {
                         await db.updateGuild({ id: interaction?.guild?.id }, { logChannel: selected })
+                        try {
+                            channel = await interaction.guild?.channels.fetch(selected) as TextChannel
+                        } catch (error) {
+                            channel = false
+                        }
                         await updateCurrentSettings()
                         await interaction.deferUpdate().catch(e => {
                             logger.error({
                                 labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
                                 message: e instanceof Error ? e.message : JSON.stringify(e),
                             })
+                        })
+                        if (channel) sendEmbed({
+                            channel,
+                            embed: {
+                                description: `\`🟢\` Log Channel has been successfully set to <#${selected}> by <@${interaction.user.id}>.`,
+                                color: Colours.GREEN,
+                            },
+                        })
+                        logger.info({
+                            labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                            message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured settings log channel to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
                         })
                         return
                     } else {
@@ -500,6 +576,17 @@ export default new Command({
                             })
                             return
                         })
+                        if (channel) sendEmbed({
+                            channel,
+                            embed: {
+                                description: `\`🟢\` Punishment Role has been successfully set to <@&${selected}> by <@${interaction.user.id}>.`,
+                                color: Colours.GREEN,
+                            },
+                        })
+                        logger.info({
+                            labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                            message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured settings punishment role to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
+                        })
                         return
                     } else {
                         await db.updatePunishments({ id: interaction?.guild?.id }, { roleId: null })
@@ -511,6 +598,17 @@ export default new Command({
                             })
                             return
                         })
+                        if (channel) sendEmbed({
+                            channel,
+                            embed: {
+                                description: `\`🟢\` Punishment Role has been successfully removed by <@${interaction.user.id}>.`,
+                                color: Colours.GREEN,
+                            },
+                        })
+                        logger.info({
+                            labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                            message: `${interaction?.user?.tag} (${interaction?.user?.id}) removed settings punishment role for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
+                        })
                         return
                     }
                 }
@@ -519,6 +617,34 @@ export default new Command({
             return
         } else if (subCommand === 'punishments') {
             // configure punishments
+            const settings = await db.getGuild({ id: interaction?.guild?.id }, { logChannel: true })
+
+            let channel: TextChannel | false
+
+            try {
+                channel = (await interaction?.guild?.channels.fetch(settings?.logChannel ?? '')) as TextChannel
+            } catch (error) {
+                channel = false
+            }
+
+            if (!channel) {
+                interaction.reply({
+                    embeds: [
+                        new EmbedBuilder()
+                            .setDescription(`\`🟡\` The log channel is not set \`/config settings\`, please set it before continuing.`)
+                            .setColor(Colours.YELLOW),
+                    ],
+                    ephemeral: true,
+                }).catch(e => {
+                    logger.error({
+                        labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: e instanceof Error ? e.message : JSON.stringify(e),
+                    })
+                })
+
+                return
+            }
+            
             logger.info({
                 labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
                 message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured punishments`,
@@ -798,6 +924,17 @@ export default new Command({
                             })
                             return
                         })
+                        if (channel) sendEmbed({
+                            channel,
+                            embed: {
+                                description: `\`🟢\` Other has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
+                                color: Colours.GREEN,
+                            },
+                        })
+                        logger.info({
+                            labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                            message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured punishments other to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
+                        })
                         return
                     } else {
                         await interaction.reply(
@@ -848,6 +985,17 @@ export default new Command({
                                 message: e instanceof Error ? e.message : JSON.stringify(e),
                             })
                             return
+                        })
+                        if (channel) sendEmbed({
+                            channel,
+                            embed: {
+                                description: `\`🟢\` Leaker has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
+                                color: Colours.GREEN,
+                            },
+                        })
+                        logger.info({
+                            labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                            message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured punishments leaker to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
                         })
                         return
                     } else {
@@ -900,6 +1048,17 @@ export default new Command({
                             })
                             return
                         })
+                        if (channel) sendEmbed({
+                            channel,
+                            embed: {
+                                description: `\`🟢\` Cheater has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
+                                color: Colours.GREEN,
+                            },
+                        })
+                        logger.info({
+                            labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                            message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured punishments cheater to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
+                        })
                         return
                     } else {
                         await interaction.reply(
@@ -951,6 +1110,17 @@ export default new Command({
                             })
                             return
                         })
+                        if (channel) sendEmbed({
+                            channel,
+                            embed: {
+                                description: `\`🟢\` Supporter has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
+                                color: Colours.GREEN,
+                            },
+                        })
+                        logger.info({
+                            labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                            message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured punishments supporter to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
+                        })
                         return
                     } else {
                         await interaction.reply(
@@ -1001,6 +1171,17 @@ export default new Command({
                                 message: e instanceof Error ? e.message : JSON.stringify(e),
                             })
                             return
+                        })
+                        if (channel) sendEmbed({
+                            channel,
+                            embed: {
+                                description: `\`🟢\` Owner has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
+                                color: Colours.GREEN,
+                            },
+                        })
+                        logger.info({
+                            labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                            message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured punishments owner to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
                         })
                         return
                     } else {
