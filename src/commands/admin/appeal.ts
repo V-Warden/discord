@@ -1,10 +1,10 @@
-import { ApplicationCommandOptionType } from 'discord.js';
-import { Command } from '../../structures/Command';
-import { sendError, sendSuccess } from '../../utils/messages';
-import { UserStatus } from '@prisma/client';
-import actionAppeal from '../../utils/actioning/actionAppeal';
-import db from '../../utils/database';
-import logger from '../../utils/logger';
+import { ApplicationCommandOptionType } from 'discord.js'
+import { Command } from '../../structures/Command'
+import { sendError, sendSuccess } from '../../utils/messages'
+import { UserStatus } from '@prisma/client'
+import actionAppeal from '../../utils/actioning/actionAppeal'
+import db from '../../utils/database'
+import logger from '../../utils/logger'
 
 export default new Command({
     name: 'appeal',
@@ -20,35 +20,44 @@ export default new Command({
         },
     ],
     run: async ({ interaction, client }) => {
-        const member = interaction.options.getUser('user');
-        const id = member?.id as string;
-        if (!id) return sendError(interaction, 'Invalid user or id provided');
+        const member = interaction.options.getUser('user')
+        const id = member?.id as string
+        if (!id) return sendError(interaction, 'Invalid user or id provided')
 
-        const user = await db.getUser(id);
+        const user = await db.getUser(id)
 
         if (user?.status === 'APPEALED')
-            return sendError(interaction, 'That user has no new servers to appeal');
+            return sendError(interaction, 'That user has no new servers to appeal')
 
         if (user?.status === 'WHITELISTED')
-            return sendError(interaction, 'That user is whitelisted. Use upstatus to change.');
+            return sendError(interaction, 'That user is whitelisted. Use upstatus to change.')
 
-        const appealPromise = db.appealImports(id);
+        let firstAppeal
+        if (user?.appealedFirst) {
+            firstAppeal = new Date(user?.appealedFirst)
+        } else {
+            firstAppeal = new Date()
+        }
+
+        const appealPromise = db.appealImports(id)
         const updatePromise = db.updateUser(id, {
             status: UserStatus.APPEALED,
+            appealedFirst: firstAppeal,
+            appealedLast: new Date(),
             appeals: {
                 increment: 1,
             },
-        });
-        await Promise.all([appealPromise, updatePromise]);
+        })
+        await Promise.all([appealPromise, updatePromise])
 
-        sendSuccess(interaction, `Successfully appealed <@${id}> (${id})`);
-        await db.increaseAppealsStaff(interaction.user.id);
+        sendSuccess(interaction, `Successfully appealed <@${id}> (${id})`)
+        await db.increaseAppealsStaff(interaction.user.id)
 
         logger.info({
             labels: { command: 'appeal', userId: interaction?.user?.id, userTag: interaction?.user?.tag, guildId: interaction?.guild?.id },
             message: `${interaction?.user?.tag} (${interaction?.user?.id}) appealed ${member?.tag} (${id})`,
-        });
+        })
 
-        return actionAppeal(client, id);
+        return actionAppeal(client, id)
     },
-});
+})
