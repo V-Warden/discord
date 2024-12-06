@@ -20,13 +20,22 @@ export default new ContextMenu({
         if (user?.status === 'APPEALED')
             return sendError(interaction, 'That user has no new servers to appeal');
 
-        const appealPromise = db.appealImports(id);
+        let firstAppeal
+        if (user?.appealedFirst) {
+            firstAppeal = new Date(user?.appealedFirst)
+        } else {
+            firstAppeal = new Date()
+        }
+
+        const appealPromise = db.appealImports(id)
         const updatePromise = db.updateUser(id, {
             status: UserStatus.APPEALED,
+            appealedFirst: firstAppeal,
+            appealedLast: new Date(),
             appeals: {
                 increment: 1,
             },
-        });
+        })
         await Promise.all([appealPromise, updatePromise]);
 
         sendSuccess(interaction, `Successfully appealed <@${id}> (${id})`, false);
