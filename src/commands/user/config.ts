@@ -45,7 +45,12 @@ export default new Command({
 
         if (subCommand === 'view') {
             // view settings
-            await interaction.deferReply()
+            await interaction.deferReply().catch(e => {
+                logger.error({
+                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                })
+            })
 
             const guild = await db.getGuild(
                 { id: interaction?.guild?.id },
@@ -86,7 +91,7 @@ export default new Command({
                         },
                         {
                             name: 'Punishment Role',
-                            value: `Role: ${guild.punishments.roleId ? `<@&${guild.punishments.roleId}>` : '`Not Set`'}\n> Set a role that a blacklisted user recieves, they will gain all roles back after being appealed.\nUse the command \`/config settings\` to change this.`,
+                            value: `Role: ${guild.punishments.roleId ? `<@&${guild.punishments.roleId}>` : '`Not Set`'}\n> Set a role that a blacklisted user receives while awaiting action from the queue \`KICK/BAN\` or by punishment \`ROLE\`. If the punishment is set to \`ROLE\` they will regain all roles upon appeal.\nUse the command \`/config settings\` to change this.`,
                         },
                         {
                             name: 'Punishments',
@@ -220,7 +225,7 @@ export default new Command({
                         **Log Channel:** <#${currentSettings.logChannel}>\n> A text channel where all bot logs are sent to.\n
                         **Unban:** \`${currentSettings.unban ? 'Enabled' : 'Disabled'}\`\n> This will automatically unban a user when appealed, if they are banned via Warden.\n
                         **Global Scan:** \`${currentSettings.globalScan ? 'Enabled' : 'Disabled'}\`\n> You can opt in or out of global scanning, you will have to use scanusers if this is disabled.\n
-                        **Punishment Role:** ${currentSettings.roleId ? `<@&${currentSettings.roleId}>` : '`Not Set`'}\n> Set a role that a blacklisted user receives, they will gain all roles back after being appealed.\n
+                        **Punishment Role:** ${currentSettings.roleId ? `<@&${currentSettings.roleId}>` : '`Not Set`'}\n> Set a role that a blacklisted user receives while awaiting action from the queue \`KICK/BAN\` or by punishment \`ROLE\`. If the punishment is set to \`ROLE\` they will regain all roles upon appeal. Set the punishments with \`/config punishments\`.\n
                         **The select menus below are in the order from above.**`
                     )
                     .setColor(Colours.BLUE)
@@ -233,18 +238,28 @@ export default new Command({
                 { punishments: true, logChannel: true }
             )
 
-            if (!guild || !guild.punishments)
-                return sendError(interaction, 'This guild is not registered, please raise a support ticket')
+            if (!guild || !guild.punishments) return
 
-            const rowsSettings = await currentSettingsRows(guild) || []
+            const rowsSettings = await currentSettingsRows(guild).catch(e => {
+                logger.error({
+                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                })
+
+                return []
+            })
 
             const replySettings = await interaction.reply({
-                embeds: [await currentEmbedSettings(guild)],
+                embeds: [await currentEmbedSettings(guild).catch(e => {
+                    logger.error({
+                        labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: e instanceof Error ? e.message : JSON.stringify(e),
+                    })
+                    return {}
+                })],
                 components: rowsSettings.length ? [rowsSettings[0], rowsSettings[1], rowsSettings[2], rowsSettings[3], rowsSettings[4]] : [],
                 ephemeral: true,
             }).catch(e => {
-                sendError(interaction, 'An error occured, please try again later.')
-
                 logger.error({
                     labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
                     message: e instanceof Error ? e.message : JSON.stringify(e),
@@ -277,17 +292,28 @@ export default new Command({
                     { punishments: true, logChannel: true }
                 )
 
-                if (!guild || !guild.punishments)
-                    return sendError(interaction, 'This guild is not registered, please raise a support ticket')
+                if (!guild || !guild.punishments) return
 
-                const rows = await currentSettingsRows(guild) || []
+                const rows = await currentSettingsRows(guild).catch(e => {
+                    logger.error({
+                        labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: e instanceof Error ? e.message : JSON.stringify(e),
+                    })
+
+                    return []
+                })
 
                 return await replySettings.edit({
-                    embeds: [await currentEmbedSettings(guild)],
+                    embeds: [await currentEmbedSettings(guild).catch(e => {
+                        logger.error({
+                            labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                            message: e instanceof Error ? e.message : JSON.stringify(e),
+                        })
+                        return {}
+                    })
+                    ],
                     components: rows.length ? [rows[0], rows[1], rows[2], rows[3], rows[4]] : [],
                 }).catch(e => {
-                    sendError(interaction, 'An error occured, please try again later.')
-
                     logger.error({
                         labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
                         message: e instanceof Error ? e.message : JSON.stringify(e),
@@ -312,305 +338,326 @@ export default new Command({
             }
 
             collectorStringSelect.on('collect', async (interaction) => {
-                if (interaction.customId === 'config_actioning') {
-                    const embedError = new EmbedBuilder()
-                        .setDescription(`\`🔴\` Actioning is empty.`)
-                        .setColor(Colours.RED)
+                try {
+                    if (interaction.customId === 'config_actioning') {
+                        const embedError = new EmbedBuilder()
+                            .setDescription(`\`🔴\` Actioning is empty.`)
+                            .setColor(Colours.RED)
 
-                    if (!interaction.values.length) {
-                        await interaction.reply({
-                            embeds: [embedError],
-                            ephemeral: true,
-                        }).catch(e => {
-                            logger.error({
-                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
-                            })
-                        })
-                        return
-                    }
-
-                    const selected = interaction.values[0]
-
-                    const embedWarn = new EmbedBuilder()
-                        .setDescription(`\`🟡\` Actioning not found.`)
-                        .setColor(Colours.YELLOW)
-
-                    if (selected) {
-                        await db.updatePunishments({ id: interaction?.guild?.id }, { enabled: JSON.parse(selected) })
-                        await updateCurrentSettings()
-                        await interaction.deferUpdate().catch(e => {
-                            logger.error({
-                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
-                            })
-                        })
-                        if (channel) sendEmbed({
-                            channel,
-                            embed: {
-                                description: `\`🟢\` Actioning has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
-                                color: Colours.GREEN,
-                            },
-                        })
-                        logger.info({
-                            labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                            message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured settings actioning to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
-                        })
-                        return
-                    } else {
-                        await interaction.reply(
-                            {
-                                embeds: [embedWarn],
+                        if (!interaction.values.length) {
+                            await interaction.reply({
+                                embeds: [embedError],
                                 ephemeral: true,
-                            }
-                        ).catch(e => {
-                            logger.error({
-                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
+                            }).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
                             })
-                        })
-                        return
-                    }
-                } else if (interaction.customId === 'config_unban') {
-                    const embedError = new EmbedBuilder()
-                        .setDescription(`\`🔴\` Unban is empty.`)
-                        .setColor(Colours.RED)
+                            return
+                        }
 
-                    if (!interaction.values.length) {
-                        await interaction.reply({
-                            embeds: [embedError],
-                            ephemeral: true,
-                        }).catch(e => {
-                            logger.error({
-                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
+                        const selected = interaction.values[0]
+
+                        const embedWarn = new EmbedBuilder()
+                            .setDescription(`\`🟡\` Actioning not found.`)
+                            .setColor(Colours.YELLOW)
+
+                        if (selected) {
+                            await db.updatePunishments({ id: interaction?.guild?.id }, { enabled: JSON.parse(selected) })
+                            await updateCurrentSettings()
+                            await interaction.deferUpdate().catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
                             })
-                        })
-                        return
-                    }
-
-                    const selected = interaction.values[0]
-
-                    const embedWarn = new EmbedBuilder()
-                        .setDescription(`\`🟡\` Unban not found.`)
-                        .setColor(Colours.YELLOW)
-
-                    if (selected) {
-                        await db.updatePunishments({ id: interaction?.guild?.id }, { unban: JSON.parse(selected) })
-                        await updateCurrentSettings()
-                        await interaction.deferUpdate().catch(e => {
-                            logger.error({
-                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
+                            if (channel) sendEmbed({
+                                channel,
+                                embed: {
+                                    description: `\`🟢\` Actioning has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
+                                    color: Colours.GREEN,
+                                },
                             })
-                        })
-                        if (channel) sendEmbed({
-                            channel,
-                            embed: {
-                                description: `\`🟢\` Unban has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
-                                color: Colours.GREEN,
-                            },
-                        })
-                        logger.info({
-                            labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                            message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured settings unban to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
-                        })
-                        return
-                    } else {
-                        await interaction.reply(
-                            {
-                                embeds: [embedWarn],
+                            logger.info({
+                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured settings actioning to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
+                            })
+                            return
+                        } else {
+                            await interaction.reply(
+                                {
+                                    embeds: [embedWarn],
+                                    ephemeral: true,
+                                }
+                            ).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                            })
+                            return
+                        }
+                    } else if (interaction.customId === 'config_unban') {
+                        const embedError = new EmbedBuilder()
+                            .setDescription(`\`🔴\` Unban is empty.`)
+                            .setColor(Colours.RED)
+
+                        if (!interaction.values.length) {
+                            await interaction.reply({
+                                embeds: [embedError],
                                 ephemeral: true,
-                            }
-                        ).catch(e => {
-                            logger.error({
-                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
+                            }).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
                             })
-                        })
-                        return
-                    }
-                } else if (interaction.customId === 'config_globalscan') {
-                    const embedError = new EmbedBuilder()
-                        .setDescription(`\`🔴\` Global Scan is empty.`)
-                        .setColor(Colours.RED)
+                            return
+                        }
 
-                    if (!interaction.values.length) {
-                        await interaction.reply({
-                            embeds: [embedError],
-                            ephemeral: true,
-                        }).catch(e => {
-                            logger.error({
-                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
+                        const selected = interaction.values[0]
+
+                        const embedWarn = new EmbedBuilder()
+                            .setDescription(`\`🟡\` Unban not found.`)
+                            .setColor(Colours.YELLOW)
+
+                        if (selected) {
+                            await db.updatePunishments({ id: interaction?.guild?.id }, { unban: JSON.parse(selected) })
+                            await updateCurrentSettings()
+                            await interaction.deferUpdate().catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
                             })
-                        })
-                        return
-                    }
-
-                    const selected = interaction.values[0]
-
-                    const embedWarn = new EmbedBuilder()
-                        .setDescription(`\`🟡\` Global Scan not found.`)
-                        .setColor(Colours.YELLOW)
-
-                    if (selected) {
-                        await db.updatePunishments({ id: interaction?.guild?.id }, { globalCheck: JSON.parse(selected) })
-                        await updateCurrentSettings()
-                        await interaction.deferUpdate().catch(e => {
-                            logger.error({
-                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
+                            if (channel) sendEmbed({
+                                channel,
+                                embed: {
+                                    description: `\`🟢\` Unban has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
+                                    color: Colours.GREEN,
+                                },
                             })
-                        })
-                        if (channel) sendEmbed({
-                            channel,
-                            embed: {
-                                description: `\`🟢\` Global Scan has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
-                                color: Colours.GREEN,
-                            },
-                        })
-                        logger.info({
-                            labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                            message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured settings global scan to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
-                        })
-                        return
-                    } else {
-                        await interaction.reply(
-                            {
-                                embeds: [embedWarn],
+                            logger.info({
+                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured settings unban to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
+                            })
+                            return
+                        } else {
+                            await interaction.reply(
+                                {
+                                    embeds: [embedWarn],
+                                    ephemeral: true,
+                                }
+                            ).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                            })
+                            return
+                        }
+                    } else if (interaction.customId === 'config_globalscan') {
+                        const embedError = new EmbedBuilder()
+                            .setDescription(`\`🔴\` Global Scan is empty.`)
+                            .setColor(Colours.RED)
+
+                        if (!interaction.values.length) {
+                            await interaction.reply({
+                                embeds: [embedError],
                                 ephemeral: true,
-                            }
-                        ).catch(e => {
-                            logger.error({
-                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
+                            }).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
                             })
-                        })
-                        return
+                            return
+                        }
+
+                        const selected = interaction.values[0]
+
+                        const embedWarn = new EmbedBuilder()
+                            .setDescription(`\`🟡\` Global Scan not found.`)
+                            .setColor(Colours.YELLOW)
+
+                        if (selected) {
+                            await db.updatePunishments({ id: interaction?.guild?.id }, { globalCheck: JSON.parse(selected) })
+                            await updateCurrentSettings()
+                            await interaction.deferUpdate().catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                            })
+                            if (channel) sendEmbed({
+                                channel,
+                                embed: {
+                                    description: `\`🟢\` Global Scan has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
+                                    color: Colours.GREEN,
+                                },
+                            })
+                            logger.info({
+                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured settings global scan to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
+                            })
+                            return
+                        } else {
+                            await interaction.reply(
+                                {
+                                    embeds: [embedWarn],
+                                    ephemeral: true,
+                                }
+                            ).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                            })
+                            return
+                        }
                     }
+                } catch (error) {
+                    logger.error({
+                        labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: error instanceof Error ? error.message : JSON.stringify(error),
+                    })
                 }
             })
 
             collectorChannelSelect.on('collect', async (interaction) => {
-                if (interaction.customId === 'config_logchannel') {
-                    const embedError = new EmbedBuilder()
-                        .setDescription(`\`🔴\` Log Channel is empty.`)
-                        .setColor(Colours.RED)
+                try {
+                    if (interaction.customId === 'config_logchannel') {
+                        const embedError = new EmbedBuilder()
+                            .setDescription(`\`🔴\` Log Channel is empty.`)
+                            .setColor(Colours.RED)
 
-                    if (!interaction.values.length) {
-                        await interaction.reply({
-                            embeds: [embedError],
-                            ephemeral: true,
-                        }).catch(e => {
-                            logger.error({
-                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
-                            })
-                            return
-                        })
-                        return
-                    }
-
-                    const selected = interaction.values[0]
-
-                    const embedWarn = new EmbedBuilder()
-                        .setDescription(`\`🟡\` Log Channel not found.`)
-                        .setColor(Colours.YELLOW)
-
-                    if (selected) {
-                        await db.updateGuild({ id: interaction?.guild?.id }, { logChannel: selected })
-                        try {
-                            channel = await interaction.guild?.channels.fetch(selected) as TextChannel
-                        } catch (error) {
-                            channel = false
-                        }
-                        await updateCurrentSettings()
-                        await interaction.deferUpdate().catch(e => {
-                            logger.error({
-                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
-                            })
-                        })
-                        if (channel) sendEmbed({
-                            channel,
-                            embed: {
-                                description: `\`🟢\` Log Channel has been successfully set to <#${selected}> by <@${interaction.user.id}>.`,
-                                color: Colours.GREEN,
-                            },
-                        })
-                        logger.info({
-                            labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                            message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured settings log channel to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
-                        })
-                        return
-                    } else {
-                        await interaction.reply(
-                            {
-                                embeds: [embedWarn],
+                        if (!interaction.values.length) {
+                            await interaction.reply({
+                                embeds: [embedError],
                                 ephemeral: true,
-                            }
-                        ).catch(e => {
-                            logger.error({
-                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
+                            }).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                                return
                             })
                             return
-                        })
-                        return
+                        }
+
+                        const selected = interaction.values[0]
+
+                        const embedWarn = new EmbedBuilder()
+                            .setDescription(`\`🟡\` Log Channel not found.`)
+                            .setColor(Colours.YELLOW)
+
+                        if (selected) {
+                            await db.updateGuild({ id: interaction?.guild?.id }, { logChannel: selected })
+                            try {
+                                channel = await interaction.guild?.channels.fetch(selected) as TextChannel
+                            } catch (error) {
+                                channel = false
+                            }
+                            await updateCurrentSettings()
+                            await interaction.deferUpdate().catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                            })
+                            if (channel) sendEmbed({
+                                channel,
+                                embed: {
+                                    description: `\`🟢\` Log Channel has been successfully set to <#${selected}> by <@${interaction.user.id}>.`,
+                                    color: Colours.GREEN,
+                                },
+                            })
+                            logger.info({
+                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured settings log channel to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
+                            })
+                            return
+                        } else {
+                            await interaction.reply(
+                                {
+                                    embeds: [embedWarn],
+                                    ephemeral: true,
+                                }
+                            ).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                                return
+                            })
+                            return
+                        }
                     }
+                } catch (error) {
+                    logger.error({
+                        labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: error instanceof Error ? error.message : JSON.stringify(error),
+                    })
                 }
             })
 
             collectorRoleSelect.on('collect', async (interaction) => {
-                if (interaction.customId === 'config_punishrole') {
-                    const selected = interaction.values[0]
+                try {
+                    if (interaction.customId === 'config_punishrole') {
+                        const selected = interaction.values[0]
 
-                    if (selected) {
-                        await db.updatePunishments({ id: interaction?.guild?.id }, { roleId: selected })
-                        await updateCurrentSettings()
-                        await interaction.deferUpdate().catch(e => {
-                            logger.error({
+                        if (selected) {
+                            await db.updatePunishments({ id: interaction?.guild?.id }, { roleId: selected })
+                            await updateCurrentSettings()
+                            await interaction.deferUpdate().catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                                return
+                            })
+                            if (channel) sendEmbed({
+                                channel,
+                                embed: {
+                                    description: `\`🟢\` Punishment Role has been successfully set to <@&${selected}> by <@${interaction.user.id}>.`,
+                                    color: Colours.GREEN,
+                                },
+                            })
+                            logger.info({
                                 labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
+                                message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured settings punishment role to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
                             })
                             return
-                        })
-                        if (channel) sendEmbed({
-                            channel,
-                            embed: {
-                                description: `\`🟢\` Punishment Role has been successfully set to <@&${selected}> by <@${interaction.user.id}>.`,
-                                color: Colours.GREEN,
-                            },
-                        })
-                        logger.info({
-                            labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                            message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured settings punishment role to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
-                        })
-                        return
-                    } else {
-                        await db.updatePunishments({ id: interaction?.guild?.id }, { roleId: null })
-                        await updateCurrentSettings()
-                        await interaction.deferUpdate().catch(e => {
-                            logger.error({
+                        } else {
+                            await db.updatePunishments({ id: interaction?.guild?.id }, { roleId: null })
+                            await updateCurrentSettings()
+                            await interaction.deferUpdate().catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                                return
+                            })
+                            if (channel) sendEmbed({
+                                channel,
+                                embed: {
+                                    description: `\`🟢\` Punishment Role has been successfully removed by <@${interaction.user.id}>.`,
+                                    color: Colours.GREEN,
+                                },
+                            })
+                            logger.info({
                                 labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
+                                message: `${interaction?.user?.tag} (${interaction?.user?.id}) removed settings punishment role for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
                             })
                             return
-                        })
-                        if (channel) sendEmbed({
-                            channel,
-                            embed: {
-                                description: `\`🟢\` Punishment Role has been successfully removed by <@${interaction.user.id}>.`,
-                                color: Colours.GREEN,
-                            },
-                        })
-                        logger.info({
-                            labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                            message: `${interaction?.user?.tag} (${interaction?.user?.id}) removed settings punishment role for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
-                        })
-                        return
+                        }
                     }
+                } catch (error) {
+                    logger.error({
+                        labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: error instanceof Error ? error.message : JSON.stringify(error),
+                    })
                 }
             })
 
@@ -644,7 +691,7 @@ export default new Command({
 
                 return
             }
-            
+
             logger.info({
                 labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
                 message: `${interaction?.user?.tag} (${interaction?.user?.id}) opened configured punishments`,
@@ -826,7 +873,8 @@ export default new Command({
                         **Leaker:** \`${currentSettings.leaker}\`\n> This is the punishment for the type leaker.\n
                         **Cheater:** \`${currentSettings.cheater}\`\n> This is the punishment for the type cheater.\n
                         **Supporter:** \`${currentSettings.supporter}\`\n> This is the punishment for the type supporter.\n
-                        **Owner:** \`${currentSettings.owner}\`\n> This is the punishment for the type owner.`
+                        **Owner:** \`${currentSettings.owner}\`\n> This is the punishment for the type owner.\n
+                        **The select menus below are in the order from above.**`
                     )
                     .setColor(Colours.BLUE)
 
@@ -838,18 +886,29 @@ export default new Command({
                 { punishments: true, logChannel: true }
             )
 
-            if (!guild || !guild.punishments)
-                return sendError(interaction, 'This guild is not registered, please raise a support ticket')
+            if (!guild || !guild.punishments) return
 
-            const rowsPunishments = await currentPunishmentRows(guild) || []
+            const rowsPunishments = await currentPunishmentRows(guild).catch(e => {
+                logger.error({
+                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                })
+
+                return []
+            })
 
             const replyPunishments = await interaction.reply({
-                embeds: [await currentEmbedPunishments(guild)],
+                embeds: [await currentEmbedPunishments(guild).catch(e => {
+                    logger.error({
+                        labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: e instanceof Error ? e.message : JSON.stringify(e),
+                    })
+                    return {}
+                })
+                ],
                 components: rowsPunishments.length ? [rowsPunishments[0], rowsPunishments[1], rowsPunishments[2], rowsPunishments[3], rowsPunishments[4]] : [],
                 ephemeral: true,
             }).catch(e => {
-                sendError(interaction, 'An error occured, please try again later.')
-
                 logger.error({
                     labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
                     message: e instanceof Error ? e.message : JSON.stringify(e),
@@ -870,17 +929,29 @@ export default new Command({
                     { punishments: true, logChannel: true }
                 )
 
-                if (!guild || !guild.punishments)
-                    return sendError(interaction, 'This guild is not registered, please raise a support ticket')
+                if (!guild || !guild.punishments) return
 
-                const rows = await currentPunishmentRows(guild) || []
+
+                const rows = await currentPunishmentRows(guild).catch(e => {
+                    logger.error({
+                        labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: e instanceof Error ? e.message : JSON.stringify(e),
+                    })
+
+                    return []
+                })
 
                 return await replyPunishments.edit({
-                    embeds: [await currentEmbedPunishments(guild)],
+                    embeds: [await currentEmbedPunishments(guild).catch(e => {
+                        logger.error({
+                            labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                            message: e instanceof Error ? e.message : JSON.stringify(e),
+                        })
+                        return {}
+                    })
+                    ],
                     components: rows.length ? [rows[0], rows[1], rows[2], rows[3], rows[4]] : [],
                 }).catch(e => {
-                    sendError(interaction, 'An error occured, please try again later.')
-
                     logger.error({
                         labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
                         message: e instanceof Error ? e.message : JSON.stringify(e),
@@ -889,316 +960,323 @@ export default new Command({
             }
 
             collectorStringSelect.on('collect', async (interaction) => {
-                if (interaction.customId === 'config_punish_other') {
-                    const embedError = new EmbedBuilder()
-                        .setDescription(`\`🔴\` Other is empty.`)
-                        .setColor(Colours.RED)
+                try {
+                    if (interaction.customId === 'config_punish_other') {
+                        const embedError = new EmbedBuilder()
+                            .setDescription(`\`🔴\` Other is empty.`)
+                            .setColor(Colours.RED)
 
-                    if (!interaction.values.length) {
-                        await interaction.reply({
-                            embeds: [embedError],
-                            ephemeral: true,
-                        }).catch(e => {
-                            logger.error({
-                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
-                            })
-                            return
-                        })
-                        return
-                    }
-
-                    const selected = interaction.values[0]
-
-                    const embedWarn = new EmbedBuilder()
-                        .setDescription(`\`🟡\` Other not found.`)
-                        .setColor(Colours.YELLOW)
-
-                    if (selected) {
-                        await db.updatePunishments({ id: interaction?.guild?.id }, { other: selected as Punish })
-                        await updateCurrentPunishments()
-                        await interaction.deferUpdate().catch(e => {
-                            logger.error({
-                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
-                            })
-                            return
-                        })
-                        if (channel) sendEmbed({
-                            channel,
-                            embed: {
-                                description: `\`🟢\` Other has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
-                                color: Colours.GREEN,
-                            },
-                        })
-                        logger.info({
-                            labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                            message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured punishments other to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
-                        })
-                        return
-                    } else {
-                        await interaction.reply(
-                            {
-                                embeds: [embedWarn],
+                        if (!interaction.values.length) {
+                            await interaction.reply({
+                                embeds: [embedError],
                                 ephemeral: true,
-                            }
-                        ).catch(e => {
-                            logger.error({
-                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
+                            }).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                                return
                             })
                             return
-                        })
-                        return
-                    }
-                } else if (interaction.customId === 'config_punish_leaker') {
-                    const embedError = new EmbedBuilder()
-                        .setDescription(`\`🔴\` Leaker is empty.`)
-                        .setColor(Colours.RED)
+                        }
 
-                    if (!interaction.values.length) {
-                        await interaction.reply({
-                            embeds: [embedError],
-                            ephemeral: true,
-                        }).catch(e => {
-                            logger.error({
+                        const selected = interaction.values[0]
+
+                        const embedWarn = new EmbedBuilder()
+                            .setDescription(`\`🟡\` Other not found.`)
+                            .setColor(Colours.YELLOW)
+
+                        if (selected) {
+                            await db.updatePunishments({ id: interaction?.guild?.id }, { other: selected as Punish })
+                            await updateCurrentPunishments()
+                            await interaction.deferUpdate().catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                                return
+                            })
+                            if (channel) sendEmbed({
+                                channel,
+                                embed: {
+                                    description: `\`🟢\` Other has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
+                                    color: Colours.GREEN,
+                                },
+                            })
+                            logger.info({
                                 labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
+                                message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured punishments other to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
                             })
                             return
-                        })
-                        return
-                    }
-
-                    const selected = interaction.values[0]
-
-                    const embedWarn = new EmbedBuilder()
-                        .setDescription(`\`🟡\` Leaker not found.`)
-                        .setColor(Colours.YELLOW)
-
-                    if (selected) {
-                        await db.updatePunishments({ id: interaction?.guild?.id }, { leaker: selected as Punish })
-                        await updateCurrentPunishments()
-                        await interaction.deferUpdate().catch(e => {
-                            logger.error({
-                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
+                        } else {
+                            await interaction.reply(
+                                {
+                                    embeds: [embedWarn],
+                                    ephemeral: true,
+                                }
+                            ).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                                return
                             })
                             return
-                        })
-                        if (channel) sendEmbed({
-                            channel,
-                            embed: {
-                                description: `\`🟢\` Leaker has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
-                                color: Colours.GREEN,
-                            },
-                        })
-                        logger.info({
-                            labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                            message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured punishments leaker to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
-                        })
-                        return
-                    } else {
-                        await interaction.reply(
-                            {
-                                embeds: [embedWarn],
+                        }
+                    } else if (interaction.customId === 'config_punish_leaker') {
+                        const embedError = new EmbedBuilder()
+                            .setDescription(`\`🔴\` Leaker is empty.`)
+                            .setColor(Colours.RED)
+
+                        if (!interaction.values.length) {
+                            await interaction.reply({
+                                embeds: [embedError],
                                 ephemeral: true,
-                            }
-                        ).catch(e => {
-                            logger.error({
-                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
+                            }).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                                return
                             })
                             return
-                        })
-                        return
-                    }
-                } else if (interaction.customId === 'config_punish_cheater') {
-                    const embedError = new EmbedBuilder()
-                        .setDescription(`\`🔴\` Cheater is empty.`)
-                        .setColor(Colours.RED)
+                        }
 
-                    if (!interaction.values.length) {
-                        await interaction.reply({
-                            embeds: [embedError],
-                            ephemeral: true,
-                        }).catch(e => {
-                            logger.error({
+                        const selected = interaction.values[0]
+
+                        const embedWarn = new EmbedBuilder()
+                            .setDescription(`\`🟡\` Leaker not found.`)
+                            .setColor(Colours.YELLOW)
+
+                        if (selected) {
+                            await db.updatePunishments({ id: interaction?.guild?.id }, { leaker: selected as Punish })
+                            await updateCurrentPunishments()
+                            await interaction.deferUpdate().catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                                return
+                            })
+                            if (channel) sendEmbed({
+                                channel,
+                                embed: {
+                                    description: `\`🟢\` Leaker has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
+                                    color: Colours.GREEN,
+                                },
+                            })
+                            logger.info({
                                 labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
+                                message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured punishments leaker to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
                             })
                             return
-                        })
-                        return
-                    }
-
-                    const selected = interaction.values[0]
-
-                    const embedWarn = new EmbedBuilder()
-                        .setDescription(`\`🟡\` Cheater not found.`)
-                        .setColor(Colours.YELLOW)
-
-                    if (selected) {
-                        await db.updatePunishments({ id: interaction?.guild?.id }, { cheater: selected as Punish })
-                        await updateCurrentPunishments()
-                        await interaction.deferUpdate().catch(e => {
-                            logger.error({
-                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
+                        } else {
+                            await interaction.reply(
+                                {
+                                    embeds: [embedWarn],
+                                    ephemeral: true,
+                                }
+                            ).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                                return
                             })
                             return
-                        })
-                        if (channel) sendEmbed({
-                            channel,
-                            embed: {
-                                description: `\`🟢\` Cheater has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
-                                color: Colours.GREEN,
-                            },
-                        })
-                        logger.info({
-                            labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                            message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured punishments cheater to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
-                        })
-                        return
-                    } else {
-                        await interaction.reply(
-                            {
-                                embeds: [embedWarn],
+                        }
+                    } else if (interaction.customId === 'config_punish_cheater') {
+                        const embedError = new EmbedBuilder()
+                            .setDescription(`\`🔴\` Cheater is empty.`)
+                            .setColor(Colours.RED)
+
+                        if (!interaction.values.length) {
+                            await interaction.reply({
+                                embeds: [embedError],
                                 ephemeral: true,
-                            }
-                        ).catch(e => {
-                            logger.error({
-                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
+                            }).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                                return
                             })
                             return
-                        })
-                        return
-                    }
-                } else if (interaction.customId === 'config_punish_supporter') {
-                    const embedError = new EmbedBuilder()
-                        .setDescription(`\`🔴\` Supporter is empty.`)
-                        .setColor(Colours.RED)
+                        }
 
-                    if (!interaction.values.length) {
-                        await interaction.reply({
-                            embeds: [embedError],
-                            ephemeral: true,
-                        }).catch(e => {
-                            logger.error({
+                        const selected = interaction.values[0]
+
+                        const embedWarn = new EmbedBuilder()
+                            .setDescription(`\`🟡\` Cheater not found.`)
+                            .setColor(Colours.YELLOW)
+
+                        if (selected) {
+                            await db.updatePunishments({ id: interaction?.guild?.id }, { cheater: selected as Punish })
+                            await updateCurrentPunishments()
+                            await interaction.deferUpdate().catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                                return
+                            })
+                            if (channel) sendEmbed({
+                                channel,
+                                embed: {
+                                    description: `\`🟢\` Cheater has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
+                                    color: Colours.GREEN,
+                                },
+                            })
+                            logger.info({
                                 labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
+                                message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured punishments cheater to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
                             })
                             return
-                        })
-                        return
-                    }
-
-                    const selected = interaction.values[0]
-
-                    const embedWarn = new EmbedBuilder()
-                        .setDescription(`\`🟡\` Supporter not found.`)
-                        .setColor(Colours.YELLOW)
-
-                    if (selected) {
-                        await db.updatePunishments({ id: interaction?.guild?.id }, { supporter: selected as Punish })
-                        await updateCurrentPunishments()
-                        await interaction.deferUpdate().catch(e => {
-                            logger.error({
-                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
+                        } else {
+                            await interaction.reply(
+                                {
+                                    embeds: [embedWarn],
+                                    ephemeral: true,
+                                }
+                            ).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                                return
                             })
                             return
-                        })
-                        if (channel) sendEmbed({
-                            channel,
-                            embed: {
-                                description: `\`🟢\` Supporter has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
-                                color: Colours.GREEN,
-                            },
-                        })
-                        logger.info({
-                            labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                            message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured punishments supporter to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
-                        })
-                        return
-                    } else {
-                        await interaction.reply(
-                            {
-                                embeds: [embedWarn],
+                        }
+                    } else if (interaction.customId === 'config_punish_supporter') {
+                        const embedError = new EmbedBuilder()
+                            .setDescription(`\`🔴\` Supporter is empty.`)
+                            .setColor(Colours.RED)
+
+                        if (!interaction.values.length) {
+                            await interaction.reply({
+                                embeds: [embedError],
                                 ephemeral: true,
-                            }
-                        ).catch(e => {
-                            logger.error({
-                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
+                            }).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                                return
                             })
                             return
-                        })
-                        return
-                    }
-                } else if (interaction.customId === 'config_punish_owner') {
-                    const embedError = new EmbedBuilder()
-                        .setDescription(`\`🔴\` Owner is empty.`)
-                        .setColor(Colours.RED)
+                        }
 
-                    if (!interaction.values.length) {
-                        await interaction.reply({
-                            embeds: [embedError],
-                            ephemeral: true,
-                        }).catch(e => {
-                            logger.error({
+                        const selected = interaction.values[0]
+
+                        const embedWarn = new EmbedBuilder()
+                            .setDescription(`\`🟡\` Supporter not found.`)
+                            .setColor(Colours.YELLOW)
+
+                        if (selected) {
+                            await db.updatePunishments({ id: interaction?.guild?.id }, { supporter: selected as Punish })
+                            await updateCurrentPunishments()
+                            await interaction.deferUpdate().catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                                return
+                            })
+                            if (channel) sendEmbed({
+                                channel,
+                                embed: {
+                                    description: `\`🟢\` Supporter has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
+                                    color: Colours.GREEN,
+                                },
+                            })
+                            logger.info({
                                 labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
+                                message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured punishments supporter to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
                             })
                             return
-                        })
-                        return
-                    }
-
-                    const selected = interaction.values[0]
-
-                    const embedWarn = new EmbedBuilder()
-                        .setDescription(`\`🟡\` Owner not found.`)
-                        .setColor(Colours.YELLOW)
-
-                    if (selected) {
-                        await db.updatePunishments({ id: interaction?.guild?.id }, { owner: selected as Punish })
-                        await updateCurrentPunishments()
-                        await interaction.deferUpdate().catch(e => {
-                            logger.error({
-                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
+                        } else {
+                            await interaction.reply(
+                                {
+                                    embeds: [embedWarn],
+                                    ephemeral: true,
+                                }
+                            ).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                                return
                             })
                             return
-                        })
-                        if (channel) sendEmbed({
-                            channel,
-                            embed: {
-                                description: `\`🟢\` Owner has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
-                                color: Colours.GREEN,
-                            },
-                        })
-                        logger.info({
-                            labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                            message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured punishments owner to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
-                        })
-                        return
-                    } else {
-                        await interaction.reply(
-                            {
-                                embeds: [embedWarn],
+                        }
+                    } else if (interaction.customId === 'config_punish_owner') {
+                        const embedError = new EmbedBuilder()
+                            .setDescription(`\`🔴\` Owner is empty.`)
+                            .setColor(Colours.RED)
+
+                        if (!interaction.values.length) {
+                            await interaction.reply({
+                                embeds: [embedError],
                                 ephemeral: true,
-                            }
-                        ).catch(e => {
-                            logger.error({
-                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: e instanceof Error ? e.message : JSON.stringify(e),
+                            }).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                                return
                             })
                             return
-                        })
-                        return
+                        }
+
+                        const selected = interaction.values[0]
+
+                        const embedWarn = new EmbedBuilder()
+                            .setDescription(`\`🟡\` Owner not found.`)
+                            .setColor(Colours.YELLOW)
+
+                        if (selected) {
+                            await db.updatePunishments({ id: interaction?.guild?.id }, { owner: selected as Punish })
+                            await updateCurrentPunishments()
+                            await interaction.deferUpdate().catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                                return
+                            })
+                            if (channel) sendEmbed({
+                                channel,
+                                embed: {
+                                    description: `\`🟢\` Owner has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
+                                    color: Colours.GREEN,
+                                },
+                            })
+                            logger.info({
+                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured punishments owner to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
+                            })
+                            return
+                        } else {
+                            await interaction.reply(
+                                {
+                                    embeds: [embedWarn],
+                                    ephemeral: true,
+                                }
+                            ).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                                return
+                            })
+                            return
+                        }
                     }
+                } catch (error) {
+                    logger.error({
+                        labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: error instanceof Error ? error.message : JSON.stringify(error),
+                    })
                 }
             })
 
