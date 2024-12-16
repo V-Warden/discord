@@ -26,8 +26,8 @@ export default new Command({
     options: [
         {
             type: ApplicationCommandOptionType.Subcommand,
-            name: 'view',
-            description: 'View settings',
+            name: 'info',
+            description: 'Info about the configuration',
         },
         {
             type: ApplicationCommandOptionType.Subcommand,
@@ -39,12 +39,22 @@ export default new Command({
             name: 'punishments',
             description: 'Configure punishments',
         },
+        {
+            type: ApplicationCommandOptionType.Subcommand,
+            name: 'bans',
+            description: 'Configure bans',
+        },
+        {
+            type: ApplicationCommandOptionType.Subcommand,
+            name: 'unbans',
+            description: 'Configure unbans',
+        },
     ],
     run: async ({ interaction, client }) => {
         const subCommand = interaction.options.getSubcommand()
 
-        if (subCommand === 'view') {
-            // view settings
+        if (subCommand === 'info') {
+            // info
             await interaction.deferReply().catch(e => {
                 logger.error({
                     labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
@@ -62,41 +72,18 @@ export default new Command({
 
             logger.info({
                 labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                message: `${interaction?.user?.tag} (${interaction?.user?.id}) viewed settings`,
+                message: `${interaction?.user?.tag} (${interaction?.user?.id}) viewed info for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
             })
 
             return sendEmbed({
                 interaction,
                 embed: {
-                    author: {
-                        name: 'Welcome to Warden!',
-                        icon_url: client.user?.defaultAvatarURL,
-                    },
+                    title: 'Warden Configuration',
+                    description: `Welcome to the Warden Configuration. Please select a subcommand to view or configure settings.`,
                     fields: [
                         {
-                            name: 'Actioning',
-                            value: `Status: \`${guild.punishments?.enabled ? 'Enabled' : 'Disabled'}\`\n> This determins if the bot will have functionality on this guild.\nUse the command \`/config settings\` to change this.`,
-                        },
-                        {
-                            name: 'Log Channel',
-                            value: `Channel: <#${guild.logChannel}>\n> A text channel where all bot logs are sent to.\nUse the command \`/config settings\` to change this.`,
-                        },
-                        {
-                            name: 'Unban',
-                            value: `Status: \`${guild.punishments?.unban ? 'Enabled' : 'Disabled'}\`\n> This will automatically unban a user when appealed, if they are banned via Warden.\nUse the command \`/config settings\` to change this.`,
-                        },
-                        {
-                            name: 'Global Scan',
-                            value: `Status: \`${guild.punishments?.globalCheck ? 'Enabled' : 'Disabled'}\`\n> You can opt in or out of global scanning, you will have to use scanusers if this is disabled.\nUse the command \`/config settings\` to change this.`,
-                        },
-                        {
-                            name: 'Punishment Role',
-                            value: `Role: ${guild.punishments.roleId ? `<@&${guild.punishments.roleId}>` : '`Not Set`'}\n> Set a role that a blacklisted user receives while awaiting action from the queue \`KICK/BAN\` or by punishment \`ROLE\`. If the punishment is set to \`ROLE\` they will regain all roles upon appeal.\nUse the command \`/config settings\` to change this.`,
-                        },
-                        {
-                            name: 'Punishments',
-                            inline: false,
-                            value: `Other -> \`${guild.punishments?.other}\`\nLeaker -> \`${guild.punishments?.leaker}\`\nCheater -> \`${guild.punishments?.cheater}\`\nSupporter -> \`${guild.punishments?.supporter}\`\nOwner -> \`${guild.punishments?.owner}\`\nUse the command \`/config punishments\` to change this.`,
+                            name: 'Subcommands',
+                            value: '`/config settings` - Configure the bot settings\n`/config punishments` - Configure the punishments\n`/config bans` - Configure the bans\n`/config unbans` - Configure the unbans',
                         },
                     ],
                     color: Colours.BLUE,
@@ -116,14 +103,13 @@ export default new Command({
 
             logger.info({
                 labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                message: `${interaction?.user?.tag} (${interaction?.user?.id}) opened configured settings`,
+                message: `${interaction?.user?.tag} (${interaction?.user?.id}) opened configured settings for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
             })
 
             const currentSettingsRows = async (guild: any): Promise<ActionRowBuilder<MessageActionRowComponentBuilder>[]> => {
                 const currentSettings = {
                     actioning: guild.punishments.enabled,
                     logChannel: guild.logChannel,
-                    unban: guild.punishments.unban,
                     globalScan: guild.punishments.globalCheck,
                     roleId: guild.punishments.roleId,
                 }
@@ -154,24 +140,6 @@ export default new Command({
                     .addChannelTypes(ChannelType.GuildText)
                     .addDefaultChannels(currentSettings.logChannel ? [currentSettings.logChannel] : [])
 
-                const unbanSelect = new StringSelectMenuBuilder()
-                    .setCustomId('config_unban')
-                    .setPlaceholder('Select an option')
-                    .setMinValues(1)
-                    .setMaxValues(1)
-                    .addOptions(
-                        new StringSelectMenuOptionBuilder()
-                            .setLabel('Enabled')
-                            .setDescription('Enable automatic unbanning')
-                            .setValue('true')
-                            .setDefault(currentSettings.unban),
-                        new StringSelectMenuOptionBuilder()
-                            .setLabel('Disabled')
-                            .setDescription('Disable automatic unbanning')
-                            .setValue('false')
-                            .setDefault(!currentSettings.unban)
-                    )
-
                 const selectGlobalScan = new StringSelectMenuBuilder()
                     .setCustomId('config_globalscan')
                     .setPlaceholder('Select an option')
@@ -200,7 +168,6 @@ export default new Command({
                 const rows = [
                     new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(selectActioning),
                     new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(selectLogChannel),
-                    new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(unbanSelect),
                     new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(selectGlobalScan),
                     new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(selectPunishRole),
                 ]
@@ -212,21 +179,18 @@ export default new Command({
                 const currentSettings = {
                     actioning: guild.punishments.enabled,
                     logChannel: guild.logChannel,
-                    unban: guild.punishments.unban,
                     globalScan: guild.punishments.globalCheck,
                     roleId: guild.punishments.roleId,
                 }
 
                 const embedSettings = new EmbedBuilder()
-                    .setTitle('Settings')
+                    .setTitle('Guild Configuration')
                     .setDescription(
-                        `**Configure the bot settings below:**\n> It is recommended to have actioning enabled.\n
-                        **Actioning:** \`${currentSettings.actioning ? 'Enabled' : 'Disabled'}\`\n> This determines if the bot will have functionality on this guild.\n
-                        **Log Channel:** <#${currentSettings.logChannel}>\n> A text channel where all bot logs are sent to.\n
-                        **Unban:** \`${currentSettings.unban ? 'Enabled' : 'Disabled'}\`\n> This will automatically unban a user when appealed, if they are banned via Warden.\n
-                        **Global Scan:** \`${currentSettings.globalScan ? 'Enabled' : 'Disabled'}\`\n> You can opt in or out of global scanning, you will have to use scanusers if this is disabled.\n
-                        **Punishment Role:** ${currentSettings.roleId ? `<@&${currentSettings.roleId}>` : '`Not Set`'}\n> Set a role that a blacklisted user receives while awaiting action from the queue \`KICK/BAN\` or by punishment \`ROLE\`. If the punishment is set to \`ROLE\` they will regain all roles upon appeal. Set the punishments with \`/config punishments\`.\n
-                        **The select menus below are in the order from above.**`
+                        `**Actioning:** \`${currentSettings.actioning ? 'Enabled' : 'Disabled'}\`\n> Determines if the bot's functionalities are active in this guild.\n
+                        **Log Channel:** ${currentSettings.logChannel ? `<#${currentSettings.logChannel}>` : '`Not Set`'}\n> The channel where all bot logs are sent.\n
+                        **Global Scan:** \`${currentSettings.globalScan ? 'Enabled' : 'Disabled'}\`\n> Opt in or out of global scanning. If disabled, you will need to use \`scanusers\` manually.\n
+                        **Punishment Role:** ${currentSettings.roleId ? `<@&${currentSettings.roleId}>` : '`Not Set`'}\n> The role assigned to blacklisted users while awaiting action (e.g., \`KICK/BAN\`) or punishment (\`ROLE\`). If set to \`ROLE\`, users will regain all roles upon appeal. Configure punishments with \`/config punishments\`.\n
+                        **The select menus below correspond to the settings above.**`
                     )
                     .setColor(Colours.BLUE)
 
@@ -257,7 +221,7 @@ export default new Command({
                     })
                     return {}
                 })],
-                components: rowsSettings.length ? [rowsSettings[0], rowsSettings[1], rowsSettings[2], rowsSettings[3], rowsSettings[4]] : [],
+                components: rowsSettings.length ? [rowsSettings[0], rowsSettings[1], rowsSettings[2], rowsSettings[3]] : [],
                 ephemeral: true,
             }).catch(e => {
                 logger.error({
@@ -312,7 +276,7 @@ export default new Command({
                         return {}
                     })
                     ],
-                    components: rows.length ? [rows[0], rows[1], rows[2], rows[3], rows[4]] : [],
+                    components: rows.length ? [rows[0], rows[1], rows[2], rows[3]] : [],
                 }).catch(e => {
                     logger.error({
                         labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
@@ -382,65 +346,6 @@ export default new Command({
                             logger.info({
                                 labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
                                 message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured settings actioning to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
-                            })
-                            return
-                        } else {
-                            await interaction.reply(
-                                {
-                                    embeds: [embedWarn],
-                                    ephemeral: true,
-                                }
-                            ).catch(e => {
-                                logger.error({
-                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                    message: e instanceof Error ? e.message : JSON.stringify(e),
-                                })
-                            })
-                            return
-                        }
-                    } else if (interaction.customId === 'config_unban') {
-                        const embedError = new EmbedBuilder()
-                            .setDescription(`\`🔴\` Unban is empty.`)
-                            .setColor(Colours.RED)
-
-                        if (!interaction.values.length) {
-                            await interaction.reply({
-                                embeds: [embedError],
-                                ephemeral: true,
-                            }).catch(e => {
-                                logger.error({
-                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                    message: e instanceof Error ? e.message : JSON.stringify(e),
-                                })
-                            })
-                            return
-                        }
-
-                        const selected = interaction.values[0]
-
-                        const embedWarn = new EmbedBuilder()
-                            .setDescription(`\`🟡\` Unban not found.`)
-                            .setColor(Colours.YELLOW)
-
-                        if (selected) {
-                            await db.updatePunishments({ id: interaction?.guild?.id }, { unban: JSON.parse(selected) })
-                            await updateCurrentSettings()
-                            await interaction.deferUpdate().catch(e => {
-                                logger.error({
-                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                    message: e instanceof Error ? e.message : JSON.stringify(e),
-                                })
-                            })
-                            if (channel) sendEmbed({
-                                channel,
-                                embed: {
-                                    description: `\`🟢\` Unban has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
-                                    color: Colours.GREEN,
-                                },
-                            })
-                            logger.info({
-                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                                message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured settings unban to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
                             })
                             return
                         } else {
@@ -694,7 +599,7 @@ export default new Command({
 
             logger.info({
                 labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
-                message: `${interaction?.user?.tag} (${interaction?.user?.id}) opened configured punishments`,
+                message: `${interaction?.user?.tag} (${interaction?.user?.id}) opened configured punishments for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
             })
 
             const currentPunishmentRows = async (guild: any): Promise<ActionRowBuilder<MessageActionRowComponentBuilder>[]> => {
@@ -867,14 +772,14 @@ export default new Command({
                 }
 
                 const embedSettings = new EmbedBuilder()
-                    .setTitle('Settings')
+                    .setTitle('Punishments Configuration')
                     .setDescription(
-                        `**Other:** \`${currentSettings.other}\`\n> This is the punishment for the type other.\n
-                        **Leaker:** \`${currentSettings.leaker}\`\n> This is the punishment for the type leaker.\n
-                        **Cheater:** \`${currentSettings.cheater}\`\n> This is the punishment for the type cheater.\n
-                        **Supporter:** \`${currentSettings.supporter}\`\n> This is the punishment for the type supporter.\n
-                        **Owner:** \`${currentSettings.owner}\`\n> This is the punishment for the type owner.\n
-                        **The select menus below are in the order from above.**`
+                        `**Other:** \`${currentSettings.other}\`\n> The punishment for other type.\n
+                        **Leaker:** \`${currentSettings.leaker}\`\n> The punishment for leaking type.\n
+                        **Cheater:** \`${currentSettings.cheater}\`\n> The punishment for cheating yupe.\n
+                        **Supporter:** \`${currentSettings.supporter}\`\n> The punishment for supporting type.\n
+                        **Owner:** \`${currentSettings.owner}\`\n> The punishment for owner type.\n
+                        **The select menus below correspond to the settings above.**`
                     )
                     .setColor(Colours.BLUE)
 
@@ -1281,6 +1186,865 @@ export default new Command({
             })
 
             return
+        } else if (subCommand === 'bans') {
+            // configure bans
+            const settings = await db.getGuild({ id: interaction?.guild?.id }, { logChannel: true })
+
+            let channel: TextChannel | false
+
+            try {
+                channel = (await interaction?.guild?.channels.fetch(settings?.logChannel ?? '')) as TextChannel
+            } catch (error) {
+                channel = false
+            }
+
+            if (!channel) {
+                interaction.reply({
+                    embeds: [
+                        new EmbedBuilder()
+                            .setDescription(`\`🟡\` The log channel is not set \`/config settings\`, please set it before continuing.`)
+                            .setColor(Colours.YELLOW),
+                    ],
+                    ephemeral: true,
+                }).catch(e => {
+                    logger.error({
+                        labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: e instanceof Error ? e.message : JSON.stringify(e),
+                    })
+                })
+
+                return
+            }
+
+            logger.info({
+                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                message: `${interaction?.user?.tag} (${interaction?.user?.id}) opened configured bans for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
+            })
+
+            const currentBanRows = async (guild: any): Promise<ActionRowBuilder<MessageActionRowComponentBuilder>[]> => {
+                const currentBan = {
+                    unban: guild.punishments.unban,
+                    banAppeal: guild.punishments.banAppeal,
+                }
+
+                const unbanSelect = new StringSelectMenuBuilder()
+                    .setCustomId('config_unban')
+                    .setPlaceholder('Select an option')
+                    .setMinValues(1)
+                    .setMaxValues(1)
+                    .addOptions(
+                        new StringSelectMenuOptionBuilder()
+                            .setLabel('Enabled')
+                            .setDescription('Enable automatic unbanning')
+                            .setValue('true')
+                            .setDefault(currentBan.unban),
+                        new StringSelectMenuOptionBuilder()
+                            .setLabel('Disabled')
+                            .setDescription('Disable automatic unbanning')
+                            .setValue('false')
+                            .setDefault(!currentBan.unban)
+                    )
+
+                const banAppealSelect = new StringSelectMenuBuilder()
+                    .setCustomId('config_ban_appeal')
+                    .setPlaceholder('Select an option')
+                    .setMinValues(1)
+                    .setMaxValues(1)
+                    .addOptions(
+                        new StringSelectMenuOptionBuilder()
+                            .setLabel('Enabled')
+                            .setDescription('Enable banning appealed users')
+                            .setValue('true')
+                            .setDefault(currentBan.banAppeal),
+                        new StringSelectMenuOptionBuilder()
+                            .setLabel('Disabled')
+                            .setDescription('Disable banning appealed users')
+                            .setValue('false')
+                            .setDefault(!currentBan.banAppeal)
+                    )
+
+                const rows = [
+                    new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(unbanSelect),
+                    new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(banAppealSelect),
+                ]
+
+                return rows
+            }
+
+            const currentEmbedBan = async (guild: any) => {
+                const currentBan = {
+                    unban: guild.punishments.unban,
+                    banAppeal: guild.punishments.banAppeal,
+                }
+
+                const embedSettings = new EmbedBuilder()
+                    .setTitle('Ban Configuration')
+                    .setDescription(
+                        `To apply a ban, set the punishment type to \`BAN\` using \`/config punishments\`.\n
+                        **Automatic Unban:** \`${currentBan.unban ? 'Enabled' : 'Disabled'}\`\n> Automatically unban users when their appeal is accepted. This is a global setting. When enabled, you can also configure it for each specific type using \`/config unbans\`.\n
+                        **Ban Appealed Users:** \`${currentBan.banAppeal ? 'Enabled' : 'Disabled'}\`\n> Ban users even if their appeal has been accepted, unless automatic unban is enabled. This setting will still apply if unban for a specific type is disabled in \`/config unbans\`. Note: Bans cannot be reversed later by Warden. No DM will be sent. Use this setting with caution!\n
+                        **The select menus below correspond to the settings above.**`
+                    )
+                    .setColor(Colours.BLUE)
+
+                return embedSettings
+            }
+
+            const guild = await db.getGuild(
+                { id: interaction?.guild?.id },
+                { punishments: true, logChannel: true }
+            )
+
+            if (!guild || !guild.punishments) return
+
+            const rowsBan = await currentBanRows(guild).catch(e => {
+                logger.error({
+                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                })
+
+                return []
+            })
+
+            const replyBan = await interaction.reply({
+                embeds: [await currentEmbedBan(guild).catch(e => {
+                    logger.error({
+                        labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: e instanceof Error ? e.message : JSON.stringify(e),
+                    })
+                    return {}
+                })
+                ],
+                components: rowsBan.length ? [rowsBan[0], rowsBan[1]] : [],
+                ephemeral: true,
+            }).catch(e => {
+                logger.error({
+                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                })
+            })
+
+            if (!replyBan) return
+
+            const collectorStringSelect = replyBan.createMessageComponentCollector({
+                componentType: ComponentType.StringSelect,
+                filter: (i) => i?.user?.id === interaction?.user?.id,
+                time: 600000,
+            })
+
+            const updateCurrentBan = async () => {
+                const guild = await db.getGuild(
+                    { id: interaction?.guild?.id },
+                    { punishments: true, logChannel: true }
+                )
+
+                if (!guild || !guild.punishments) return
+
+                const rows = await currentBanRows(guild).catch(e => {
+                    logger.error({
+                        labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: e instanceof Error ? e.message : JSON.stringify(e),
+                    })
+
+                    return []
+                })
+
+                return await replyBan.edit({
+                    embeds: [await currentEmbedBan(guild).catch(e => {
+                        logger.error({
+                            labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                            message: e instanceof Error ? e.message : JSON.stringify(e),
+                        })
+                        return {}
+                    })
+                    ],
+                    components: rows.length ? [rows[0], rows[1]] : [],
+                }).catch(e => {
+                    logger.error({
+                        labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: e instanceof Error ? e.message : JSON.stringify(e),
+                    })
+                })
+            }
+
+            collectorStringSelect.on('collect', async (interaction) => {
+                try {
+                    if (interaction.customId === 'config_unban') {
+                        const embedError = new EmbedBuilder()
+                            .setDescription(`\`🔴\` Unban is empty.`)
+                            .setColor(Colours.RED)
+
+                        if (!interaction.values.length) {
+                            await interaction.reply({
+                                embeds: [embedError],
+                                ephemeral: true,
+                            }).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                            })
+                            return
+                        }
+
+                        const selected = interaction.values[0]
+
+                        const embedWarn = new EmbedBuilder()
+                            .setDescription(`\`🟡\` Unban not found.`)
+                            .setColor(Colours.YELLOW)
+
+                        if (selected) {
+                            await db.updatePunishments({ id: interaction?.guild?.id }, { unban: JSON.parse(selected) })
+                            await updateCurrentBan()
+                            await interaction.deferUpdate().catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                            })
+                            if (channel) sendEmbed({
+                                channel,
+                                embed: {
+                                    description: `\`🟢\` Unban has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
+                                    color: Colours.GREEN,
+                                },
+                            })
+                            logger.info({
+                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured settings unban to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
+                            })
+                            return
+                        } else {
+                            await interaction.reply(
+                                {
+                                    embeds: [embedWarn],
+                                    ephemeral: true,
+                                }
+                            ).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                            })
+                            return
+                        }
+                    } else if (interaction.customId === 'config_ban_appeal') {
+                        const embedError = new EmbedBuilder()
+                            .setDescription(`\`🔴\` Ban appeal is empty.`)
+                            .setColor(Colours.RED)
+
+                        if (!interaction.values.length) {
+                            await interaction.reply({
+                                embeds: [embedError],
+                                ephemeral: true,
+                            }).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                            })
+                            return
+                        }
+
+                        const selected = interaction.values[0]
+
+                        const embedWarn = new EmbedBuilder()
+                            .setDescription(`\`🟡\` Ban appeal not found.`)
+                            .setColor(Colours.YELLOW)
+
+                        if (selected) {
+                            await db.updatePunishments({ id: interaction?.guild?.id }, { banAppeal: JSON.parse(selected) })
+                            await updateCurrentBan()
+                            await interaction.deferUpdate().catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                            })
+                            if (channel) sendEmbed({
+                                channel,
+                                embed: {
+                                    description: `\`🟢\` Ban appeal has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
+                                    color: Colours.GREEN,
+                                },
+                            })
+                            logger.info({
+                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured settings ban appeal to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
+                            })
+                            return
+                        } else {
+                            await interaction.reply(
+                                {
+                                    embeds: [embedWarn],
+                                    ephemeral: true,
+                                }
+                            ).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                            })
+                            return
+                        }
+                    }
+                } catch (error) {
+                    logger.error({
+                        labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: error instanceof Error ? error.message : JSON.stringify(error),
+                    })
+                }
+            })
+        } else if (subCommand === 'unbans') {
+            // configure bans
+            const settings = await db.getGuild({ id: interaction?.guild?.id }, { logChannel: true })
+
+            let channel: TextChannel | false
+
+            try {
+                channel = (await interaction?.guild?.channels.fetch(settings?.logChannel ?? '')) as TextChannel
+            } catch (error) {
+                channel = false
+            }
+
+            if (!channel) {
+                interaction.reply({
+                    embeds: [
+                        new EmbedBuilder()
+                            .setDescription(`\`🟡\` The log channel is not set \`/config settings\`, please set it before continuing.`)
+                            .setColor(Colours.YELLOW),
+                    ],
+                    ephemeral: true,
+                }).catch(e => {
+                    logger.error({
+                        labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: e instanceof Error ? e.message : JSON.stringify(e),
+                    })
+                })
+
+                return
+            }
+
+            logger.info({
+                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                message: `${interaction?.user?.tag} (${interaction?.user?.id}) opened configured bans for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
+            })
+
+            const currentUnbanRows = async (guild: any): Promise<ActionRowBuilder<MessageActionRowComponentBuilder>[]> => {
+                const currentUnban = {
+                    unbanOther: guild.punishments.unbanOther,
+                    unbanLeaker: guild.punishments.unbanLeaker,
+                    unbanCheater: guild.punishments.unbanCheater,
+                    unbanSupporter: guild.punishments.unbanSupporter,
+                    unbanOwner: guild.punishments.unbanOwner,
+                }
+
+                const unbanOtherSelect = new StringSelectMenuBuilder()
+                    .setCustomId('config_unban_other')
+                    .setPlaceholder('Select an option')
+                    .setMinValues(1)
+                    .setMaxValues(1)
+                    .addOptions(
+                        new StringSelectMenuOptionBuilder()
+                            .setLabel('Enabled')
+                            .setDescription('Enable unbanning other type')
+                            .setValue('true')
+                            .setDefault(currentUnban.unbanOther),
+                        new StringSelectMenuOptionBuilder()
+                            .setLabel('Disabled')
+                            .setDescription('Disable unbanning other type')
+                            .setValue('false')
+                            .setDefault(!currentUnban.unbanOther)
+                    )
+
+                const unbanLeakerSelect = new StringSelectMenuBuilder()
+                    .setCustomId('config_unban_leaker')
+                    .setPlaceholder('Select an option')
+                    .setMinValues(1)
+                    .setMaxValues(1)
+                    .addOptions(
+                        new StringSelectMenuOptionBuilder()
+                            .setLabel('Enabled')
+                            .setDescription('Enable unbanning leaker type')
+                            .setValue('true')
+                            .setDefault(currentUnban.unbanLeaker),
+                        new StringSelectMenuOptionBuilder()
+                            .setLabel('Disabled')
+                            .setDescription('Disable unbanning leaker type')
+                            .setValue('false')
+                            .setDefault(!currentUnban.unbanLeaker)
+                    )
+
+                const unbanCheaterSelect = new StringSelectMenuBuilder()
+                    .setCustomId('config_unban_cheater')
+                    .setPlaceholder('Select an option')
+                    .setMinValues(1)
+                    .setMaxValues(1)
+                    .addOptions(
+                        new StringSelectMenuOptionBuilder()
+                            .setLabel('Enabled')
+                            .setDescription('Enable unbanning cheater type')
+                            .setValue('true')
+                            .setDefault(currentUnban.unbanCheater),
+                        new StringSelectMenuOptionBuilder()
+                            .setLabel('Disabled')
+                            .setDescription('Disable unbanning cheater type')
+                            .setValue('false')
+                            .setDefault(!currentUnban.unbanCheater)
+                    )
+
+                const unbanSupporterSelect = new StringSelectMenuBuilder()
+                    .setCustomId('config_unban_supporter')
+                    .setPlaceholder('Select an option')
+                    .setMinValues(1)
+                    .setMaxValues(1)
+                    .addOptions(
+                        new StringSelectMenuOptionBuilder()
+                            .setLabel('Enabled')
+                            .setDescription('Enable unbanning supporter type')
+                            .setValue('true')
+                            .setDefault(currentUnban.unbanSupporter),
+                        new StringSelectMenuOptionBuilder()
+                            .setLabel('Disabled')
+                            .setDescription('Disable unbanning supporter type')
+                            .setValue('false')
+                            .setDefault(!currentUnban.unbanSupporter)
+                    )
+
+                const unbanOwnerSelect = new StringSelectMenuBuilder()
+                    .setCustomId('config_unban_owner')
+                    .setPlaceholder('Select an option')
+                    .setMinValues(1)
+                    .setMaxValues(1)
+                    .addOptions(
+                        new StringSelectMenuOptionBuilder()
+                            .setLabel('Enabled')
+                            .setDescription('Enable unbanning owner type')
+                            .setValue('true')
+                            .setDefault(currentUnban.unbanOwner),
+                        new StringSelectMenuOptionBuilder()
+                            .setLabel('Disabled')
+                            .setDescription('Disable unbanning owner type')
+                            .setValue('false')
+                            .setDefault(!currentUnban.unbanOwner)
+                    )
+
+                const rows = [
+                    new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(unbanOtherSelect),
+                    new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(unbanLeakerSelect),
+                    new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(unbanCheaterSelect),
+                    new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(unbanSupporterSelect),
+                    new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(unbanOwnerSelect),
+                ]
+
+                return rows
+            }
+
+            const currentEmbedUnban = async (guild: any) => {
+                const currentUnban = {
+                    unban: guild.punishments.unban,
+                    banAppeal: guild.punishments.banAppeal,
+                }
+
+                const embedSettings = new EmbedBuilder()
+                    .setTitle('Unnan Configuration')
+                    .setDescription(
+                        `To apply a ban, set the punishment type to \`BAN\` using \`/config punishments\`.\n
+                        **The unban settings below are only applied if automatic unban is enabled in \`/config bans\`.**\n
+                        **Unban Other:** \`${guild.punishments.unbanOther ? 'Enabled' : 'Disabled'}\`\n> Automatically unban users with the "other" type.\n
+                        **Unban Leaker:** \`${guild.punishments.unbanLeaker ? 'Enabled' : 'Disabled'}\`\n> Automatically unban users with the "leaker" type.\n
+                        **Unban Cheater:** \`${guild.punishments.unbanCheater ? 'Enabled' : 'Disabled'}\`\n> Automatically unban users with the "cheater" type.\n
+                        **Unban Supporter:** \`${guild.punishments.unbanSupporter ? 'Enabled' : 'Disabled'}\`\n> Automatically unban users with the "supporter" type.\n
+                        **Unban Owner:** \`${guild.punishments.unbanOwner ? 'Enabled' : 'Disabled'}\`\n> Automatically unban users with the "owner" type.\n
+                        **The select menus below correspond to the settings above.**`
+                    )
+                    .setColor(Colours.BLUE)
+
+                return embedSettings
+            }
+
+            const guild = await db.getGuild(
+                { id: interaction?.guild?.id },
+                { punishments: true, logChannel: true }
+            )
+
+            if (!guild || !guild.punishments) return
+
+            const rowsUnban = await currentUnbanRows(guild).catch(e => {
+                logger.error({
+                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                })
+
+                return []
+            })
+
+            const replyUnban = await interaction.reply({
+                embeds: [await currentEmbedUnban(guild).catch(e => {
+                    logger.error({
+                        labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: e instanceof Error ? e.message : JSON.stringify(e),
+                    })
+                    return {}
+                })
+                ],
+                components: rowsUnban.length ? [rowsUnban[0], rowsUnban[1], rowsUnban[2], rowsUnban[3], rowsUnban[4]] : [],
+                ephemeral: true,
+            }).catch(e => {
+                logger.error({
+                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                })
+            })
+
+            if (!replyUnban) return
+
+            const collectorStringSelect = replyUnban.createMessageComponentCollector({
+                componentType: ComponentType.StringSelect,
+                filter: (i) => i?.user?.id === interaction?.user?.id,
+                time: 600000,
+            })
+
+            const updateCurrentUnban = async () => {
+                const guild = await db.getGuild(
+                    { id: interaction?.guild?.id },
+                    { punishments: true, logChannel: true }
+                )
+
+                if (!guild || !guild.punishments) return
+
+                const rows = await currentUnbanRows(guild).catch(e => {
+                    logger.error({
+                        labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: e instanceof Error ? e.message : JSON.stringify(e),
+                    })
+
+                    return []
+                })
+
+                return await replyUnban.edit({
+                    embeds: [await currentEmbedUnban(guild).catch(e => {
+                        logger.error({
+                            labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                            message: e instanceof Error ? e.message : JSON.stringify(e),
+                        })
+                        return {}
+                    })
+                    ],
+                    components: rows.length ? [rows[0], rows[1], rows[2], rows[3], rows[4]] : [],
+                }).catch(e => {
+                    logger.error({
+                        labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: e instanceof Error ? e.message : JSON.stringify(e),
+                    })
+                })
+            }
+
+            collectorStringSelect.on('collect', async (interaction) => {
+                try {
+                    if (interaction.customId === 'config_unban_other') {
+                        const embedError = new EmbedBuilder()
+                            .setDescription(`\`🔴\` Unban other is empty.`)
+                            .setColor(Colours.RED)
+
+                        if (!interaction.values.length) {
+                            await interaction.reply({
+                                embeds: [embedError],
+                                ephemeral: true,
+                            }).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                            })
+                            return
+                        }
+
+                        const selected = interaction.values[0]
+
+                        const embedWarn = new EmbedBuilder()
+                            .setDescription(`\`🟡\` Unban other not found.`)
+                            .setColor(Colours.YELLOW)
+
+                        if (selected) {
+                            await db.updatePunishments({ id: interaction?.guild?.id }, { unbanOther: JSON.parse(selected) })
+                            await updateCurrentUnban()
+                            await interaction.deferUpdate().catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                            })
+                            if (channel) sendEmbed({
+                                channel,
+                                embed: {
+                                    description: `\`🟢\` Unban other has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
+                                    color: Colours.GREEN,
+                                },
+                            })
+                            logger.info({
+                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured settings unban other to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
+                            })
+                            return
+                        } else {
+                            await interaction.reply(
+                                {
+                                    embeds: [embedWarn],
+                                    ephemeral: true,
+                                }
+                            ).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                            })
+                            return
+                        }
+                    } else if (interaction.customId === 'config_unban_leaker') {
+                        const embedError = new EmbedBuilder()
+                            .setDescription(`\`🔴\` Unban leaker is empty.`)
+                            .setColor(Colours.RED)
+
+                        if (!interaction.values.length) {
+                            await interaction.reply({
+                                embeds: [embedError],
+                                ephemeral: true,
+                            }).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                            })
+                            return
+                        }
+
+                        const selected = interaction.values[0]
+
+                        const embedWarn = new EmbedBuilder()
+                            .setDescription(`\`🟡\` Unban leaker not found.`)
+                            .setColor(Colours.YELLOW)
+
+                        if (selected) {
+                            await db.updatePunishments({ id: interaction?.guild?.id }, { unbanLeaker: JSON.parse(selected) })
+                            await updateCurrentUnban()
+                            await interaction.deferUpdate().catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                            })
+                            if (channel) sendEmbed({
+                                channel,
+                                embed: {
+                                    description: `\`🟢\` Unban leaker has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
+                                    color: Colours.GREEN,
+                                },
+                            })
+                            logger.info({
+                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured settings unban leaker to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
+                            })
+                            return
+                        } else {
+                            await interaction.reply(
+                                {
+                                    embeds: [embedWarn],
+                                    ephemeral: true,
+                                }
+                            ).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                            })
+                            return
+                        }
+                    } else if (interaction.customId === 'config_unban_cheater') {
+                        const embedError = new EmbedBuilder()
+                            .setDescription(`\`🔴\` Unban cheater is empty.`)
+                            .setColor(Colours.RED)
+
+                        if (!interaction.values.length) {
+                            await interaction.reply({
+                                embeds: [embedError],
+                                ephemeral: true,
+                            }).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                            })
+                            return
+                        }
+
+                        const selected = interaction.values[0]
+
+                        const embedWarn = new EmbedBuilder()
+                            .setDescription(`\`🟡\` Unban cheater not found.`)
+                            .setColor(Colours.YELLOW)
+
+                        if (selected) {
+                            await db.updatePunishments({ id: interaction?.guild?.id }, { unbanCheater: JSON.parse(selected) })
+                            await updateCurrentUnban()
+                            await interaction.deferUpdate().catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                            })
+                            if (channel) sendEmbed({
+                                channel,
+                                embed: {
+                                    description: `\`🟢\` Unban cheater has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
+                                    color: Colours.GREEN,
+                                },
+                            })
+                            logger.info({
+                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured settings unban cheater to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
+                            })
+                            return
+                        } else {
+                            await interaction.reply(
+                                {
+                                    embeds: [embedWarn],
+                                    ephemeral: true,
+                                }
+                            ).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                            })
+                            return
+                        }
+                    } else if (interaction.customId === 'config_unban_supporter') {
+                        const embedError = new EmbedBuilder()
+                            .setDescription(`\`🔴\` Unban supporter is empty.`)
+                            .setColor(Colours.RED)
+
+                        if (!interaction.values.length) {
+                            await interaction.reply({
+                                embeds: [embedError],
+                                ephemeral: true,
+                            }).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                            })
+                            return
+                        }
+
+                        const selected = interaction.values[0]
+
+                        const embedWarn = new EmbedBuilder()
+                            .setDescription(`\`🟡\` Unban supporter not found.`)
+                            .setColor(Colours.YELLOW)
+
+                        if (selected) {
+                            await db.updatePunishments({ id: interaction?.guild?.id }, { unbanSupporter: JSON.parse(selected) })
+                            await updateCurrentUnban()
+                            await interaction.deferUpdate().catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                            })
+                            if (channel) sendEmbed({
+                                channel,
+                                embed: {
+                                    description: `\`🟢\` Unban supporter has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
+                                    color: Colours.GREEN,
+                                },
+                            })
+                            logger.info({
+                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured settings unban supporter to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
+                            })
+                            return
+                        } else {
+                            await interaction.reply(
+                                {
+                                    embeds: [embedWarn],
+                                    ephemeral: true,
+                                }
+                            ).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                            })
+                            return
+                        }
+                    } else if (interaction.customId === 'config_unban_owner') {
+                        const embedError = new EmbedBuilder()
+                            .setDescription(`\`🔴\` Unban owner is empty.`)
+                            .setColor(Colours.RED)
+
+                        if (!interaction.values.length) {
+                            await interaction.reply({
+                                embeds: [embedError],
+                                ephemeral: true,
+                            }).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                            })
+                            return
+                        }
+
+                        const selected = interaction.values[0]
+
+                        const embedWarn = new EmbedBuilder()
+                            .setDescription(`\`🟡\` Unban owner not found.`)
+                            .setColor(Colours.YELLOW)
+
+                        if (selected) {
+                            await db.updatePunishments({ id: interaction?.guild?.id }, { unbanOwner: JSON.parse(selected) })
+                            await updateCurrentUnban()
+                            await interaction.deferUpdate().catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                            })
+                            if (channel) sendEmbed({
+                                channel,
+                                embed: {
+                                    description: `\`🟢\` Unban owner has been successfully set to \`${selected}\` by <@${interaction.user.id}>.`,
+                                    color: Colours.GREEN,
+                                },
+                            })
+                            logger.info({
+                                labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                message: `${interaction?.user?.tag} (${interaction?.user?.id}) configured settings unban owner to ${selected} for ${interaction?.guild?.name} (${interaction?.guild?.id})`,
+                            })
+                            return
+                        } else {
+                            await interaction.reply(
+                                {
+                                    embeds: [embedWarn],
+                                    ephemeral: true,
+                                }
+                            ).catch(e => {
+                                logger.error({
+                                    labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                                    message: e instanceof Error ? e.message : JSON.stringify(e),
+                                })
+                            })
+                            return
+                        }
+                    }
+                } catch (error) {
+                    logger.error({
+                        labels: { command: 'config', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: error instanceof Error ? error.message : JSON.stringify(error),
+                    })
+                }
+            })
         }
 
         return
