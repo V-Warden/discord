@@ -30,6 +30,7 @@ export default new Command({
 
         const settings = await db.getGuild({ id: id }, { punishments: true });
         if (!settings) return sendError(interaction, 'Unable to find guild in the database');
+        if (settings.punishments?.banAppeal) return sendError(interaction, 'This guild has ban appeals enabled');
 
         const result = await client.shard.broadcastEval(
             async (c, { guildId }) => {
