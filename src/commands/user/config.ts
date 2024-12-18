@@ -1647,7 +1647,7 @@ export default new Command({
                 }
 
                 const embedSettings = new EmbedBuilder()
-                    .setTitle('Unnan Configuration')
+                    .setTitle('Unban Configuration')
                     .setDescription(
                         `To apply a ban, set the punishment type to \`BAN\` using \`/config punishments\`.\n
                         **The unban settings below are only applied if automatic unban is enabled in \`/config bans\`.**\n
