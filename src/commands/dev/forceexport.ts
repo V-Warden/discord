@@ -33,7 +33,7 @@ export default new Command({
         const settings = await db.getGuild({ id: id }, { punishments: true });
         if (!settings) return sendError(interaction, 'Unable to find guild in the database');
 
-        const punishRole = settings.punishments?.roleId;
+        const punishRole = settings?.punishments?.roleId;
         if (!punishRole) return sendError(interaction, 'Invalid punish role set');
 
         await db.removeAllBans({ guild: id });

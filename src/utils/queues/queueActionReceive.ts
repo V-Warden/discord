@@ -123,7 +123,6 @@ async function actionUser(client: Client, id: string, guildId: string, toDo: str
     if (!member) return false
     const user = await db.getUser(id)
     if (!user) return false
-    if (user?.status === 'APPEALED') return false
     if (user?.status === 'WHITELISTED') return false
     if (member.user.bot) return false
 
@@ -157,7 +156,7 @@ async function actionUser(client: Client, id: string, guildId: string, toDo: str
     const settings = await db.getGuild({ id: guildId }, { logChannel: true, punishments: true })
     if (!settings?.logChannel) return false
     const logChannel = settings.logChannel
-    const punishments = settings.punishments
+    const punishments = settings?.punishments
 
     let channel: TextChannel
     try {
