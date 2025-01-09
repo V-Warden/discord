@@ -51,13 +51,13 @@ export default new ContextMenu({
             let lastAppeal = ''
 
             if (user.appealedFirst) {
-                firstAppeal = new Date(user.appealedFirst).toLocaleDateString()
-                comments += `\n> First Appeal: ${firstAppeal}`
+                const createdAtTimestamp = Math.floor(new Date(user.appealedFirst).getTime() / 1000)
+                comments += `\n> First Appeal: <t:${createdAtTimestamp}:F>`
             }
             if (user.appealedLast) {
-                lastAppeal = new Date(user.appealedLast).toLocaleDateString()
+                const createdAtTimestamp = Math.floor(new Date(user.appealedLast).getTime() / 1000)
                 if (firstAppeal !== lastAppeal) {
-                    comments += `\n> Last Appeal: ${new Date(user.appealedLast).toLocaleDateString()}`
+                    comments += `\n> Last Appeal: <t:${createdAtTimestamp}:F>`
                 }
             }
 
@@ -112,10 +112,12 @@ export default new ContextMenu({
             } else {
                 realCount += 1
                 const dateFirst = new Date(x.createdAt)
+                const dateFirstTimestamp = Math.floor(new Date(x.createdAt).getTime() / 1000)
                 const dateLast = new Date(x.updatedAt)
+                const dateLastTimestamp = Math.floor(new Date(x.updatedAt).getTime() / 1000)
                 const formattedRoles = x.roles.split(',').map(role => role.trim())
-                const firstSeen = `> First seen: ${dateFirst.toLocaleDateString()}`
-                const lastSeen = dateFirst.toLocaleDateString() !== dateLast.toLocaleDateString() ? `\n> Last seen: ${dateLast.toLocaleDateString()}` : ''
+                const firstSeen = `> First seen: <t:${dateFirstTimestamp}:F>`
+                const lastSeen = dateFirst.toLocaleDateString() !== dateLast.toLocaleDateString() ? `\n> Last seen: <t:${dateLastTimestamp}:F>` : ''
 
                 if (x.roles.length > 200) {
                     const response = await uploadText(JSON.stringify(formattedRoles, null, 4), '1h').catch(e => {
@@ -158,13 +160,15 @@ export default new ContextMenu({
         let lastAppeal = ''
 
         if (user.appealedFirst) {
+            const firstAppealTimestamp = Math.floor(new Date(user.appealedFirst).getTime() / 1000)
             firstAppeal = new Date(user.appealedFirst).toLocaleDateString()
-            comments += `\n> First Appeal: ${firstAppeal}`
+            comments += `\n> First Appeal: <t:${firstAppealTimestamp}:F>`
         }
         if (user.appealedLast) {
+            const lastAppealTimestamp = Math.floor(new Date(user.appealedLast).getTime() / 1000)
             lastAppeal = new Date(user.appealedLast).toLocaleDateString()
             if (firstAppeal !== lastAppeal) {
-                comments += `\n> Last Appeal: ${new Date(user.appealedLast).toLocaleDateString()}`
+                comments += `\n> Last Appeal: <t:${lastAppealTimestamp}:F>`
             }
         }
 

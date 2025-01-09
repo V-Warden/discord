@@ -1,10 +1,10 @@
-import { ApplicationCommandOptionType } from 'discord.js';
-import { Colours } from '../../@types/Colours';
-import { Command } from '../../structures/Command';
-import { sendError, sendSuccess } from '../../utils/messages';
-import db from '../../utils/database';
-import logger from '../../utils/logger';
-import sendEmbed from '../../utils/messages/sendEmbed';
+import { ApplicationCommandOptionType } from 'discord.js'
+import { Colours } from '../../@types/Colours'
+import { Command } from '../../structures/Command'
+import { sendError, sendSuccess } from '../../utils/messages'
+import db from '../../utils/database'
+import logger from '../../utils/logger'
+import sendEmbed from '../../utils/messages/sendEmbed'
 
 export default new Command({
     name: 'checkserveradmin',
@@ -32,46 +32,48 @@ export default new Command({
         },
     ],
     run: async ({ interaction, client }) => {
-        const sid = interaction.options.get('id')?.value as string;
-        const sname = interaction.options.get('name')?.value as string;
-        const invite = interaction.options.get('invite')?.value as string;
+        const sid = interaction.options.get('id')?.value as string
+        const sname = interaction.options.get('name')?.value as string
+        const invite = interaction.options.get('invite')?.value as string
 
         if (!sid && !sname && !invite)
-            return sendError(interaction, 'You must provide either a name, id or invite to check');
+            return sendError(interaction, 'You must provide either a name, id or invite to check')
 
-        let lookup: any;
+        let lookup: any
         if (invite) {
             const inv = await client.fetchInvite(invite).catch(e => {
                 logger.error({
                     labels: { command: 'checkserveradmin', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
                     message: e instanceof Error ? e.message : JSON.stringify(e),
-                });    
-            });
-            if (!inv) return sendError(interaction, 'Invalid invite or invite has expired');
+                })
+            })
+            if (!inv) return sendError(interaction, 'Invalid invite or invite has expired')
 
-            lookup = { id: inv?.guild?.id };
+            lookup = { id: inv?.guild?.id }
         } else if (sname) {
             lookup = {
                 name: {
                     contains: sname,
                 },
-            };
+            }
         } else if (sid) {
             lookup = {
                 id: sid
             }
         }
 
-        const server = await db.getBadServer(lookup);
+        const server = await db.getBadServer(lookup)
 
-        if (!server) return sendSuccess(interaction, 'Server not found in the database');
+        if (!server) return sendSuccess(interaction, 'Server not found in the database')
 
-        const addedBy = /^\d+$/.test(server.addedBy) ? `<@${server.addedBy}>` : server.addedBy;
+        const addedBy = /^\d+$/.test(server.addedBy) ? `<@${server.addedBy}>` : server.addedBy
 
         logger.info({
             labels: { command: 'checkserveradmin', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
             message: `${interaction?.user?.tag} (${interaction?.user?.id}) checked server ${server.id}`,
-        });
+        })
+
+        const createdAtTimestamp = Math.floor(new Date(server.createdAt).getTime() / 1000)
 
         return sendEmbed({
             interaction,
@@ -96,7 +98,7 @@ export default new Command({
                     },
                     {
                         name: 'Date Added',
-                        value: server.createdAt.toISOString().replace(/T/, ' ').replace(/\..+/, ''),
+                        value: `<t:${createdAtTimestamp}:F>`,
                         inline: true,
                     },
                     {
@@ -116,6 +118,6 @@ export default new Command({
                     },
                 ]
             },
-        });
+        })
     },
-});
+})
