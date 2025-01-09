@@ -1,5 +1,5 @@
-import { ApplicationCommandType } from 'discord.js';
-import { CommandType } from '../@types';
+import { ApplicationCommandType } from 'discord.js'
+import { CommandType } from '../@types'
 
 export class Command {
     constructor(commandOptions: CommandType) {
@@ -8,6 +8,6 @@ export class Command {
             ...{
                 type: ApplicationCommandType.ChatInput,
             },
-        });
+        })
     }
 }

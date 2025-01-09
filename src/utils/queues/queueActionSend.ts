@@ -1,33 +1,33 @@
-import amqp from 'amqplib';
+import amqp from 'amqplib'
 
 const USERNAME = process.env.RABBITMQ_USER
 const PASSWORD = process.env.RABBITMQ_PASS
 const HOST = process.env.RABBITMQ_HOST
-const INACTIVITY_TIMEOUT = 10 * 60 * 1000; // 10 minutes
+const INACTIVITY_TIMEOUT = 10 * 60 * 1000 // 10 minutes
 
-let connection: amqp.Connection | null = null;
-let channel: amqp.Channel | null = null;
-let inactivityTimer: NodeJS.Timeout | null = null;
+let connection: amqp.Connection | null = null
+let channel: amqp.Channel | null = null
+let inactivityTimer: NodeJS.Timeout | null = null
 
 async function getChannel() {
     if (!connection) {
-        connection = await amqp.connect(`amqp://${USERNAME}:${PASSWORD}@${HOST}`!);
+        connection = await amqp.connect(`amqp://${USERNAME}:${PASSWORD}@${HOST}`!)
     }
     if (!channel) {
-        channel = await connection.createChannel();
-        const queue = 'actionUser';
-        await channel.assertQueue(queue, { durable: true });
+        channel = await connection.createChannel()
+        const queue = 'actionUser'
+        await channel.assertQueue(queue, { durable: true })
     }
-    return channel;
+    return channel
 }
 
 function resetInactivityTimer() {
     if (inactivityTimer) {
-        clearTimeout(inactivityTimer);
+        clearTimeout(inactivityTimer)
     }
     inactivityTimer = setTimeout(async () => {
-        await closeConnection();
-    }, INACTIVITY_TIMEOUT);
+        await closeConnection()
+    }, INACTIVITY_TIMEOUT)
 }
 
 /**
@@ -40,23 +40,23 @@ export default async function (
     guildId: string,
     punishment: string,
 ) {
-    const channel = await getChannel();
-    const queue = 'actionUser';
-    channel.sendToQueue(queue, Buffer.from(JSON.stringify({ "id": id, "guildId": guildId, "punishment": punishment })), { persistent: true });
-    resetInactivityTimer();
+    const channel = await getChannel()
+    const queue = 'actionUser'
+    channel.sendToQueue(queue, Buffer.from(JSON.stringify({ "id": id, "guildId": guildId, "punishment": punishment })), { persistent: true })
+    resetInactivityTimer()
 }
 
 export async function closeConnection() {
     if (channel) {
-        await channel.close();
-        channel = null;
+        await channel.close()
+        channel = null
     }
     if (connection) {
-        await connection.close();
-        connection = null;
+        await connection.close()
+        connection = null
     }
     if (inactivityTimer) {
-        clearTimeout(inactivityTimer);
-        inactivityTimer = null;
+        clearTimeout(inactivityTimer)
+        inactivityTimer = null
     }
 }

@@ -1,7 +1,7 @@
-import { Colours } from '../../@types/Colours';
-import { Command } from '../../structures/Command';
-import logger from '../../utils/logger';
-import sendEmbed from '../../utils/messages/sendEmbed';
+import { Colours } from '../../@types/Colours'
+import { Command } from '../../structures/Command'
+import logger from '../../utils/logger'
+import sendEmbed from '../../utils/messages/sendEmbed'
 
 export default new Command({
     name: 'about',
@@ -10,8 +10,8 @@ export default new Command({
         logger.info({
             labels: { command: 'about', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
             message: `${interaction?.user?.tag} (${interaction?.user?.id}) requested information about the bot`,
-        });
-        
+        })
+
         return sendEmbed({
             interaction,
             embed: {
@@ -24,6 +24,6 @@ export default new Command({
                           \nFeel free to contribute here: <https://github.com/V-Warden/discord>`,
                 color: Colours.BLUE,
             },
-        });
+        })
     },
-});
+})
