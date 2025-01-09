@@ -71,6 +71,8 @@ export default new Command({
             message: `${interaction?.user?.tag} (${interaction?.user?.id}) checked server ${server.id}`,
         });
 
+        const createdAtTimestamp = Math.floor(new Date(server.createdAt).getTime() / 1000)
+
         return sendEmbed({
             interaction,
             embed: {
@@ -81,10 +83,7 @@ export default new Command({
                         name: 'Server Information',
                         value: `**ID**: ${server.id} / **Name**: ${server.name}\n
                               **Details**: ${server.type.toLowerCase()}\n
-                              **Date Added**: ${server.createdAt
-                                  .toISOString()
-                                  .replace(/T/, ' ')
-                                  .replace(/\..+/, '')}\n
+                              **Date Added**: <t:${createdAtTimestamp}:F>\n
                               **Added By**: ${addedBy}`,
                     },
                 ],
