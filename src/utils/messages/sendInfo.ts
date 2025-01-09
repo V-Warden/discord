@@ -1,6 +1,6 @@
-import { CommandInteraction, Message } from 'discord.js';
-import { Colours } from '../../@types/Colours';
-import sendEmbed from './sendEmbed';
+import { CommandInteraction, Message } from 'discord.js'
+import { Colours } from '../../@types/Colours'
+import sendEmbed from './sendEmbed'
 
 export function sendSuccess(
     interaction: CommandInteraction,
@@ -14,7 +14,7 @@ export function sendSuccess(
             color: Colours.GREEN,
         },
         ephemeral: ephemeral ?? true,
-    });
+    })
 }
 
 export function sendWarning(
@@ -29,7 +29,7 @@ export function sendWarning(
             color: Colours.YELLOW,
         },
         ephemeral: ephemeral ?? true,
-    });
+    })
 }
 
 export function sendError(
@@ -44,5 +44,5 @@ export function sendError(
             color: Colours.RED,
         },
         ephemeral: ephemeral ?? true,
-    });
+    })
 }

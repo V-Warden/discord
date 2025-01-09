@@ -7,34 +7,34 @@ import {
     PermissionResolvable,
     UserApplicationCommandData,
     UserContextMenuCommandInteraction,
-} from 'discord.js';
-import { ExtendedClient } from '../structures/Client';
+} from 'discord.js'
+import { ExtendedClient } from '../structures/Client'
 
 interface RunOptions {
-    client: ExtendedClient;
-    interaction: ChatInputCommandInteraction;
-    args: CommandInteractionOptionResolver;
+    client: ExtendedClient
+    interaction: ChatInputCommandInteraction
+    args: CommandInteractionOptionResolver
 }
 
 interface MenuOptions {
-    client: ExtendedClient;
-    interaction: MessageContextMenuCommandInteraction | UserContextMenuCommandInteraction;
-    args: CommandInteractionOptionResolver;
+    client: ExtendedClient
+    interaction: MessageContextMenuCommandInteraction | UserContextMenuCommandInteraction
+    args: CommandInteractionOptionResolver
 }
 
-type RunFunction = (options: RunOptions) => any;
-type MenuFunction = (options: MenuOptions) => any;
+type RunFunction = (options: RunOptions) => any
+type MenuFunction = (options: MenuOptions) => any
 
 export type CommandType = {
-    userPermissions?: PermissionResolvable[];
+    userPermissions?: PermissionResolvable[]
     // Limit to main warden discord only
-    main?: boolean;
-    run: RunFunction;
-} & ChatInputApplicationCommandData;
+    main?: boolean
+    run: RunFunction
+} & ChatInputApplicationCommandData
 
 export type MenuType = {
-    userPermissions?: PermissionResolvable[];
+    userPermissions?: PermissionResolvable[]
     // Limit to main warden discord only
-    main?: boolean;
-    run: MenuFunction;
-} & (MessageApplicationCommandData | UserApplicationCommandData);
+    main?: boolean
+    run: MenuFunction
+} & (MessageApplicationCommandData | UserApplicationCommandData)

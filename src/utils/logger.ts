@@ -1,16 +1,16 @@
-import { CommandInteraction } from 'discord.js';
-import { createLogger, transports, format } from 'winston';
-import LokiTransport from 'winston-loki';
-import { Colours } from '../@types/Colours';
-import sendEmbed from './messages/sendEmbed';
-import { generateErrorID } from './misc';
+import { CommandInteraction } from 'discord.js'
+import { createLogger, transports, format } from 'winston'
+import LokiTransport from 'winston-loki'
+import { Colours } from '../@types/Colours'
+import sendEmbed from './messages/sendEmbed'
+import { generateErrorID } from './misc'
 
-require('dotenv').config();
+require('dotenv').config()
 
 const consoleFormat = format.printf(({ level, labels, message, timestamp }) => {
-    const labelString = labels ? Object.entries(labels).map(([key, value]) => `${key}: ${value}`).join(', ') : '';
-    return `[${timestamp}] [${level}] | ${JSON.stringify(`${labelString ? `${labelString}, message: ` : ''}${message}`)}`;
-});
+    const labelString = labels ? Object.entries(labels).map(([key, value]) => `${key}: ${value}`).join(', ') : ''
+    return `[${timestamp}] [${level}] | ${JSON.stringify(`${labelString ? `${labelString}, message: ` : ''}${message}`)}`
+})
 
 const transport_logs: any = [
     new transports.Console({
@@ -23,7 +23,7 @@ const transport_logs: any = [
             consoleFormat
         ),
     }),
-];
+]
 
 if (process.env.LOKI_URL) {
     transport_logs.push(
@@ -38,7 +38,7 @@ if (process.env.LOKI_URL) {
             format: format.json(),
             onConnectionError: (err: any) => console.error(err),
         })
-    );
+    )
 }
 
 const logger = createLogger({
@@ -46,7 +46,7 @@ const logger = createLogger({
     transports: transport_logs,
     exceptionHandlers: [new transports.File({ filename: 'logs/exceptions.log' })],
     rejectionHandlers: [new transports.File({ filename: 'logs/rejections.log' })],
-});
+})
 
 /**
  * To be used when
@@ -55,18 +55,18 @@ const logger = createLogger({
  * @returns Error ID
  */
 export async function logException(interaction: CommandInteraction | null, e: any): Promise<string> {
-    const errorId = generateErrorID();
-    e = e.message ?? e;
+    const errorId = generateErrorID()
+    e = e.message ?? e
 
     if (interaction) {
         const args = interaction.options.data.map(x => {
-            return { name: x.name, value: x.value };
-        });
+            return { name: x.name, value: x.value }
+        })
 
         logger.error({
             labels: { command: interaction.commandName, errorId },
             message: { e, args },
-        });
+        })
 
         try {
             sendEmbed({
@@ -76,16 +76,16 @@ export async function logException(interaction: CommandInteraction | null, e: an
                     color: Colours.RED,
                 },
                 ephemeral: true,
-            });
-        } catch (e) {}
+            })
+        } catch (e) { }
     } else {
         logger.error({
             labels: { errorId },
             message: { e },
-        });
+        })
     }
 
-    return errorId;
+    return errorId
 }
 
-export default logger;
+export default logger
