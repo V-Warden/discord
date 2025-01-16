@@ -98,7 +98,7 @@ export default new Command({
                     },
                     {
                         name: 'Date Added',
-                        value: `<t:${createdAtTimestamp}:F>`,
+                        value: `<t:${createdAtTimestamp}:D>`,
                         inline: true,
                     },
                     {

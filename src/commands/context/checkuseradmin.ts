@@ -52,12 +52,12 @@ export default new ContextMenu({
 
             if (user.appealedFirst) {
                 const createdAtTimestamp = Math.floor(new Date(user.appealedFirst).getTime() / 1000)
-                comments += `\n> First Appeal: <t:${createdAtTimestamp}:F>`
+                comments += `\n> First Appeal: <t:${createdAtTimestamp}:D>`
             }
             if (user.appealedLast) {
                 const createdAtTimestamp = Math.floor(new Date(user.appealedLast).getTime() / 1000)
                 if (firstAppeal !== lastAppeal) {
-                    comments += `\n> Last Appeal: <t:${createdAtTimestamp}:F>`
+                    comments += `\n> Last Appeal: <t:${createdAtTimestamp}:D>`
                 }
             }
 
@@ -116,8 +116,8 @@ export default new ContextMenu({
                 const dateLast = new Date(x.updatedAt)
                 const dateLastTimestamp = Math.floor(new Date(x.updatedAt).getTime() / 1000)
                 const formattedRoles = x.roles.split(',').map(role => role.trim())
-                const firstSeen = `> First seen: <t:${dateFirstTimestamp}:F>`
-                const lastSeen = dateFirst.toLocaleDateString() !== dateLast.toLocaleDateString() ? `\n> Last seen: <t:${dateLastTimestamp}:F>` : ''
+                const firstSeen = `> First seen: <t:${dateFirstTimestamp}:D>`
+                const lastSeen = dateFirst.toLocaleDateString() !== dateLast.toLocaleDateString() ? `\n> Last seen: <t:${dateLastTimestamp}:D>` : ''
 
                 if (x.roles.length > 200) {
                     const response = await uploadText(JSON.stringify(formattedRoles, null, 4), '1h').catch(e => {
@@ -162,13 +162,13 @@ export default new ContextMenu({
         if (user.appealedFirst) {
             const firstAppealTimestamp = Math.floor(new Date(user.appealedFirst).getTime() / 1000)
             firstAppeal = new Date(user.appealedFirst).toLocaleDateString()
-            comments += `\n> First Appeal: <t:${firstAppealTimestamp}:F>`
+            comments += `\n> First Appeal: <t:${firstAppealTimestamp}:D>`
         }
         if (user.appealedLast) {
             const lastAppealTimestamp = Math.floor(new Date(user.appealedLast).getTime() / 1000)
             lastAppeal = new Date(user.appealedLast).toLocaleDateString()
             if (firstAppeal !== lastAppeal) {
-                comments += `\n> Last Appeal: <t:${lastAppealTimestamp}:F>`
+                comments += `\n> Last Appeal: <t:${lastAppealTimestamp}:D>`
             }
         }
 
