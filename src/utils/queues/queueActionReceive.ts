@@ -1,11 +1,11 @@
-import amqp from 'amqplib'
-import logger from '../logger'
-import { Client, TextChannel, EmbedBuilder } from 'discord.js'
-import db from '../database'
-import sendEmbed from '../messages/sendEmbed'
-import { generateErrorID } from '../misc'
+import { Client, TextChannel, EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder, MessageActionRowComponentBuilder, ComponentType } from 'discord.js'
 import { Colours } from '../../@types/Colours'
+import { generateErrorID } from '../misc'
 import { lruInfinity, setCache, getCache } from '../../utils/cache'
+import amqp from 'amqplib'
+import db from '../database'
+import logger from '../logger'
+import sendEmbed from '../messages/sendEmbed'
 
 const USERNAME = process.env.RABBITMQ_USER
 const PASSWORD = process.env.RABBITMQ_PASS
@@ -89,18 +89,108 @@ async function dmUser(client: Client, id: string, guildId: string, toDo: string)
             are = 'is'
         }
 
+        const languageSelector = (current: string) => {
+            const languageSelect = new StringSelectMenuBuilder()
+                .setCustomId('language_select')
+                .setPlaceholder('Select an option')
+                .setMinValues(1)
+                .setMaxValues(1)
+                .addOptions(
+                    new StringSelectMenuOptionBuilder()
+                        .setLabel('English')
+                        .setDescription('Translate to English')
+                        .setValue('en')
+                        .setDefault(current === 'en'),
+                    new StringSelectMenuOptionBuilder()
+                        .setLabel('Nederlands')
+                        .setDescription('Vertaal naar Nederlands')
+                        .setValue('nl')
+                        .setDefault(current === 'nl')
+                )
+
+            const rows = [
+                new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(languageSelect),
+            ]
+
+            return rows
+        }
+
         const embed = new EmbedBuilder()
             .setTitle(':shield: Warden')
             .setDescription(
                 `If you are receiving this message, you are blacklisted by the Warden bot, an anti-leaking/cheating and reselling bot.\n\n` +
                 `You are automatically being **${punishment}** by **${member.guild.name}**.\n\n` +
-                `This is because you are/were associated with **${realCount === 0 ? 1 : realCount}** leaking, cheating, or reselling Discord server${realCount === 1 ? '' : 's'}.\n` +
+                `This is because you are/were associated with **${realCount === 0 ? 1 : realCount}** leaking, cheating or reselling Discord server${realCount === 1 ? '' : 's'}.\n` +
                 `## [Join the Warden Discord](https://discord.gg/MVNZR73Ghf)\n` +
-                `When you join, please read the questions channel.`
+                `When you join, please read the "questions" channel.`
             )
             .setColor(Colours.BLUE)
 
-        await chan.send({ embeds: [embed] })
+        const dmMessage = await chan.send({ embeds: [embed], components: languageSelector('en') })
+
+        const collectorStringSelect = dmMessage.createMessageComponentCollector({
+            componentType: ComponentType.StringSelect,
+            time: 600000,
+        })
+
+        collectorStringSelect.on('collect', async (interaction) => {
+            try {
+                if (interaction.customId === 'language_select') {
+                    const lang = interaction.values[0]
+                    let translation = ''
+                    switch (lang) {
+                        case 'en':
+                            translation = `If you are receiving this message, you are blacklisted by the Warden bot, an anti-leaking/cheating and reselling bot.\n\n` +
+                                `You are automatically being **${punishment}** by **${member.guild.name}**.\n\n` +
+                                `This is because you are/were associated with **${realCount === 0 ? 1 : realCount}** leaking, cheating or reselling Discord server${realCount === 1 ? '' : 's'}.\n` +
+                                `## [Join the Warden Discord](https://discord.gg/MVNZR73Ghf)\n` +
+                                `When you join, please read the "questions" channel.`
+                            break
+                        case 'nl':
+                            let punishmentTranslated = ''
+
+                            switch (toDo) {
+                                case 'WARN':
+                                    punishmentTranslated = 'gewaarschuwd'
+                                    break
+                                case 'KICK':
+                                    punishmentTranslated = 'gekickt'
+                                    break
+                                case 'BAN':
+                                    punishmentTranslated = 'verbannen'
+                                    break
+                                case 'ROLE':
+                                    punishmentTranslated = 'een rol gegeven'
+                                    break
+                            }
+
+                            translation = `Als je dit bericht ontvangt, sta je op de zwarte lijst van de Warden bot, een anti-leaking/cheating en reselling bot.\n\n` +
+                                `Je wordt automatisch **${punishmentTranslated}** door **${member.guild.name}**.\n\n` +
+                                `Dit is omdat je geassocieerd bent met **${realCount === 0 ? 1 : realCount}** leaking, cheating of reselling Discord server${realCount === 1 ? '' : 's'}.\n` +
+                                `## [Join de Warden Discord](https://discord.gg/MVNZR73Ghf)\n` +
+                                `Als je lid wordt, lees dan het "questions" kanaal.`
+                            break
+
+                        default:
+                            break
+                    }
+
+                    dmMessage.edit({ embeds: [embed.setDescription(translation)], components: languageSelector(lang) })
+                }
+            } catch (e) {
+                logger.error({
+                    labels: { queue: 'queueActionReceive', userId: id, guildId: member.guild.id },
+                    message: `Error in collectorStringSelect: ${e instanceof Error ? e.message : JSON.stringify(e)}`,
+                })
+            }
+
+            return interaction.deferUpdate().catch((e) => {
+                logger.error({
+                    labels: { queue: 'queueActionReceive', userId: id, guildId: member.guild.id },
+                    message: `Error in collectorStringSelect: ${e instanceof Error ? e.message : JSON.stringify(e)}`,
+                })
+            })
+        })
 
         logger.info({
             labels: { queue: 'queueActionReceive', userId: id, guildId: member.guild.id },
@@ -109,7 +199,7 @@ async function dmUser(client: Client, id: string, guildId: string, toDo: string)
     } catch (e) {
         logger.error({
             labels: { queue: 'queueActionReceive', userId: id, guildId: member.guild.id },
-            message: `Unable to create DM with user`,
+            message: `Unable to create DM with user: ${e instanceof Error ? e.message : JSON.stringify(e)}`,
         })
     }
 

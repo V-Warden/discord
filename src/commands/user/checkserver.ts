@@ -83,7 +83,7 @@ export default new Command({
                         name: 'Server Information',
                         value: `**ID**: ${server.id} / **Name**: ${server.name}\n
                               **Details**: ${server.type.toLowerCase()}\n
-                              **Date Added**: <t:${createdAtTimestamp}:F>\n
+                              **Date Added**: <t:${createdAtTimestamp}:D>\n
                               **Added By**: ${addedBy}`,
                     },
                 ],

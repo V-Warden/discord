@@ -15,7 +15,8 @@ import path from 'path'
 import logger from '../utils/logger'
 import { startReceiver } from '../utils/queues/queueActionReceive'
 import { lruInfinity, setCache } from '../utils/cache'
-
+import { liveStatus } from '../utils/status/liveStatus'
+ 
 export class ExtendedClient extends Client {
     commands: Collection<string, CommandType> = new Collection();
     contextmenus: Collection<string, MenuType> = new Collection();
@@ -103,6 +104,10 @@ export class ExtendedClient extends Client {
 
             startReceiver(this).catch((e) => {
                 logger.error({ message: 'Error starting receiver', error: e instanceof Error ? e.message : JSON.stringify(e) })
+            })
+
+            liveStatus(this).catch((e) => {
+                logger.error({ message: 'Error starting liveStatus', error: e instanceof Error ? e.message : JSON.stringify(e) })
             })
         })
 

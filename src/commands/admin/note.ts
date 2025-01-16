@@ -117,7 +117,7 @@ export default new Command({
                     const x = notes[i]
 
                     const createdAtTimestamp = Math.floor(new Date(x.createdAt).getTime() / 1000)
-                    values.push(`> **Note ID**: ${x.nId}\n> **Made by**: <@${x.staff.id}>\n> **Created at**: <t:${createdAtTimestamp}:F>\n> \`\`${x.note}\`\`\n`)
+                    values.push(`> **Note ID**: ${x.nId}\n> **Made by**: <@${x.staff.id}>\n> **Created at**: <t:${createdAtTimestamp}:D>\n> \`\`${x.note}\`\`\n`)
                 }
 
                 const chunks = chunk(values, 15)
