@@ -1,0 +1,39 @@
+{
+	"name": "@warden/database",
+	"version": "0.0.0",
+	"private": true,
+	"main": "dist/index.js",
+	"exports": {
+		".": {
+			"import": "./dist/src/index.js",
+			"types": "./dist/src/index.d.ts"
+		}
+	},
+	"scripts": {
+		"dev": "tsc --watch",
+		"build": "tsc",
+		"db:seed": "ts-node scripts/seed.ts",
+		"db:migrate": "ts-node scripts/migrate.ts",
+		"db:studio": "drizzle-kit studio",
+		"db:check": "drizzle-kit check",
+		"db:wipe": "ts-node scripts/wipe.ts",
+		"db:generate": "drizzle-kit generate"
+	},
+	"devDependencies": {
+		"@swc/cli": "catalog:",
+		"@swc/core": "catalog:",
+		"@total-typescript/tsconfig": "^1.0.4",
+		"@types/node": "^22.10.7",
+		"drizzle-kit": "^0.30.2",
+		"ts-node": "^10.9.2",
+		"typescript": "^5.2.2"
+	},
+	"dependencies": {
+		"dotenv": "^16.4.7",
+		"drizzle-orm": "^0.38.4",
+		"drizzle-zod": "^0.6.1",
+		"postgres": "^3.4.5",
+		"typescript": "catalog:",
+		"zod": "^3.23.10"
+	}
+}

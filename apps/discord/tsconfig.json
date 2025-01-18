@@ -1,11 +1,11 @@
 {
 	"compilerOptions": {
 		"target": "es2022",
-		"module": "es2022",
+		"module": "Node16",
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
 		"isolatedModules": true,
-		"moduleResolution": "node",
+		"moduleResolution": "Node16",
 		"skipDefaultLibCheck": true,
 		"skipLibCheck": true,
 		"strict": true,

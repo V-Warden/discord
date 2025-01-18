@@ -6,6 +6,7 @@
 	"type": "module",
 	"license": "ISC",
 	"private": true,
+	"packageManager": "pnpm@9.15.4",
 	"scripts": {
 		"start:bot": "node dist/bot/index.js",
 		"start:rest": "node dist/rest/index.js",
@@ -17,21 +18,22 @@
 		"dev:gateway": "node --watch --watch-preserve-output dist/gateway/index.js"
 	},
 	"dependencies": {
-		"@discordeno/bot": "21.0.0",
-		"@fastify/multipart": "^9.0.1",
-		"@influxdata/influxdb-client": "^1.35.0",
-		"amqplib": "^0.10.5",
-		"chalk": "^5.4.1",
+		"@warden/database": "workspace:*",
+		"@discordeno/bot": "catalog:",
+		"@fastify/multipart": "catalog:",
+		"@influxdata/influxdb-client": "catalog:",
+		"amqplib": "catalog:",
+		"chalk": "catalog:",
 		"dotenv": "^16.4.7",
-		"fastify": "^5.2.0"
+		"fastify": "catalog:"
 	},
 	"devDependencies": {
-		"@jest/globals": "^29.7.0",
-		"@swc/cli": "^0.5.2",
-		"@swc/core": "^1.10.4",
-		"@types/amqplib": "^0.10.6",
-		"@types/node": "^22.10.2",
-		"chokidar": "^3.6.0",
+		"@jest/globals": "catalog:",
+		"@swc/cli": "catalog:",
+		"@swc/core": "catalog:",
+		"@types/amqplib": "catalog:",
+		"@types/node": "catalog:",
+		"chokidar": "catalog:",
 		"typescript": "catalog:"
 	}
 }

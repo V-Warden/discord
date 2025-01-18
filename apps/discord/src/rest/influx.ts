@@ -9,11 +9,13 @@ import {
 } from "../config.js";
 
 export const influxDB = INFLUX_ENABLED
-	? new InfluxDB({ url: INFLUX_URL!, token: INFLUX_TOKEN! })
+	? // biome-ignore lint/style/noNonNullAssertion: <explanation>
+		new InfluxDB({ url: INFLUX_URL!, token: INFLUX_TOKEN! })
 	: undefined;
 export const influx =
 	INFLUX_ENABLED && influxDB
-		? influxDB.getWriteApi(INFLUX_ORG!, INFLUX_BUCKET!)
+		? // biome-ignore lint/style/noNonNullAssertion: <explanation>
+			influxDB.getWriteApi(INFLUX_ORG!, INFLUX_BUCKET!)
 		: undefined;
 
 export const setupRestAnalyticsHooks = (

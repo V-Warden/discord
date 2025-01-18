@@ -9,12 +9,56 @@ services:
       - postgres-db:/var/lib/postgresql/data
     ports:
       - ${POSTGRES_PORT:-5432}:5432
-    networks:
-      - postgres-db-network
+
+  influxdb:
+    image: influxdb:2.7-alpine
+    ports:
+      - 127.0.0.1:8086:8086
+    env_file:
+      - /apps/discord/.env
+    healthcheck:
+      test: "curl -f http://localhost:8086/ping"
+      interval: 5s
+      timeout: 10s
+      retries: 5
+  rabbitmq:
+    build:
+      context: .
+      target: rabbitmq
+    ports:
+      - 127.0.0.1:15672:15672
+
+  rest:
+    build:
+      context: .
+      target: rest
+    depends_on:
+      influxdb:
+        condition: service_healthy
+    env_file:
+      - /apps/discord/.env
+  gateway:
+    build:
+      context: .
+      target: gateway
+    depends_on:
+      rest:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    env_file:
+      - /apps/discord/.env
+  bot:
+    build:
+      context: .
+      target: bot
+    depends_on:
+      rest:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    env_file:
+      - /apps/discord/.env
 
 volumes:
   postgres-db:
-
-networks:
-  postgres-db-network:
-    driver: bridge

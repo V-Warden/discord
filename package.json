@@ -11,6 +11,10 @@
 		"lint": "turbo lint",
 		"format": "biome format --write",
 		"commitlint": "commitlint --edit",
+		"db:check": "turbo run db:check",
+		"db:generate": "turbo run db:generate",
+		"db:migrate": "turbo run db:migrate",
+		"db:wipe": "turbo run db:wipe",
 		"cm": "cz"
 	},
 	"engines": {
@@ -18,13 +22,13 @@
 	},
 	"packageManager": "pnpm@9.15.4",
 	"devDependencies": {
-		"@biomejs/biome": "1.9.4",
-		"@commitlint/cli": "^19.6.1",
-		"@commitlint/config-conventional": "^19.6.0",
-		"cz-conventional-changelog": "^3.3.0",
+		"@biomejs/biome": "catalog:",
+		"@commitlint/cli": "catalog:",
+		"@commitlint/config-conventional": "catalog:",
+		"cz-conventional-changelog": "catalog:",
 		"dotenv": "^16.4.7",
 		"dotenv-cli": "^7.4.1",
-		"turbo": "^2.3.3",
+		"turbo": "catalog:",
 		"typescript": "catalog:"
 	},
 	"commitlint": {

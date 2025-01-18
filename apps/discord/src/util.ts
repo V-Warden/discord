@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 // This is a "polyfill" for the `Promise.withResolves`, while node 22 does support it, node 18 does not and this template does support node 18
 export function promiseWithResolvers<T>(): PromiseWithResolvers<T> {
 	let resolve!: (data: T | PromiseLike<T>) => void;
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	let reject!: (reason?: any) => void;
 	const promise = new Promise<T>((_resolve, _reject) => {
 		resolve = _resolve;
@@ -21,5 +22,6 @@ export function getDirnameFromFileUrl(url: string): string {
 export interface PromiseWithResolvers<T> {
 	promise: Promise<T>;
 	resolve: (data: T | PromiseLike<T>) => void;
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	reject: (reason?: any) => void;
 }
