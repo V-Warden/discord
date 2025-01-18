@@ -1,10 +1,10 @@
 import { eq } from "drizzle-orm/pg-core/expressions";
-import { z } from "zod";
+import type { z } from "zod";
+
 import { db } from "../index.js";
 import {
 	users,
-	type UserUpdate,
-	zUserRequired,
+	type zUserRequired,
 	zUserSchema,
 	zUserUpdateSchema,
 } from "../schemas/user.js";
@@ -26,7 +26,10 @@ export async function createUser(
 	return created;
 }
 
-export async function updateUser(id: string, input: UserUpdate) {
+export async function updateUser(
+	id: string,
+	input: z.infer<typeof zUserUpdateSchema>,
+) {
 	await db
 		.update(users)
 		.set(zUserUpdateSchema.parse(input))
