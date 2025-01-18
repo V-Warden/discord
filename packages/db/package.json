@@ -9,8 +9,6 @@
 		"./*": ["./src/*.ts"]
 	},
 	"scripts": {
-		"with-env": "dotenv -e .env -e ../../.env --",
-		"with-env-local": "dotenv -e .env.local -e ../../.env.local --",
 		"typecheck": "tsc --noEmit",
 		"db:introspect": "drizzle-kit introspect",
 		"db:dev": "echo http://localhost:4983 && pnpm with-env drizzle-kit studio --host localhost --port 3001 --verbose --config drizzle.config.ts",
@@ -20,16 +18,12 @@
 		"generate": "pnpm with-env drizzle-kit generate"
 	},
 	"devDependencies": {
-		"@sapphire/eslint-config": "^5.0.5",
-		"@sapphire/prettier-config": "^2.0.0",
-		"@sapphire/ts-config": "^5.0.1",
 		"@total-typescript/tsconfig": "^1.0.4",
 		"@types/pg": "^8.11.10",
 		"drizzle-kit": "^0.30.2",
 		"tsx": "^4.19.2"
 	},
 	"dependencies": {
-		"@sapphire/bitfield": "^1.2.0",
 		"@warden/db": "file:",
 		"dotenv": "^16.4.7",
 		"drizzle-orm": "^0.38.4",
