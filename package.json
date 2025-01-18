@@ -1,53 +1,38 @@
 {
-    "name": "warden",
-    "version": "3.6.1",
-    "description": "",
-    "main": "index.js",
-    "scripts": {
-        "start": "ts-node src/index.ts",
-        "start:dev": "ts-node-dev src/bot.ts",
-        "start:prod": "tsc && node dist/index.js",
-        "build": "tsc",
-        "lint": "gts lint",
-        "clean": "gts clean",
-        "compile": "tsc",
-        "fix": "gts fix",
-        "seed": "ts-node prisma/seed.ts"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "prisma": {
-        "seed": "ts-node prisma/seed.ts"
-    },
-    "dependencies": {
-        "@prisma/client": "^5.20.0",
-        "@types/amqplib": "^0.10.5",
-        "amqplib": "^0.10.4",
-        "axios": "^1.7.7",
-        "discord.js": "14.16.3",
-        "form-data": "^4.0.1",
-        "lodash": "^4.17.21",
-        "lru-cache": "^11.0.2",
-        "triple-beam": "^1.4.1",
-        "winston": "^3.15.0",
-        "winston-loki": "^6.1.2"
-    },
-    "devDependencies": {
-        "@faker-js/faker": "^7.6.0",
-        "@types/glob": "^8.1.0",
-        "@types/lodash": "^4.17.10",
-        "@types/node": "^22.7.5",
-        "dotenv": "^16.4.5",
-        "eslint": "^9.12.0",
-        "eslint-plugin-prettier": "^5.2.1",
-        "glob": "^11.0.0",
-        "gts": "^5.3.1",
-        "prettier": "3.3.3",
-        "prisma": "^5.20.0",
-        "ts-node": "^10.9.2",
-        "ts-node-dev": "^2.0.0",
-        "tslib": "^2.7.0",
-        "typescript": "^5.6.3"
-    }
+	"name": "warden",
+	"version": "1.0.0",
+	"author": "mk3ext",
+	"description": "Warden is a Discord bot that helps you manage your server.",
+	"type": "module",
+	"scripts": {
+		"preinstall": "npx only-allow pnpm",
+		"build": "turbo run build",
+		"fmt": "turbo fmt",
+		"lint": "turbo lint",
+		"format": "biome format --write",
+		"commitlint": "commitlint --edit",
+		"cm": "cz"
+	},
+	"engines": {
+		"node": ">=23.5.0"
+	},
+	"packageManager": "pnpm@9.15.4",
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4",
+		"@commitlint/cli": "^19.6.1",
+		"@commitlint/config-conventional": "^19.6.0",
+		"cz-conventional-changelog": "^3.3.0",
+		"dotenv": "^16.4.7",
+		"dotenv-cli": "^7.4.1",
+		"turbo": "^2.3.3",
+		"typescript": "catalog:"
+	},
+	"commitlint": {
+		"extends": ["@commitlint/config-conventional"]
+	},
+	"config": {
+		"commitizen": {
+			"path": "./node_modules/cz-conventional-changelog"
+		}
+	}
 }

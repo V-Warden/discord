@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:17.2-alpine
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+      - POSTGRES_DB=${POSTGRES_DB:-warden}
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+    ports:
+      - ${POSTGRES_PORT:-5432}:5432
+    networks:
+      - postgres-db-network
+
+volumes:
+  postgres-db:
+
+networks:
+  postgres-db-network:
+    driver: bridge

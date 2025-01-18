@@ -1,3 +1,0 @@
-[submodule "prisma"]
-	path = prisma
-	url = https://github.com/V-Warden/prisma

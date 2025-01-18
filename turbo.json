@@ -1,0 +1,16 @@
+{
+	"$schema": "https://turborepo.org/schema.json",
+	"globalDependencies": [".env.local"],
+	"ui": "tui",
+	"globalEnv": ["DISCORD_TOKEN", "OWNERS"],
+	"tasks": {
+		"build": {
+			"dependsOn": ["^db:generate", "generate-i18n", "^build"],
+			"outputs": ["build/**", ".next/**"]
+		},
+		"dev": {
+			"dependsOn": ["^db:generate", "generate-i18n"],
+			"cache": false
+		}
+	}
+}

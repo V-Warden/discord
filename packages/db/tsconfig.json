@@ -1,0 +1,11 @@
+{
+	"extends": "@total-typescript/tsconfig/bundler/no-dom/library-monorepo",
+	"compilerOptions": {
+		"outDir": "dist",
+		"skipLibCheck": true,
+		"strictNullChecks": true,
+		"strict": true
+	},
+	"exclude": ["node_modules", "../../node_modules/*"],
+	"include": ["src", "drizzle.config.ts"]
+}
