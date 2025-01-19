@@ -8,6 +8,13 @@
       "when": 1737294458934,
       "tag": "0000_create_users_and_notes_tables",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1737295995427,
+      "tag": "0001_create_imports_and_badservers",
+      "breakpoints": true
     }
   ]
 }

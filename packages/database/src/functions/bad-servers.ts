@@ -1,0 +1,61 @@
+import { eq } from "drizzle-orm/pg-core/expressions";
+
+import { db } from "../index.js";
+import {
+	type BadServerInsert,
+	type BadServerUpdate,
+	badServers,
+	zBadServerCreate,
+	zBadServerUpdateSchema,
+} from "../schemas/bad-servers.js";
+
+/**
+ * User Functions
+ * Functions for user operations
+ */
+
+/**
+ * Find a user by their ID
+ * @param id - The ID of the user to find
+ * @returns The user object
+ */
+export async function findBadServerById(id: string) {
+	return db.query.badServers.findFirst({
+		where: eq(badServers.id, id),
+	});
+}
+
+/**
+ * Create a user
+ * @param input - The user data to create
+ * @returns The created user
+ */
+export async function createBadServer(input: BadServerInsert) {
+	await db.insert(badServers).values(zBadServerCreate.parse(input));
+
+	const created = await findBadServerById(input.id);
+	if (!created)
+		throw new Error(`Failed to create BadServer with id ${input.id}`);
+
+	return created;
+}
+
+/**
+ * Update a user
+ * @param id - The ID of the user to update
+ * @param input - The user data to update
+ */
+export async function updateBadServer(id: string, input: BadServerUpdate) {
+	await db
+		.update(badServers)
+		.set(zBadServerUpdateSchema.parse(input))
+		.where(eq(badServers.id, id));
+}
+
+/**
+ * Delete a user
+ * @param id - The ID of the user to delete
+ */
+export async function deleteBadServer(id: string) {
+	await db.delete(badServers).where(eq(badServers.id, id));
+}

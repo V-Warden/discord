@@ -1,8 +1,13 @@
 import { eq } from "drizzle-orm/pg-core/expressions";
-import type { z } from "zod";
 
 import { db } from "../index.js";
-import { notes, zNoteCreate, zNoteUpdateSchema } from "../schemas/notes.js";
+import {
+	type NoteInsert,
+	type NoteUpdate,
+	notes,
+	zNoteCreate,
+	zNoteUpdateSchema,
+} from "../schemas/notes.js";
 
 /**
  * Note Functions
@@ -36,13 +41,7 @@ export async function findNotesByUserId(userId: string) {
  * @param input - The note data to create
  * @returns The created note
  */
-export async function createNote(
-	input: z.infer<typeof zNoteCreate> & {
-		userId: string;
-		note: string;
-		createdBy: string;
-	},
-) {
+export async function createNote(input: NoteInsert) {
 	const [inserted] = await db
 		.insert(notes)
 		.values(zNoteCreate.parse(input))
@@ -65,12 +64,7 @@ export async function createNote(
  * @param id - The ID of the note to update
  * @param input - The note data to update
  */
-export async function updateNote(
-	id: number,
-	input: z.infer<typeof zNoteUpdateSchema> & {
-		updatedBy: string;
-	},
-) {
+export async function updateNote(id: number, input: NoteUpdate) {
 	await db
 		.update(notes)
 		.set(zNoteUpdateSchema.parse(input))

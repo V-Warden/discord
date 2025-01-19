@@ -68,6 +68,6 @@ export const zUserCreate = zUserMutable.extend(zUserRequired.shape);
 export const zUserUpdateSchema = createUpdateSchema(users).extend({});
 export const zUserSelectSchema = createSelectSchema(users).extend({});
 
-export type UserInsert = z.infer<typeof zUserSchema>;
+export type UserInsert = z.infer<typeof zUserCreate>;
 export type UserUpdate = z.infer<typeof zUserUpdateSchema>;
 export type UserSelect = z.infer<typeof zUserSelectSchema>;

@@ -66,9 +66,11 @@ export const zNoteCreate = zNoteMutable.extend(zNoteRequired.shape).extend({
 	createdBy: z.string(),
 });
 
-export const zNoteUpdateSchema = createUpdateSchema(notes).extend({});
+export const zNoteUpdateSchema = createUpdateSchema(notes).extend({
+	updatedBy: z.string(),
+});
 export const zNoteSelectSchema = createSelectSchema(notes).extend({});
 
-export type NoteInsert = z.infer<typeof zNoteSchema>;
+export type NoteInsert = z.infer<typeof zNoteCreate>;
 export type NoteUpdate = z.infer<typeof zNoteUpdateSchema>;
 export type NoteSelect = z.infer<typeof zNoteSelectSchema>;

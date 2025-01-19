@@ -1,9 +1,13 @@
 import { eq } from "drizzle-orm/pg-core/expressions";
-import type { z } from "zod";
 
 import { db } from "../index.js";
-import type { UserType } from "../schemas/custom-types.js";
-import { users, zUserCreate, zUserUpdateSchema } from "../schemas/users.js";
+import {
+	type UserInsert,
+	type UserUpdate,
+	users,
+	zUserCreate,
+	zUserUpdateSchema,
+} from "../schemas/users.js";
 
 /**
  * User Functions
@@ -26,13 +30,7 @@ export async function findUserById(id: string) {
  * @param input - The user data to create
  * @returns The created user
  */
-export async function createUser(
-	input: z.infer<typeof zUserCreate> & {
-		id: string;
-		last_username: string;
-		type: UserType;
-	},
-) {
+export async function createUser(input: UserInsert) {
 	await db.insert(users).values(zUserCreate.parse(input));
 
 	const created = await findUserById(input.id);
@@ -46,10 +44,7 @@ export async function createUser(
  * @param id - The ID of the user to update
  * @param input - The user data to update
  */
-export async function updateUser(
-	id: string,
-	input: z.infer<typeof zUserUpdateSchema>,
-) {
+export async function updateUser(id: string, input: UserUpdate) {
 	await db
 		.update(users)
 		.set(zUserUpdateSchema.parse(input))

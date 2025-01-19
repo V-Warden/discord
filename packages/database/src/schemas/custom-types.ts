@@ -31,8 +31,18 @@ export const userType = pgEnum("user_type", [
 	"BOT",
 ] as const);
 
+export const serverType = pgEnum("server_type", [
+	"CHEATING",
+	"LEAKING",
+	"RESELLING",
+	"ADVERTISING",
+	"OTHER",
+] as const);
+
 /**
  * User Type
  * A type for the user type, used for type validation
  */
 export type UserType = (typeof userType.enumValues)[number];
+
+export type ServerType = (typeof serverType.enumValues)[number];
