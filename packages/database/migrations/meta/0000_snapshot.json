@@ -1,5 +1,5 @@
 {
-  "id": "c691533b-04e4-4862-91d2-9a8553314c88",
+  "id": "ffb8e4c1-e256-47fc-989c-1bb64dc8ce10",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -12,6 +12,46 @@
           "name": "id",
           "type": "bigint",
           "primaryKey": true,
+          "notNull": true
+        },
+        "last_username": {
+          "name": "last_username",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "appeals": {
+          "name": "appeals",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "first_appeal": {
+          "name": "first_appeal",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_appeal": {
+          "name": "last_appeal",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "user_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'BLACKLISTED'"
+        },
+        "type": {
+          "name": "type",
+          "type": "user_type",
+          "typeSchema": "public",
+          "primaryKey": false,
           "notNull": true
         },
         "created_at": {
@@ -37,7 +77,30 @@
       "isRLSEnabled": false
     }
   },
-  "enums": {},
+  "enums": {
+    "public.user_status": {
+      "name": "user_status",
+      "schema": "public",
+      "values": [
+        "APPEALED",
+        "BLACKLISTED",
+        "PERM_BLACKLISTED",
+        "WHITELISTED"
+      ]
+    },
+    "public.user_type": {
+      "name": "user_type",
+      "schema": "public",
+      "values": [
+        "OTHER",
+        "LEAKER",
+        "CHEATER",
+        "SUPPORTER",
+        "OWNER",
+        "BOT"
+      ]
+    }
+  },
   "schemas": {},
   "sequences": {},
   "roles": {},
