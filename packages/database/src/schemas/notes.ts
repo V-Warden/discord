@@ -52,7 +52,7 @@ export const zNoteSchema = createInsertSchema(notes)
 	.required();
 
 export const zNoteRequired = zNoteSchema.pick({
-	user_id: true,
+	userId: true,
 	note: true,
 });
 
@@ -62,7 +62,9 @@ export const zNoteMutable = zNoteSchema
 	})
 	.deepPartial();
 
-export const zNoteCreate = zNoteMutable.extend(zNoteRequired.shape);
+export const zNoteCreate = zNoteMutable.extend(zNoteRequired.shape).extend({
+	createdBy: z.string(),
+});
 
 export const zNoteUpdateSchema = createUpdateSchema(notes).extend({});
 export const zNoteSelectSchema = createSelectSchema(notes).extend({});
