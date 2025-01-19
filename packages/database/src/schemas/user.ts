@@ -1,14 +1,23 @@
-import { pgTable, timestamp } from "drizzle-orm/pg-core";
+import { integer, pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
 import {
 	createInsertSchema,
 	createSelectSchema,
 	createUpdateSchema,
 } from "drizzle-zod";
 import { z } from "zod";
-import { snowflake } from "./custom-types";
+import { snowflake, userStatus, userType } from "./custom-types";
 
 export const users = pgTable("users", {
 	id: snowflake().primaryKey(),
+	last_username: varchar("last_username").notNull(),
+
+	appeals: integer("appeals").notNull().default(0),
+	first_appeal: timestamp("first_appeal"),
+	last_appeal: timestamp("last_appeal"),
+
+	status: userStatus("status").notNull().default("BLACKLISTED"),
+	type: userType("type").notNull(),
+
 	createdAt: timestamp("created_at").defaultNow(),
 	updatedAt: timestamp("updated_at", {
 		mode: "date",
@@ -24,6 +33,8 @@ export const zUserSchema = createInsertSchema(users)
 
 export const zUserRequired = zUserSchema.pick({
 	id: true,
+	last_username: true,
+	type: true,
 });
 
 export const zUserMutable = zUserSchema

@@ -2,7 +2,8 @@ import { eq } from "drizzle-orm/pg-core/expressions";
 import type { z } from "zod";
 
 import { db } from "../index.js";
-import { users, zUserRequired, zUserUpdateSchema } from "../schemas/user.js";
+import type { UserType } from "../schemas/custom-types.js";
+import { users, zUserCreate, zUserUpdateSchema } from "../schemas/user.js";
 
 export async function findUserById(id: string) {
 	return db.query.users.findFirst({
@@ -11,9 +12,13 @@ export async function findUserById(id: string) {
 }
 
 export async function createUser(
-	input: z.infer<typeof zUserRequired> & { id: string },
+	input: z.infer<typeof zUserCreate> & {
+		id: string;
+		last_username: string;
+		type: UserType;
+	},
 ) {
-	await db.insert(users).values(zUserRequired.parse(input));
+	await db.insert(users).values(zUserCreate.parse(input));
 
 	const created = await findUserById(input.id);
 	if (!created) throw new Error(`Failed to create User with id ${input.id}`);
