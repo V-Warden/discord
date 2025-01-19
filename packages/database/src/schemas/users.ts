@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import { integer, pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
 import {
 	createInsertSchema,
@@ -5,25 +6,44 @@ import {
 	createUpdateSchema,
 } from "drizzle-zod";
 import { z } from "zod";
+import { auditColumns, updatedAndCreatedAt } from "./common-columns";
 import { snowflake, userStatus, userType } from "./custom-types";
+import { notes } from "./notes";
+
+/**
+ * Database Schema Definition
+ * Defines the structure of the 'users' table in PostgreSQL
+ */
 
 export const users = pgTable("users", {
 	id: snowflake().primaryKey(),
-	last_username: varchar("last_username").notNull(),
+	last_username: varchar().notNull(),
 
-	appeals: integer("appeals").notNull().default(0),
-	first_appeal: timestamp("first_appeal"),
-	last_appeal: timestamp("last_appeal"),
+	appeals: integer().notNull().default(0),
+	first_appeal: timestamp(),
+	last_appeal: timestamp(),
 
-	status: userStatus("status").notNull().default("BLACKLISTED"),
-	type: userType("type").notNull(),
+	status: userStatus().notNull().default("BLACKLISTED"),
+	type: userType().notNull(),
 
-	createdAt: timestamp("created_at").defaultNow(),
-	updatedAt: timestamp("updated_at", {
-		mode: "date",
-		precision: 3,
-	}).$onUpdate(() => new Date()),
+	// Audit Columns
+	...updatedAndCreatedAt,
+	...auditColumns,
 });
+
+/**
+ * Relations
+ * Relations for the users table
+ */
+
+export const usersRelations = relations(users, ({ many }) => ({
+	notes: many(notes),
+}));
+
+/**
+ * Zod Schema Definitions
+ * Type validation schemas for user operations
+ */
 
 export const zUserSchema = createInsertSchema(users)
 	.extend({

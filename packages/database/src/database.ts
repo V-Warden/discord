@@ -1,7 +1,7 @@
 import "dotenv/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { drizzle } from "drizzle-orm/node-postgres";
-import { users } from "./schemas/user";
+import { users } from "./schemas/users";
 
 const getEnvVariable = (name: string) => {
 	const value = process.env[name];

@@ -3,14 +3,29 @@ import type { z } from "zod";
 
 import { db } from "../index.js";
 import type { UserType } from "../schemas/custom-types.js";
-import { users, zUserCreate, zUserUpdateSchema } from "../schemas/user.js";
+import { users, zUserCreate, zUserUpdateSchema } from "../schemas/users.js";
 
+/**
+ * User Functions
+ * Functions for user operations
+ */
+
+/**
+ * Find a user by their ID
+ * @param id - The ID of the user to find
+ * @returns The user object
+ */
 export async function findUserById(id: string) {
 	return db.query.users.findFirst({
 		where: eq(users.id, id),
 	});
 }
 
+/**
+ * Create a user
+ * @param input - The user data to create
+ * @returns The created user
+ */
 export async function createUser(
 	input: z.infer<typeof zUserCreate> & {
 		id: string;
@@ -26,6 +41,11 @@ export async function createUser(
 	return created;
 }
 
+/**
+ * Update a user
+ * @param id - The ID of the user to update
+ * @param input - The user data to update
+ */
 export async function updateUser(
 	id: string,
 	input: z.infer<typeof zUserUpdateSchema>,
@@ -36,6 +56,10 @@ export async function updateUser(
 		.where(eq(users.id, id));
 }
 
+/**
+ * Delete a user
+ * @param id - The ID of the user to delete
+ */
 export async function deleteUser(id: string) {
 	await db.delete(users).where(eq(users.id, id));
 }
