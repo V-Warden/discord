@@ -15,7 +15,7 @@ import {
  */
 
 /**
- * Find a import by the user and server id
+ * Find an import by the user and server id
  * @param userId - The ID of the user
  * @param serverId - The ID of the server
  * @returns The import object
@@ -30,7 +30,7 @@ export async function findImportByUserAndServerId(
 }
 
 /**
- * Create a import
+ * Create an import
  * @param input - The import data to create
  * @returns The created import
  */
@@ -44,7 +44,7 @@ export async function createImport(input: ImportInsert) {
 }
 
 /**
- * Update a import
+ * Update an import
  * @param userId - The ID of the user
  * @param serverId - The ID of the server
  * @param input - The import data to update
@@ -61,7 +61,7 @@ export async function updateImport(
 }
 
 /**
- * Delete a import
+ * Delete an import
  * @param userId - The ID of the user
  * @param serverId - The ID of the server
  */

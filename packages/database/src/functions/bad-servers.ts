@@ -10,11 +10,6 @@ import {
 } from "../schemas/bad-servers.js";
 
 /**
- * User Functions
- * Functions for user operations
- */
-
-/**
  * Find a user by their ID
  * @param id - The ID of the user to find
  * @returns The user object

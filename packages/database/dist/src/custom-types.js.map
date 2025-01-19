@@ -1,1 +1,0 @@
-{"version":3,"file":"custom-types.js","sourceRoot":"","sources":["../../src/custom-types.ts"],"names":[],"mappings":";;;AAAA,iDAAiD;AAEpC,QAAA,SAAS,GAAG,IAAA,oBAAU,EAAmB;IACrD,QAAQ;QACP,OAAO,QAAQ,CAAC;IACjB,CAAC;IACD,aAAa;IACb,UAAU,CAAC,KAAa;QACvB,OAAO,KAAK,CAAC,QAAQ,EAAE,CAAC;IACzB,CAAC;CACD,CAAC,CAAC"}

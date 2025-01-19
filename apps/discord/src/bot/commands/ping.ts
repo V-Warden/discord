@@ -1,5 +1,10 @@
 import { snowflakeToTimestamp } from "@discordeno/bot";
-import { createUser, findUserById } from "@warden/database";
+import {
+	createGuild,
+	createPunishment,
+	findPunishmentById,
+	updatePunishment,
+} from "@warden/database";
 import { getShardInfoFromGuild } from "../bot.js";
 import createCommand from "../commands.js";
 
@@ -13,12 +18,33 @@ createCommand({
 		const shardPing =
 			shardInfo.rtt === -1 ? "*Not yet available*" : `${shardInfo.rtt}ms`;
 
-		await createUser({
-			id: interaction.user.id.toString(),
+		const guild = await createGuild({
+			id: interaction.guildId?.toString() ?? "12",
+			name: "test",
 		});
 
-		const user = await findUserById(interaction.user.id.toString());
-		console.log(user);
+		console.log(guild);
+
+		const punishment = await createPunishment({
+			id: interaction.guildId?.toString() ?? "12",
+		});
+
+		console.log(punishment);
+
+		await updatePunishment(interaction.guildId?.toString() ?? "12", {
+			unban: {
+				enabled: true,
+				owner: true,
+				supporter: true,
+				leaker: true,
+				cheater: true,
+				other: false,
+			},
+		});
+
+		const p = await findPunishmentById(interaction.guildId?.toString() ?? "12");
+
+		console.log(p);
 
 		await interaction.respond(
 			`🏓 Pong! Gateway Latency: ${shardPing}, Roundtrip Latency: ${ping}ms. I am online and responsive! 🕙`,

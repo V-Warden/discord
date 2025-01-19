@@ -2,8 +2,10 @@ import "dotenv/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { badServers } from "./schemas/bad-servers";
+import { guilds } from "./schemas/guilds";
 import { imports } from "./schemas/imports";
 import { notes } from "./schemas/notes";
+import { punishments } from "./schemas/punishments";
 import { users } from "./schemas/users";
 
 const getEnvVariable = (name: string) => {
@@ -17,6 +19,8 @@ export const dbSchema = {
 	notes: notes,
 	badServers: badServers,
 	imports: imports,
+	guilds: guilds,
+	punishments: punishments,
 };
 
 export const db: NodePgDatabase<typeof dbSchema> = drizzle<typeof dbSchema>({

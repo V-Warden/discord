@@ -39,6 +39,13 @@ export const serverType = pgEnum("server_type", [
 	"OTHER",
 ] as const);
 
+export const punishmentType = pgEnum("punishment_type", [
+	"BAN",
+	"KICK",
+	"WARN",
+	"ROLE",
+] as const);
+
 /**
  * User Type
  * A type for the user type, used for type validation
