@@ -1,0 +1,29 @@
+{
+	"name": "@warden/web",
+	"version": "1.0.0",
+	"description": "A NextJS web application.",
+	"type": "module",
+	"license": "ISC",
+	"private": true,
+	"packageManager": "pnpm@9.15.4",
+	"scripts": {
+		"dev": "next dev -p 4000",
+		"build": "next build",
+		"start": "next start -p 4000",
+		"lint": "next lint"
+	},
+	"dependencies": {
+		"@warden/database": "workspace:*",
+		"dotenv": "^16.4.7",
+		"next": "^15.1.5",
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0"
+	},
+	"devDependencies": {
+		"@jest/globals": "catalog:",
+		"@types/node": "catalog:",
+		"@types/react-dom": "^19",
+		"@types/react": "^19",
+		"typescript": "catalog:"
+	}
+}

@@ -69,5 +69,19 @@ services:
     ports:
       - 8081:8081
 
+  web:
+    build:
+      context: .
+      target: web
+    depends_on:
+      rest:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    env_file:
+      - ./apps/web/.env
+    ports:
+      - 3000:3000
+
 volumes:
   postgres-db:
