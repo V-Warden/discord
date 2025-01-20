@@ -37,6 +37,8 @@ services:
         condition: service_healthy
     env_file:
       - /apps/discord/.env
+    expose:
+      - 8000:8000
   gateway:
     build:
       context: .
@@ -48,6 +50,8 @@ services:
         condition: service_healthy
     env_file:
       - /apps/discord/.env
+    expose:
+      - 8080:8080
   bot:
     build:
       context: .
@@ -59,6 +63,8 @@ services:
         condition: service_healthy
     env_file:
       - /apps/discord/.env
+    expose:
+      - 8081:8081
 
 volumes:
   postgres-db:
