@@ -24,6 +24,7 @@ COPY . .
 # Generate a partial monorepo with a pruned lockfile for a target workspace.
 # Assuming "web" is the name entered in the project's package.json: { name: "web" }
 RUN turbo prune @warden/discord --docker
+RUN turbo prune @warden/web --docker
 
 FROM base AS installer
 RUN apk update
@@ -34,9 +35,13 @@ COPY --from=build /app/out/json/ .
 RUN pnpm install
 
 COPY --from=build /app/out/full/ .
+RUN pnpm install --filter=@warden/web
+
 RUN pnpm turbo run build --filter=@warden/discord...
+RUN pnpm turbo run build --filter=@warden/web...
 
 RUN pnpm deploy --filter=@warden/discord --prod /prod/discord
+RUN pnpm deploy --filter=@warden/web --prod /prod/web
 
 # Run the application as a non-root user.
 USER node
@@ -84,6 +89,18 @@ EXPOSE 8081
 
 # Run the application.
 CMD ["node", "dist/bot/index.js"]
+
+################################################################################
+
+FROM base AS web
+
+COPY --from=installer /prod/web/ /prod/web/
+COPY --from=installer /app/apps/web/.next /prod/web/.next
+WORKDIR /prod/web
+EXPOSE 4000
+
+# Run the Next.js application.
+CMD ["pnpm", "start"]
 
 ################################################################################
 
