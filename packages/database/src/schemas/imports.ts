@@ -17,12 +17,12 @@ import { users } from "./users";
  */
 
 export const imports = pgTable("imports", {
-	id: snowflake().references(() => users.id, {
+	userId: snowflake("user_id").references(() => users.id, {
 		onDelete: "restrict",
 		onUpdate: "restrict",
 	}),
 
-	server: snowflake("server_id").references(() => badServers.id, {
+	serverId: snowflake("server_id").references(() => badServers.id, {
 		onDelete: "restrict",
 		onUpdate: "restrict",
 	}),
@@ -43,11 +43,11 @@ export const imports = pgTable("imports", {
 
 export const importsRelations = relations(imports, ({ one }) => ({
 	user: one(users, {
-		fields: [imports.id],
+		fields: [imports.userId],
 		references: [users.id],
 	}),
 	badServer: one(badServers, {
-		fields: [imports.server],
+		fields: [imports.serverId],
 		references: [badServers.id],
 	}),
 }));
@@ -59,22 +59,22 @@ export const importsRelations = relations(imports, ({ one }) => ({
 
 export const zImportSchema = createInsertSchema(imports)
 	.extend({
-		id: z.string(),
-		server: z.string(),
+		userId: z.string(),
+		serverId: z.string(),
 	})
 	.required();
 
 export const zImportRequired = zImportSchema.pick({
-	id: true,
-	server: true,
+	userId: true,
+	serverId: true,
 	roles: true,
 	type: true,
 });
 
 export const zImportMutable = zImportSchema
 	.omit({
-		id: true,
-		server: true,
+		userId: true,
+		serverId: true,
 	})
 	.deepPartial();
 

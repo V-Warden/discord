@@ -17,7 +17,7 @@ import {
  */
 export async function findPunishmentById(guildId: string) {
 	const punishment = await db.query.punishments.findFirst({
-		where: eq(punishments.id, guildId),
+		where: eq(punishments.guildId, guildId),
 	});
 
 	if (!punishment) return null;
@@ -33,9 +33,9 @@ export async function findPunishmentById(guildId: string) {
 export async function createPunishment(input: PunishmentInsert) {
 	await db.insert(punishments).values(zPunishmentCreate.parse(input));
 
-	const created = await findPunishmentById(input.id);
+	const created = await findPunishmentById(input.guildId);
 	if (!created)
-		throw new Error(`Failed to create Punishment with id ${input.id}`);
+		throw new Error(`Failed to create Punishment with id ${input.guildId}`);
 
 	return zPunishmentSelectSchema.parse(created);
 }
@@ -52,7 +52,7 @@ export async function updatePunishment(
 	await db
 		.update(punishments)
 		.set(zPunishmentUpdateSchema.parse(input))
-		.where(eq(punishments.id, guildId));
+		.where(eq(punishments.guildId, guildId));
 }
 
 /**
@@ -60,5 +60,5 @@ export async function updatePunishment(
  * @param guildId - The ID of the guild
  */
 export async function deletePunishment(guildId: string) {
-	await db.delete(punishments).where(eq(punishments.id, guildId));
+	await db.delete(punishments).where(eq(punishments.guildId, guildId));
 }

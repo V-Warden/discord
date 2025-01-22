@@ -6,6 +6,7 @@ import { guilds } from "./schemas/guilds";
 import { imports } from "./schemas/imports";
 import { notes } from "./schemas/notes";
 import { punishments } from "./schemas/punishments";
+import { rolesArchive } from "./schemas/roles";
 import { users } from "./schemas/users";
 
 const getEnvVariable = (name: string) => {
@@ -21,6 +22,7 @@ export const dbSchema = {
 	imports: imports,
 	guilds: guilds,
 	punishments: punishments,
+	rolesArchive: rolesArchive,
 };
 
 export const db: NodePgDatabase<typeof dbSchema> = drizzle<typeof dbSchema>({

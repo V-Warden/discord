@@ -40,18 +40,13 @@ export async function createNote(input: NoteInsert) {
 	const [inserted] = await db
 		.insert(notes)
 		.values(zNoteCreate.parse(input))
-		.returning({ id: notes.id });
+		.returning();
 
 	if (!inserted?.id) {
 		throw new Error(`Failed to create note for user ${input.userId}`);
 	}
 
-	const created = await findNoteById(inserted.id);
-	if (!created) {
-		throw new Error(`Failed to find created note with id ${inserted.id}`);
-	}
-
-	return created;
+	return inserted;
 }
 
 /**

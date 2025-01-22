@@ -16,7 +16,7 @@ import { guilds } from "./guilds";
  */
 
 export const punishments = pgTable("punishments", {
-	id: snowflake(),
+	guildId: snowflake("guild_id"),
 
 	// Punishment Settings
 	enabled: boolean().default(false),
@@ -50,7 +50,7 @@ export const punishments = pgTable("punishments", {
 
 export const punishmentsRelations = relations(punishments, ({ one }) => ({
 	guild: one(guilds, {
-		fields: [punishments.id],
+		fields: [punishments.guildId],
 		references: [guilds.id],
 	}),
 }));
@@ -74,17 +74,17 @@ export const zPunishmentSchema = createInsertSchema(punishments, {
 	unban: zUnbanSchema,
 })
 	.extend({
-		id: z.string(),
+		guildId: z.string(),
 	})
 	.required();
 
 export const zPunishmentRequired = zPunishmentSchema.pick({
-	id: true,
+	guildId: true,
 });
 
 export const zPunishmentMutable = zPunishmentSchema
 	.omit({
-		id: true,
+		guildId: true,
 	})
 	.deepPartial();
 

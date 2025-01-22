@@ -25,7 +25,7 @@ export async function findImportByUserAndServerId(
 	serverId: string,
 ) {
 	return db.query.imports.findFirst({
-		where: and(eq(imports.id, userId), eq(imports.server, serverId)),
+		where: and(eq(imports.userId, userId), eq(imports.serverId, serverId)),
 	});
 }
 
@@ -37,8 +37,12 @@ export async function findImportByUserAndServerId(
 export async function createImport(input: ImportInsert) {
 	await db.insert(imports).values(zImportCreate.parse(input));
 
-	const created = await findImportByUserAndServerId(input.id, input.server);
-	if (!created) throw new Error(`Failed to create Import with id ${input.id}`);
+	const created = await findImportByUserAndServerId(
+		input.userId,
+		input.serverId,
+	);
+	if (!created)
+		throw new Error(`Failed to create Import with id ${input.userId}`);
 
 	return created;
 }
@@ -57,7 +61,7 @@ export async function updateImport(
 	await db
 		.update(imports)
 		.set(zImportUpdateSchema.parse(input))
-		.where(and(eq(imports.id, userId), eq(imports.server, serverId)));
+		.where(and(eq(imports.userId, userId), eq(imports.serverId, serverId)));
 }
 
 /**
@@ -68,5 +72,5 @@ export async function updateImport(
 export async function deleteImport(userId: string, serverId: string) {
 	await db
 		.delete(imports)
-		.where(and(eq(imports.id, userId), eq(imports.server, serverId)));
+		.where(and(eq(imports.userId, userId), eq(imports.serverId, serverId)));
 }

@@ -14,8 +14,8 @@ import { snowflake } from "./custom-types";
  */
 
 export const rolesArchive = pgTable("roles_archive", {
-	id: snowflake(),
-	guildId: snowflake(),
+	userId: snowflake("user_id"),
+	guildId: snowflake("guild_id"),
 	roles: text().array(),
 
 	// Audit Columns
@@ -37,21 +37,21 @@ export const rolesArchive = pgTable("roles_archive", {
 
 export const zRoleArchiveSchema = createInsertSchema(rolesArchive, {})
 	.extend({
-		id: z.string(),
+		userId: z.string(),
 		guildId: z.string(),
 		roles: z.array(z.string()),
 	})
 	.required();
 
 export const zRoleArchiveRequired = zRoleArchiveSchema.pick({
-	id: true,
+	userId: true,
 	guildId: true,
 	roles: true,
 });
 
 export const zRoleArchiveMutable = zRoleArchiveSchema
 	.omit({
-		id: true,
+		userId: true,
 		guildId: true,
 	})
 	.deepPartial();

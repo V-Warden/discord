@@ -33,7 +33,7 @@ export const guilds = pgTable("guilds", {
 export const guildsRelations = relations(guilds, ({ one }) => ({
 	punishments: one(punishments, {
 		fields: [guilds.id],
-		references: [punishments.id],
+		references: [punishments.guildId],
 	}),
 }));
 
