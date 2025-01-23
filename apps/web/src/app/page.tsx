@@ -6,7 +6,7 @@ import { Section } from '@/components/ui/section'
 import scrollToTop from '@/lib/scrollToTop'
 import { useEffect } from 'react'
 
-export default function Home() {
+const Home = () => {
 	useEffect(() => {
 		scrollToTop()
 	}, [])
@@ -29,3 +29,5 @@ export default function Home() {
 		</Section>
 	)
 }
+
+export default Home

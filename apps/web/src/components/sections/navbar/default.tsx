@@ -8,7 +8,7 @@ import {
 	NavbarRight,
 } from '../../ui/navbar'
 
-export default function Navbar() {
+const Navbar = () => {
 	return (
 		<header className='top-0 z-50 p-0 m-0 sticky border-b-2 bg-black/50 border-solid border-slate-700 overflow-hidden'>
 			<div className='absolute left-0 h-24 w-full bg-background/15 backdrop-blur-lg' />
@@ -37,3 +37,5 @@ export default function Navbar() {
 		</header>
 	)
 }
+
+export default Navbar

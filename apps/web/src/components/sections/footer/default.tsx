@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { Footer, FooterBottom } from '../../ui/footer'
 
-export default function FooterSection() {
+const FooterSection = () => {
 	return (
 		<footer className='w-full px-4 relative z-50 fade-top bg-black/30'>
 			<div className='mx-auto max-w-container'>
@@ -17,3 +17,5 @@ export default function FooterSection() {
 		</footer>
 	)
 }
+
+export default FooterSection

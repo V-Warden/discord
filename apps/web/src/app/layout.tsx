@@ -19,11 +19,11 @@ export const metadata: Metadata = {
 		'We strive to try and help the leaking and cheating problems within the CFX Community. By using Warden, you can help too!',
 }
 
-export default function RootLayout({
+const RootLayout = ({
 	children,
 }: Readonly<{
 	children: React.ReactNode
-}>) {
+}>) => {
 	return (
 		<html lang='en'>
 			<head>
@@ -49,3 +49,5 @@ export default function RootLayout({
 		</html>
 	)
 }
+
+export default RootLayout

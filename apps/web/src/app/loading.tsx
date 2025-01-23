@@ -1,7 +1,7 @@
 import { Section } from '@/components/ui/section'
 import { Skeleton } from '@/components/ui/skeleton'
 
-export default function Loading() {
+const Loading = () => {
 	return (
 		<Section className='md:py-0 sm:py-0 px-0'>
 			<Section className='z-50 relative bg-transparent'>
@@ -17,3 +17,5 @@ export default function Loading() {
 		</Section>
 	)
 }
+
+export default Loading

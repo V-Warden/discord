@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Item, ItemDescription, ItemIcon, ItemTitle } from '../../ui/item'
 import { Section } from '../../ui/section'
 
-export default function Items() {
+const Items = () => {
 	return (
 		<Section className='z-50 relative bg-transparent'>
 			<div className='mx-auto flex max-w-container flex-col items-center gap-6 sm:gap-20'>
@@ -56,3 +56,5 @@ export default function Items() {
 		</Section>
 	)
 }
+
+export default Items
