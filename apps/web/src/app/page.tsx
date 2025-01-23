@@ -6,7 +6,7 @@ import { Section } from '@/components/ui/section'
 
 export default function Home() {
 	return (
-		<Section className='md:py-0 sm:py-0 px-0 min-h-dvh-minus-209'>
+		<Section className='md:py-0 sm:py-0 px-0'>
 			<Hero
 				title={
 					<span>

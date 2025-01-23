@@ -36,7 +36,7 @@ export default function RootLayout({
 				<div className='noise-overlay absolute top-0 left-0 w-full h-full z-10 animate-appear opacity-0 fade-bottom'>
 					<div className='noise w-full h-full opacity-50' />
 				</div>
-				<main className='relative bg-transparent z-40'>
+				<main className='relative bg-transparent z-40 min-h-dvh-minus-191'>
 					<Glow
 						variant='top'
 						className='animate-appear-zoom opacity-0 delay-00'
