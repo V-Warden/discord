@@ -139,6 +139,6 @@
 .noise {
   background-image: url('../assets/noise.svg');
   background-repeat: repeat;
-  background-size: 400px 400px;
+  background-size: 200px 200px;
   -webkit-mask-image: -webkit-radial-gradient(circle, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
 }
