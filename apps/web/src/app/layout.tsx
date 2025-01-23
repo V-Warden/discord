@@ -33,7 +33,7 @@ export default function RootLayout({
 				className={`${fontRoboto.variable} dark overflow-x-hidden font-roboto`}
 			>
 				<Navbar />
-				<div className='noise-overlay absolute top-0 left-0 w-full h-full z-10 animate-appear opacity-0'>
+				<div className='noise-overlay absolute top-0 left-0 w-full h-full z-10 animate-appear opacity-0 fade-bottom'>
 					<div className='noise w-full h-full opacity-50' />
 				</div>
 				<main className='relative bg-transparent z-40'>
