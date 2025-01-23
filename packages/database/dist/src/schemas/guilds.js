@@ -27,7 +27,7 @@ exports.guilds = (0, pg_core_1.pgTable)("guilds", {
 exports.guildsRelations = (0, drizzle_orm_1.relations)(exports.guilds, ({ one }) => ({
     punishments: one(punishments_1.punishments, {
         fields: [exports.guilds.id],
-        references: [punishments_1.punishments.id],
+        references: [punishments_1.punishments.guildId],
     }),
 }));
 /**

@@ -9,10 +9,6 @@ const expressions_1 = require("drizzle-orm/pg-core/expressions");
 const index_js_1 = require("../index.js");
 const notes_js_1 = require("../schemas/notes.js");
 /**
- * Note Functions
- * Functions for note operations
- */
-/**
  * Find a note by its ID
  * @param id - The ID of the note to find
  * @returns The note object
@@ -41,15 +37,11 @@ async function createNote(input) {
     const [inserted] = await index_js_1.db
         .insert(notes_js_1.notes)
         .values(notes_js_1.zNoteCreate.parse(input))
-        .returning({ id: notes_js_1.notes.id });
+        .returning();
     if (!inserted?.id) {
         throw new Error(`Failed to create note for user ${input.userId}`);
     }
-    const created = await findNoteById(inserted.id);
-    if (!created) {
-        throw new Error(`Failed to find created note with id ${inserted.id}`);
-    }
-    return created;
+    return inserted;
 }
 /**
  * Update a note

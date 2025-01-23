@@ -7,10 +7,7 @@ exports.deleteGuild = deleteGuild;
 const expressions_1 = require("drizzle-orm/pg-core/expressions");
 const index_js_1 = require("../index.js");
 const guilds_js_1 = require("../schemas/guilds.js");
-/**
- * Import Functions
- * Functions for import operations
- */
+const punishments_js_1 = require("../schemas/punishments.js");
 /**
  * Find a guild by the ID
  * @param id - The ID of the guild
@@ -29,6 +26,9 @@ async function findGuildById(id) {
 async function createGuild(input) {
     console.log(input);
     await index_js_1.db.insert(guilds_js_1.guilds).values(guilds_js_1.zGuildCreate.parse(input));
+    await index_js_1.db.insert(punishments_js_1.punishments).values(punishments_js_1.zPunishmentCreate.parse({
+        id: input.id,
+    }));
     const created = await findGuildById(input.id);
     if (!created)
         throw new Error(`Failed to create Guild with id ${input.id}`);

@@ -1,9 +1,5 @@
 import { type UserInsert, type UserUpdate } from "../schemas/users.js";
 /**
- * User Functions
- * Functions for user operations
- */
-/**
  * Find a user by their ID
  * @param id - The ID of the user to find
  * @returns The user object

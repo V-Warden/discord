@@ -13,7 +13,7 @@ const guilds_1 = require("./guilds");
  * Defines the structure of the 'punishments' table in PostgreSQL
  */
 exports.punishments = (0, pg_core_1.pgTable)("punishments", {
-    id: (0, custom_types_1.snowflake)(),
+    guildId: (0, custom_types_1.snowflake)("guild_id"),
     // Punishment Settings
     enabled: (0, pg_core_1.boolean)().default(false),
     roleId: (0, custom_types_1.snowflake)(),
@@ -41,7 +41,7 @@ exports.punishments = (0, pg_core_1.pgTable)("punishments", {
  */
 exports.punishmentsRelations = (0, drizzle_orm_1.relations)(exports.punishments, ({ one }) => ({
     guild: one(guilds_1.guilds, {
-        fields: [exports.punishments.id],
+        fields: [exports.punishments.guildId],
         references: [guilds_1.guilds.id],
     }),
 }));
@@ -62,15 +62,15 @@ exports.zPunishmentSchema = (0, drizzle_zod_1.createInsertSchema)(exports.punish
     unban: exports.zUnbanSchema,
 })
     .extend({
-    id: zod_1.z.string(),
+    guildId: zod_1.z.string(),
 })
     .required();
 exports.zPunishmentRequired = exports.zPunishmentSchema.pick({
-    id: true,
+    guildId: true,
 });
 exports.zPunishmentMutable = exports.zPunishmentSchema
     .omit({
-    id: true,
+    guildId: true,
 })
     .deepPartial();
 exports.zPunishmentCreate = exports.zPunishmentMutable.extend(exports.zPunishmentRequired.shape);

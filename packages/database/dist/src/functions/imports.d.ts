@@ -10,13 +10,13 @@ import { type ImportInsert, type ImportUpdate } from "../schemas/imports.js";
  * @returns The import object
  */
 export declare function findImportByUserAndServerId(userId: string, serverId: string): Promise<{
-    id: string | null;
     type: "OTHER" | "LEAKER" | "CHEATER" | "SUPPORTER" | "OWNER" | "BOT" | null;
     createdBy: string | null;
     updatedBy: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
-    server: string | null;
+    userId: string | null;
+    serverId: string | null;
     roles: string[] | null;
     appealed: boolean | null;
 } | undefined>;
@@ -26,13 +26,13 @@ export declare function findImportByUserAndServerId(userId: string, serverId: st
  * @returns The created import
  */
 export declare function createImport(input: ImportInsert): Promise<{
-    id: string | null;
     type: "OTHER" | "LEAKER" | "CHEATER" | "SUPPORTER" | "OWNER" | "BOT" | null;
     createdBy: string | null;
     updatedBy: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
-    server: string | null;
+    userId: string | null;
+    serverId: string | null;
     roles: string[] | null;
     appealed: boolean | null;
 }>;

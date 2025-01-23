@@ -1,15 +1,15 @@
 import { z } from "zod";
 /**
  * Database Schema Definition
- * Defines the structure of the 'imports' table in PostgreSQL
+ * Defines the structure of the 'roles' table in PostgreSQL
  */
-export declare const imports: import("drizzle-orm/pg-core").PgTableWithColumns<{
-    name: "imports";
+export declare const rolesArchive: import("drizzle-orm/pg-core").PgTableWithColumns<{
+    name: "roles_archive";
     schema: undefined;
     columns: {
         createdBy: import("drizzle-orm/pg-core").PgColumn<{
             name: "created_by";
-            tableName: "imports";
+            tableName: "roles_archive";
             dataType: "custom";
             columnType: "PgCustomColumn";
             data: string;
@@ -28,7 +28,7 @@ export declare const imports: import("drizzle-orm/pg-core").PgTableWithColumns<{
         }>;
         updatedBy: import("drizzle-orm/pg-core").PgColumn<{
             name: "updated_by";
-            tableName: "imports";
+            tableName: "roles_archive";
             dataType: "custom";
             columnType: "PgCustomColumn";
             data: string;
@@ -47,7 +47,7 @@ export declare const imports: import("drizzle-orm/pg-core").PgTableWithColumns<{
         }>;
         createdAt: import("drizzle-orm/pg-core").PgColumn<{
             name: "created_at";
-            tableName: "imports";
+            tableName: "roles_archive";
             dataType: "date";
             columnType: "PgTimestamp";
             data: Date;
@@ -64,7 +64,7 @@ export declare const imports: import("drizzle-orm/pg-core").PgTableWithColumns<{
         }, {}, {}>;
         updatedAt: import("drizzle-orm/pg-core").PgColumn<{
             name: "updated_at";
-            tableName: "imports";
+            tableName: "roles_archive";
             dataType: "date";
             columnType: "PgTimestamp";
             data: Date;
@@ -81,7 +81,7 @@ export declare const imports: import("drizzle-orm/pg-core").PgTableWithColumns<{
         }, {}, {}>;
         userId: import("drizzle-orm/pg-core").PgColumn<{
             name: "user_id";
-            tableName: "imports";
+            tableName: "roles_archive";
             dataType: "custom";
             columnType: "PgCustomColumn";
             data: string;
@@ -98,9 +98,9 @@ export declare const imports: import("drizzle-orm/pg-core").PgTableWithColumns<{
         }, {}, {
             pgColumnBuilderBrand: "PgCustomColumnBuilderBrand";
         }>;
-        serverId: import("drizzle-orm/pg-core").PgColumn<{
-            name: "server_id";
-            tableName: "imports";
+        guildId: import("drizzle-orm/pg-core").PgColumn<{
+            name: "guild_id";
+            tableName: "roles_archive";
             dataType: "custom";
             columnType: "PgCustomColumn";
             data: string;
@@ -119,7 +119,7 @@ export declare const imports: import("drizzle-orm/pg-core").PgTableWithColumns<{
         }>;
         roles: import("drizzle-orm/pg-core").PgColumn<{
             name: "roles";
-            tableName: "imports";
+            tableName: "roles_archive";
             dataType: "array";
             columnType: "PgArray";
             data: string[];
@@ -132,7 +132,7 @@ export declare const imports: import("drizzle-orm/pg-core").PgTableWithColumns<{
             enumValues: [string, ...string[]];
             baseColumn: import("drizzle-orm").Column<{
                 name: "";
-                tableName: "imports";
+                tableName: "roles_archive";
                 dataType: "string";
                 columnType: "PgText";
                 data: string;
@@ -160,236 +160,160 @@ export declare const imports: import("drizzle-orm/pg-core").PgTableWithColumns<{
             }, {}, {}, import("drizzle-orm").ColumnBuilderExtraConfig>;
             size: undefined;
         }>;
-        type: import("drizzle-orm/pg-core").PgColumn<{
-            name: "type";
-            tableName: "imports";
-            dataType: "string";
-            columnType: "PgEnumColumn";
-            data: "OTHER" | "LEAKER" | "CHEATER" | "SUPPORTER" | "OWNER" | "BOT";
-            driverParam: string;
-            notNull: false;
-            hasDefault: false;
-            isPrimaryKey: false;
-            isAutoincrement: false;
-            hasRuntimeDefault: false;
-            enumValues: ["OTHER", "LEAKER", "CHEATER", "SUPPORTER", "OWNER", "BOT"];
-            baseColumn: never;
-            identity: undefined;
-            generated: undefined;
-        }, {}, {}>;
-        appealed: import("drizzle-orm/pg-core").PgColumn<{
-            name: "appealed";
-            tableName: "imports";
-            dataType: "boolean";
-            columnType: "PgBoolean";
-            data: boolean;
-            driverParam: boolean;
-            notNull: false;
-            hasDefault: true;
-            isPrimaryKey: false;
-            isAutoincrement: false;
-            hasRuntimeDefault: false;
-            enumValues: undefined;
-            baseColumn: never;
-            identity: undefined;
-            generated: undefined;
-        }, {}, {}>;
     };
     dialect: "pg";
 }>;
 /**
  * Relations
- * Relations for the notes table
+ * Relations for the punishments table
  */
-export declare const importsRelations: import("drizzle-orm").Relations<"imports", {
-    user: import("drizzle-orm").One<"users", false>;
-    badServer: import("drizzle-orm").One<"bad_servers", false>;
-}>;
 /**
  * Zod Schema Definitions
- * Type validation schemas for note operations
+ * Type validation schemas for punishment operations
  */
-export declare const zImportSchema: z.ZodObject<{
+export declare const zRoleArchiveSchema: z.ZodObject<{
     createdBy: z.ZodNullable<z.ZodString>;
     updatedBy: z.ZodNullable<z.ZodString>;
     createdAt: z.ZodNullable<z.ZodDate>;
     updatedAt: z.ZodNullable<z.ZodDate>;
-    roles: z.ZodNullable<z.ZodArray<z.ZodString, "many">>;
-    type: z.ZodNullable<z.ZodEnum<["OTHER", "LEAKER", "CHEATER", "SUPPORTER", "OWNER", "BOT"]>>;
-    appealed: z.ZodNullable<z.ZodBoolean>;
     userId: z.ZodString;
-    serverId: z.ZodString;
+    guildId: z.ZodString;
+    roles: z.ZodArray<z.ZodString, "many">;
 }, "strip", z.ZodTypeAny, {
-    type: "OTHER" | "LEAKER" | "CHEATER" | "SUPPORTER" | "OWNER" | "BOT" | null;
     createdBy: string | null;
     updatedBy: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
     userId: string;
-    serverId: string;
-    roles: string[] | null;
-    appealed: boolean | null;
+    roles: string[];
+    guildId: string;
 }, {
-    type: "OTHER" | "LEAKER" | "CHEATER" | "SUPPORTER" | "OWNER" | "BOT" | null;
     createdBy: string | null;
     updatedBy: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
     userId: string;
-    serverId: string;
-    roles: string[] | null;
-    appealed: boolean | null;
+    roles: string[];
+    guildId: string;
 }>;
-export declare const zImportRequired: z.ZodObject<Pick<{
+export declare const zRoleArchiveRequired: z.ZodObject<Pick<{
     createdBy: z.ZodNullable<z.ZodString>;
     updatedBy: z.ZodNullable<z.ZodString>;
     createdAt: z.ZodNullable<z.ZodDate>;
     updatedAt: z.ZodNullable<z.ZodDate>;
-    roles: z.ZodNullable<z.ZodArray<z.ZodString, "many">>;
-    type: z.ZodNullable<z.ZodEnum<["OTHER", "LEAKER", "CHEATER", "SUPPORTER", "OWNER", "BOT"]>>;
-    appealed: z.ZodNullable<z.ZodBoolean>;
     userId: z.ZodString;
-    serverId: z.ZodString;
-}, "type" | "userId" | "serverId" | "roles">, "strip", z.ZodTypeAny, {
-    type: "OTHER" | "LEAKER" | "CHEATER" | "SUPPORTER" | "OWNER" | "BOT" | null;
+    guildId: z.ZodString;
+    roles: z.ZodArray<z.ZodString, "many">;
+}, "userId" | "roles" | "guildId">, "strip", z.ZodTypeAny, {
     userId: string;
-    serverId: string;
-    roles: string[] | null;
+    roles: string[];
+    guildId: string;
 }, {
-    type: "OTHER" | "LEAKER" | "CHEATER" | "SUPPORTER" | "OWNER" | "BOT" | null;
     userId: string;
-    serverId: string;
-    roles: string[] | null;
+    roles: string[];
+    guildId: string;
 }>;
-export declare const zImportMutable: z.ZodObject<{
-    type: z.ZodOptional<z.ZodNullable<z.ZodEnum<["OTHER", "LEAKER", "CHEATER", "SUPPORTER", "OWNER", "BOT"]>>>;
+export declare const zRoleArchiveMutable: z.ZodObject<{
     createdBy: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     updatedBy: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     createdAt: z.ZodOptional<z.ZodNullable<z.ZodDate>>;
     updatedAt: z.ZodOptional<z.ZodNullable<z.ZodDate>>;
-    roles: z.ZodOptional<z.ZodNullable<z.ZodArray<z.ZodString, "many">>>;
-    appealed: z.ZodOptional<z.ZodNullable<z.ZodBoolean>>;
+    roles: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
 }, "strip", z.ZodTypeAny, {
-    type?: "OTHER" | "LEAKER" | "CHEATER" | "SUPPORTER" | "OWNER" | "BOT" | null | undefined;
     createdBy?: string | null | undefined;
     updatedBy?: string | null | undefined;
     createdAt?: Date | null | undefined;
     updatedAt?: Date | null | undefined;
-    roles?: string[] | null | undefined;
-    appealed?: boolean | null | undefined;
+    roles?: string[] | undefined;
 }, {
-    type?: "OTHER" | "LEAKER" | "CHEATER" | "SUPPORTER" | "OWNER" | "BOT" | null | undefined;
     createdBy?: string | null | undefined;
     updatedBy?: string | null | undefined;
     createdAt?: Date | null | undefined;
     updatedAt?: Date | null | undefined;
-    roles?: string[] | null | undefined;
-    appealed?: boolean | null | undefined;
+    roles?: string[] | undefined;
 }>;
-export declare const zImportCreate: z.ZodObject<z.objectUtil.extendShape<z.objectUtil.extendShape<{
-    type: z.ZodOptional<z.ZodNullable<z.ZodEnum<["OTHER", "LEAKER", "CHEATER", "SUPPORTER", "OWNER", "BOT"]>>>;
+export declare const zRoleArchiveCreate: z.ZodObject<z.objectUtil.extendShape<{
     createdBy: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     updatedBy: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     createdAt: z.ZodOptional<z.ZodNullable<z.ZodDate>>;
     updatedAt: z.ZodOptional<z.ZodNullable<z.ZodDate>>;
-    roles: z.ZodOptional<z.ZodNullable<z.ZodArray<z.ZodString, "many">>>;
-    appealed: z.ZodOptional<z.ZodNullable<z.ZodBoolean>>;
+    roles: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
 }, Pick<{
     createdBy: z.ZodNullable<z.ZodString>;
     updatedBy: z.ZodNullable<z.ZodString>;
     createdAt: z.ZodNullable<z.ZodDate>;
     updatedAt: z.ZodNullable<z.ZodDate>;
-    roles: z.ZodNullable<z.ZodArray<z.ZodString, "many">>;
-    type: z.ZodNullable<z.ZodEnum<["OTHER", "LEAKER", "CHEATER", "SUPPORTER", "OWNER", "BOT"]>>;
-    appealed: z.ZodNullable<z.ZodBoolean>;
     userId: z.ZodString;
-    serverId: z.ZodString;
-}, "type" | "userId" | "serverId" | "roles">>, {
-    createdBy: z.ZodString;
-}>, "strip", z.ZodTypeAny, {
-    type: "OTHER" | "LEAKER" | "CHEATER" | "SUPPORTER" | "OWNER" | "BOT" | null;
-    createdBy: string;
+    guildId: z.ZodString;
+    roles: z.ZodArray<z.ZodString, "many">;
+}, "userId" | "roles" | "guildId">>, "strip", z.ZodTypeAny, {
     userId: string;
-    serverId: string;
-    roles: string[] | null;
+    roles: string[];
+    guildId: string;
+    createdBy?: string | null | undefined;
     updatedBy?: string | null | undefined;
     createdAt?: Date | null | undefined;
     updatedAt?: Date | null | undefined;
-    appealed?: boolean | null | undefined;
 }, {
-    type: "OTHER" | "LEAKER" | "CHEATER" | "SUPPORTER" | "OWNER" | "BOT" | null;
-    createdBy: string;
     userId: string;
-    serverId: string;
-    roles: string[] | null;
+    roles: string[];
+    guildId: string;
+    createdBy?: string | null | undefined;
     updatedBy?: string | null | undefined;
     createdAt?: Date | null | undefined;
     updatedAt?: Date | null | undefined;
-    appealed?: boolean | null | undefined;
 }>;
-export declare const zImportUpdateSchema: z.ZodObject<z.objectUtil.extendShape<{
+export declare const zRoleArchiveUpdateSchema: z.ZodObject<z.objectUtil.extendShape<{
     createdBy: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     updatedBy: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     createdAt: z.ZodOptional<z.ZodNullable<z.ZodDate>>;
     updatedAt: z.ZodOptional<z.ZodNullable<z.ZodDate>>;
     userId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
-    serverId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    guildId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     roles: z.ZodOptional<z.ZodNullable<z.ZodArray<z.ZodString, "many">>>;
-    type: z.ZodOptional<z.ZodNullable<z.ZodEnum<["OTHER", "LEAKER", "CHEATER", "SUPPORTER", "OWNER", "BOT"]>>>;
-    appealed: z.ZodOptional<z.ZodNullable<z.ZodBoolean>>;
 }, {}>, "strip", z.ZodTypeAny, {
-    type?: "OTHER" | "LEAKER" | "CHEATER" | "SUPPORTER" | "OWNER" | "BOT" | null | undefined;
     createdBy?: string | null | undefined;
     updatedBy?: string | null | undefined;
     createdAt?: Date | null | undefined;
     updatedAt?: Date | null | undefined;
     userId?: string | null | undefined;
-    serverId?: string | null | undefined;
     roles?: string[] | null | undefined;
-    appealed?: boolean | null | undefined;
+    guildId?: string | null | undefined;
 }, {
-    type?: "OTHER" | "LEAKER" | "CHEATER" | "SUPPORTER" | "OWNER" | "BOT" | null | undefined;
     createdBy?: string | null | undefined;
     updatedBy?: string | null | undefined;
     createdAt?: Date | null | undefined;
     updatedAt?: Date | null | undefined;
     userId?: string | null | undefined;
-    serverId?: string | null | undefined;
     roles?: string[] | null | undefined;
-    appealed?: boolean | null | undefined;
+    guildId?: string | null | undefined;
 }>;
-export declare const zImportSelectSchema: z.ZodObject<z.objectUtil.extendShape<{
+export declare const zRoleArchiveSelectSchema: z.ZodObject<z.objectUtil.extendShape<{
     createdBy: z.ZodNullable<z.ZodString>;
     updatedBy: z.ZodNullable<z.ZodString>;
     createdAt: z.ZodNullable<z.ZodDate>;
     updatedAt: z.ZodNullable<z.ZodDate>;
     userId: z.ZodNullable<z.ZodString>;
-    serverId: z.ZodNullable<z.ZodString>;
+    guildId: z.ZodNullable<z.ZodString>;
     roles: z.ZodNullable<z.ZodArray<z.ZodString, "many">>;
-    type: z.ZodNullable<z.ZodEnum<["OTHER", "LEAKER", "CHEATER", "SUPPORTER", "OWNER", "BOT"]>>;
-    appealed: z.ZodNullable<z.ZodBoolean>;
 }, {}>, "strip", z.ZodTypeAny, {
-    type: "OTHER" | "LEAKER" | "CHEATER" | "SUPPORTER" | "OWNER" | "BOT" | null;
     createdBy: string | null;
     updatedBy: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
     userId: string | null;
-    serverId: string | null;
     roles: string[] | null;
-    appealed: boolean | null;
+    guildId: string | null;
 }, {
-    type: "OTHER" | "LEAKER" | "CHEATER" | "SUPPORTER" | "OWNER" | "BOT" | null;
     createdBy: string | null;
     updatedBy: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
     userId: string | null;
-    serverId: string | null;
     roles: string[] | null;
-    appealed: boolean | null;
+    guildId: string | null;
 }>;
-export type ImportInsert = z.infer<typeof zImportSchema>;
-export type ImportUpdate = z.infer<typeof zImportUpdateSchema>;
-export type ImportSelect = z.infer<typeof zImportSelectSchema>;
-//# sourceMappingURL=imports.d.ts.map
+export type RoleArchiveInsert = z.infer<typeof zRoleArchiveCreate>;
+export type RoleArchiveUpdate = z.infer<typeof zRoleArchiveUpdateSchema>;
+export type RoleArchiveSelect = z.infer<typeof zRoleArchiveSelectSchema>;
+//# sourceMappingURL=roles.d.ts.map

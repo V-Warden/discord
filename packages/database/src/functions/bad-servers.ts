@@ -1,13 +1,26 @@
-import { eq } from "drizzle-orm/pg-core/expressions";
+import { eq } from "drizzle-orm/pg-core/expressions"
 
-import { db } from "../index.js";
+import { db } from "../index.js"
 import {
 	type BadServerInsert,
 	type BadServerUpdate,
 	badServers,
 	zBadServerCreate,
 	zBadServerUpdateSchema,
-} from "../schemas/bad-servers.js";
+} from "../schemas/bad-servers.js"
+
+/**
+ * 
+ * @param limit - The number of bad servers to find
+ * @param offset - The number of bad servers to skip
+ * @returns The bad servers object
+ */
+export async function findBadServers(limit: number, offset: number) {
+	return db.query.badServers.findMany({
+		limit: limit,
+		offset: offset,
+	})
+}
 
 /**
  * Find a user by their ID
@@ -17,7 +30,7 @@ import {
 export async function findBadServerById(id: string) {
 	return db.query.badServers.findFirst({
 		where: eq(badServers.id, id),
-	});
+	})
 }
 
 /**
@@ -26,13 +39,13 @@ export async function findBadServerById(id: string) {
  * @returns The created user
  */
 export async function createBadServer(input: BadServerInsert) {
-	await db.insert(badServers).values(zBadServerCreate.parse(input));
+	await db.insert(badServers).values(zBadServerCreate.parse(input))
 
-	const created = await findBadServerById(input.id);
+	const created = await findBadServerById(input.id)
 	if (!created)
-		throw new Error(`Failed to create BadServer with id ${input.id}`);
+		throw new Error(`Failed to create BadServer with id ${input.id}`)
 
-	return created;
+	return created
 }
 
 /**
@@ -44,7 +57,7 @@ export async function updateBadServer(id: string, input: BadServerUpdate) {
 	await db
 		.update(badServers)
 		.set(zBadServerUpdateSchema.parse(input))
-		.where(eq(badServers.id, id));
+		.where(eq(badServers.id, id))
 }
 
 /**
@@ -52,5 +65,5 @@ export async function updateBadServer(id: string, input: BadServerUpdate) {
  * @param id - The ID of the user to delete
  */
 export async function deleteBadServer(id: string) {
-	await db.delete(badServers).where(eq(badServers.id, id));
+	await db.delete(badServers).where(eq(badServers.id, id))
 }

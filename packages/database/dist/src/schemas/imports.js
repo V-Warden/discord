@@ -14,11 +14,11 @@ const users_1 = require("./users");
  * Defines the structure of the 'imports' table in PostgreSQL
  */
 exports.imports = (0, pg_core_1.pgTable)("imports", {
-    id: (0, custom_types_1.snowflake)().references(() => users_1.users.id, {
+    userId: (0, custom_types_1.snowflake)("user_id").references(() => users_1.users.id, {
         onDelete: "restrict",
         onUpdate: "restrict",
     }),
-    server: (0, custom_types_1.snowflake)("server_id").references(() => bad_servers_1.badServers.id, {
+    serverId: (0, custom_types_1.snowflake)("server_id").references(() => bad_servers_1.badServers.id, {
         onDelete: "restrict",
         onUpdate: "restrict",
     }),
@@ -35,11 +35,11 @@ exports.imports = (0, pg_core_1.pgTable)("imports", {
  */
 exports.importsRelations = (0, drizzle_orm_1.relations)(exports.imports, ({ one }) => ({
     user: one(users_1.users, {
-        fields: [exports.imports.id],
+        fields: [exports.imports.userId],
         references: [users_1.users.id],
     }),
     badServer: one(bad_servers_1.badServers, {
-        fields: [exports.imports.server],
+        fields: [exports.imports.serverId],
         references: [bad_servers_1.badServers.id],
     }),
 }));
@@ -49,20 +49,20 @@ exports.importsRelations = (0, drizzle_orm_1.relations)(exports.imports, ({ one 
  */
 exports.zImportSchema = (0, drizzle_zod_1.createInsertSchema)(exports.imports)
     .extend({
-    id: zod_1.z.string(),
-    server: zod_1.z.string(),
+    userId: zod_1.z.string(),
+    serverId: zod_1.z.string(),
 })
     .required();
 exports.zImportRequired = exports.zImportSchema.pick({
-    id: true,
-    server: true,
+    userId: true,
+    serverId: true,
     roles: true,
     type: true,
 });
 exports.zImportMutable = exports.zImportSchema
     .omit({
-    id: true,
-    server: true,
+    userId: true,
+    serverId: true,
 })
     .deepPartial();
 exports.zImportCreate = exports.zImportMutable

@@ -626,8 +626,8 @@ export declare const dbSchema: {
                 identity: undefined;
                 generated: undefined;
             }, {}, {}>;
-            id: import("drizzle-orm/pg-core").PgColumn<{
-                name: "id";
+            userId: import("drizzle-orm/pg-core").PgColumn<{
+                name: "user_id";
                 tableName: "imports";
                 dataType: "custom";
                 columnType: "PgCustomColumn";
@@ -645,7 +645,7 @@ export declare const dbSchema: {
             }, {}, {
                 pgColumnBuilderBrand: "PgCustomColumnBuilderBrand";
             }>;
-            server: import("drizzle-orm/pg-core").PgColumn<{
+            serverId: import("drizzle-orm/pg-core").PgColumn<{
                 name: "server_id";
                 tableName: "imports";
                 dataType: "custom";
@@ -956,8 +956,8 @@ export declare const dbSchema: {
                 identity: undefined;
                 generated: undefined;
             }, {}, {}>;
-            id: import("drizzle-orm/pg-core").PgColumn<{
-                name: "id";
+            guildId: import("drizzle-orm/pg-core").PgColumn<{
+                name: "guild_id";
                 tableName: "punishments";
                 dataType: "custom";
                 columnType: "PgCustomColumn";
@@ -1113,6 +1113,166 @@ export declare const dbSchema: {
                 identity: undefined;
                 generated: undefined;
             }, {}, {}>;
+        };
+        dialect: "pg";
+    }>;
+    rolesArchive: import("drizzle-orm/pg-core").PgTableWithColumns<{
+        name: "roles_archive";
+        schema: undefined;
+        columns: {
+            createdBy: import("drizzle-orm/pg-core").PgColumn<{
+                name: "created_by";
+                tableName: "roles_archive";
+                dataType: "custom";
+                columnType: "PgCustomColumn";
+                data: string;
+                driverParam: unknown;
+                notNull: false;
+                hasDefault: false;
+                isPrimaryKey: false;
+                isAutoincrement: false;
+                hasRuntimeDefault: false;
+                enumValues: undefined;
+                baseColumn: never;
+                identity: undefined;
+                generated: undefined;
+            }, {}, {
+                pgColumnBuilderBrand: "PgCustomColumnBuilderBrand";
+            }>;
+            updatedBy: import("drizzle-orm/pg-core").PgColumn<{
+                name: "updated_by";
+                tableName: "roles_archive";
+                dataType: "custom";
+                columnType: "PgCustomColumn";
+                data: string;
+                driverParam: unknown;
+                notNull: false;
+                hasDefault: false;
+                isPrimaryKey: false;
+                isAutoincrement: false;
+                hasRuntimeDefault: false;
+                enumValues: undefined;
+                baseColumn: never;
+                identity: undefined;
+                generated: undefined;
+            }, {}, {
+                pgColumnBuilderBrand: "PgCustomColumnBuilderBrand";
+            }>;
+            createdAt: import("drizzle-orm/pg-core").PgColumn<{
+                name: "created_at";
+                tableName: "roles_archive";
+                dataType: "date";
+                columnType: "PgTimestamp";
+                data: Date;
+                driverParam: string;
+                notNull: false;
+                hasDefault: true;
+                isPrimaryKey: false;
+                isAutoincrement: false;
+                hasRuntimeDefault: false;
+                enumValues: undefined;
+                baseColumn: never;
+                identity: undefined;
+                generated: undefined;
+            }, {}, {}>;
+            updatedAt: import("drizzle-orm/pg-core").PgColumn<{
+                name: "updated_at";
+                tableName: "roles_archive";
+                dataType: "date";
+                columnType: "PgTimestamp";
+                data: Date;
+                driverParam: string;
+                notNull: false;
+                hasDefault: true;
+                isPrimaryKey: false;
+                isAutoincrement: false;
+                hasRuntimeDefault: false;
+                enumValues: undefined;
+                baseColumn: never;
+                identity: undefined;
+                generated: undefined;
+            }, {}, {}>;
+            userId: import("drizzle-orm/pg-core").PgColumn<{
+                name: "user_id";
+                tableName: "roles_archive";
+                dataType: "custom";
+                columnType: "PgCustomColumn";
+                data: string;
+                driverParam: unknown;
+                notNull: false;
+                hasDefault: false;
+                isPrimaryKey: false;
+                isAutoincrement: false;
+                hasRuntimeDefault: false;
+                enumValues: undefined;
+                baseColumn: never;
+                identity: undefined;
+                generated: undefined;
+            }, {}, {
+                pgColumnBuilderBrand: "PgCustomColumnBuilderBrand";
+            }>;
+            guildId: import("drizzle-orm/pg-core").PgColumn<{
+                name: "guild_id";
+                tableName: "roles_archive";
+                dataType: "custom";
+                columnType: "PgCustomColumn";
+                data: string;
+                driverParam: unknown;
+                notNull: false;
+                hasDefault: false;
+                isPrimaryKey: false;
+                isAutoincrement: false;
+                hasRuntimeDefault: false;
+                enumValues: undefined;
+                baseColumn: never;
+                identity: undefined;
+                generated: undefined;
+            }, {}, {
+                pgColumnBuilderBrand: "PgCustomColumnBuilderBrand";
+            }>;
+            roles: import("drizzle-orm/pg-core").PgColumn<{
+                name: "roles";
+                tableName: "roles_archive";
+                dataType: "array";
+                columnType: "PgArray";
+                data: string[];
+                driverParam: string | string[];
+                notNull: false;
+                hasDefault: false;
+                isPrimaryKey: false;
+                isAutoincrement: false;
+                hasRuntimeDefault: false;
+                enumValues: [string, ...string[]];
+                baseColumn: import("drizzle-orm").Column<{
+                    name: "";
+                    tableName: "roles_archive";
+                    dataType: "string";
+                    columnType: "PgText";
+                    data: string;
+                    driverParam: string;
+                    notNull: false;
+                    hasDefault: false;
+                    isPrimaryKey: false;
+                    isAutoincrement: false;
+                    hasRuntimeDefault: false;
+                    enumValues: [string, ...string[]];
+                    baseColumn: never;
+                    identity: undefined;
+                    generated: undefined;
+                }, {}, {}>;
+                identity: undefined;
+                generated: undefined;
+            }, {}, {
+                baseBuilder: import("drizzle-orm/pg-core").PgColumnBuilder<{
+                    name: "";
+                    dataType: "string";
+                    columnType: "PgText";
+                    data: string;
+                    enumValues: [string, ...string[]];
+                    driverParam: string;
+                }, {}, {}, import("drizzle-orm").ColumnBuilderExtraConfig>;
+                size: undefined;
+            }>;
         };
         dialect: "pg";
     }>;

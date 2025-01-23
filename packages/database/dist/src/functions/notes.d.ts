@@ -1,9 +1,5 @@
 import { type NoteInsert, type NoteUpdate } from "../schemas/notes.js";
 /**
- * Note Functions
- * Functions for note operations
- */
-/**
  * Find a note by its ID
  * @param id - The ID of the note to find
  * @returns The note object

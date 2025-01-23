@@ -8,6 +8,7 @@ const guilds_1 = require("./schemas/guilds");
 const imports_1 = require("./schemas/imports");
 const notes_1 = require("./schemas/notes");
 const punishments_1 = require("./schemas/punishments");
+const roles_1 = require("./schemas/roles");
 const users_1 = require("./schemas/users");
 const getEnvVariable = (name) => {
     const value = process.env[name];
@@ -22,8 +23,8 @@ exports.dbSchema = {
     imports: imports_1.imports,
     guilds: guilds_1.guilds,
     punishments: punishments_1.punishments,
+    rolesArchive: roles_1.rolesArchive,
 };
-console.log(getEnvVariable("DATABASE_URL"));
 exports.db = (0, node_postgres_1.drizzle)({
     connection: {
         connectionString: getEnvVariable("DATABASE_URL"),

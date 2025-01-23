@@ -19,7 +19,7 @@ const imports_js_1 = require("../schemas/imports.js");
  */
 async function findImportByUserAndServerId(userId, serverId) {
     return index_js_1.db.query.imports.findFirst({
-        where: (0, expressions_1.and)((0, expressions_1.eq)(imports_js_1.imports.id, userId), (0, expressions_1.eq)(imports_js_1.imports.server, serverId)),
+        where: (0, expressions_1.and)((0, expressions_1.eq)(imports_js_1.imports.userId, userId), (0, expressions_1.eq)(imports_js_1.imports.serverId, serverId)),
     });
 }
 /**
@@ -29,9 +29,9 @@ async function findImportByUserAndServerId(userId, serverId) {
  */
 async function createImport(input) {
     await index_js_1.db.insert(imports_js_1.imports).values(imports_js_1.zImportCreate.parse(input));
-    const created = await findImportByUserAndServerId(input.id, input.server);
+    const created = await findImportByUserAndServerId(input.userId, input.serverId);
     if (!created)
-        throw new Error(`Failed to create Import with id ${input.id}`);
+        throw new Error(`Failed to create Import with id ${input.userId}`);
     return created;
 }
 /**
@@ -44,7 +44,7 @@ async function updateImport(userId, serverId, input) {
     await index_js_1.db
         .update(imports_js_1.imports)
         .set(imports_js_1.zImportUpdateSchema.parse(input))
-        .where((0, expressions_1.and)((0, expressions_1.eq)(imports_js_1.imports.id, userId), (0, expressions_1.eq)(imports_js_1.imports.server, serverId)));
+        .where((0, expressions_1.and)((0, expressions_1.eq)(imports_js_1.imports.userId, userId), (0, expressions_1.eq)(imports_js_1.imports.serverId, serverId)));
 }
 /**
  * Delete an import
@@ -54,6 +54,6 @@ async function updateImport(userId, serverId, input) {
 async function deleteImport(userId, serverId) {
     await index_js_1.db
         .delete(imports_js_1.imports)
-        .where((0, expressions_1.and)((0, expressions_1.eq)(imports_js_1.imports.id, userId), (0, expressions_1.eq)(imports_js_1.imports.server, serverId)));
+        .where((0, expressions_1.and)((0, expressions_1.eq)(imports_js_1.imports.userId, userId), (0, expressions_1.eq)(imports_js_1.imports.serverId, serverId)));
 }
 //# sourceMappingURL=imports.js.map

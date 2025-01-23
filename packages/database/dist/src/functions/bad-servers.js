@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.findBadServers = findBadServers;
 exports.findBadServerById = findBadServerById;
 exports.createBadServer = createBadServer;
 exports.updateBadServer = updateBadServer;
@@ -8,9 +9,17 @@ const expressions_1 = require("drizzle-orm/pg-core/expressions");
 const index_js_1 = require("../index.js");
 const bad_servers_js_1 = require("../schemas/bad-servers.js");
 /**
- * User Functions
- * Functions for user operations
+ *
+ * @param limit - The number of bad servers to find
+ * @param offset - The number of bad servers to skip
+ * @returns The bad server object
  */
+async function findBadServers(limit, offset) {
+    return index_js_1.db.query.badServers.findMany({
+        limit: limit,
+        offset: offset,
+    });
+}
 /**
  * Find a user by their ID
  * @param id - The ID of the user to find

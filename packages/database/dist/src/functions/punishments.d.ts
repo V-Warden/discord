@@ -1,19 +1,15 @@
 import { type PunishmentInsert, type PunishmentUpdate } from "../schemas/punishments.js";
 /**
- * Punishment Functions
- * Functions for punishment operations
- */
-/**
  * Find punishment settings by guild id
  * @param guildId - The ID of the guild
  * @returns The punishment object
  */
 export declare function findPunishmentById(guildId: string): Promise<{
-    id: string | null;
     createdBy: string | null;
     updatedBy: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
+    guildId: string | null;
     enabled: boolean | null;
     roleId: string | null;
     unban: {
@@ -36,11 +32,11 @@ export declare function findPunishmentById(guildId: string): Promise<{
  * @returns The created punishment
  */
 export declare function createPunishment(input: PunishmentInsert): Promise<{
-    id: string | null;
     createdBy: string | null;
     updatedBy: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
+    guildId: string | null;
     enabled: boolean | null;
     roleId: string | null;
     unban: {

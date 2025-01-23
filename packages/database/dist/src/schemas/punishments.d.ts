@@ -79,8 +79,8 @@ export declare const punishments: import("drizzle-orm/pg-core").PgTableWithColum
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        id: import("drizzle-orm/pg-core").PgColumn<{
-            name: "id";
+        guildId: import("drizzle-orm/pg-core").PgColumn<{
+            name: "guild_id";
             tableName: "punishments";
             dataType: "custom";
             columnType: "PgCustomColumn";
@@ -306,13 +306,13 @@ export declare const zPunishmentSchema: z.ZodObject<{
     leaker: z.ZodNullable<z.ZodEnum<["BAN", "KICK", "WARN", "ROLE"]>>;
     cheater: z.ZodNullable<z.ZodEnum<["BAN", "KICK", "WARN", "ROLE"]>>;
     other: z.ZodNullable<z.ZodEnum<["BAN", "KICK", "WARN", "ROLE"]>>;
-    id: z.ZodString;
+    guildId: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    id: string;
     createdBy: string | null;
     updatedBy: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
+    guildId: string;
     enabled: boolean | null;
     roleId: string | null;
     unban: {
@@ -329,11 +329,11 @@ export declare const zPunishmentSchema: z.ZodObject<{
     cheater: "BAN" | "KICK" | "WARN" | "ROLE" | null;
     other: "BAN" | "KICK" | "WARN" | "ROLE" | null;
 }, {
-    id: string;
     createdBy: string | null;
     updatedBy: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
+    guildId: string;
     enabled: boolean | null;
     roleId: string | null;
     unban: {
@@ -384,11 +384,11 @@ export declare const zPunishmentRequired: z.ZodObject<Pick<{
     leaker: z.ZodNullable<z.ZodEnum<["BAN", "KICK", "WARN", "ROLE"]>>;
     cheater: z.ZodNullable<z.ZodEnum<["BAN", "KICK", "WARN", "ROLE"]>>;
     other: z.ZodNullable<z.ZodEnum<["BAN", "KICK", "WARN", "ROLE"]>>;
-    id: z.ZodString;
-}, "id">, "strip", z.ZodTypeAny, {
-    id: string;
+    guildId: z.ZodString;
+}, "guildId">, "strip", z.ZodTypeAny, {
+    guildId: string;
 }, {
-    id: string;
+    guildId: string;
 }>;
 export declare const zPunishmentMutable: z.ZodObject<{
     createdBy: z.ZodOptional<z.ZodNullable<z.ZodString>>;
@@ -533,9 +533,9 @@ export declare const zPunishmentCreate: z.ZodObject<z.objectUtil.extendShape<{
     leaker: z.ZodNullable<z.ZodEnum<["BAN", "KICK", "WARN", "ROLE"]>>;
     cheater: z.ZodNullable<z.ZodEnum<["BAN", "KICK", "WARN", "ROLE"]>>;
     other: z.ZodNullable<z.ZodEnum<["BAN", "KICK", "WARN", "ROLE"]>>;
-    id: z.ZodString;
-}, "id">>, "strip", z.ZodTypeAny, {
-    id: string;
+    guildId: z.ZodString;
+}, "guildId">>, "strip", z.ZodTypeAny, {
+    guildId: string;
     createdBy?: string | null | undefined;
     updatedBy?: string | null | undefined;
     createdAt?: Date | null | undefined;
@@ -556,7 +556,7 @@ export declare const zPunishmentCreate: z.ZodObject<z.objectUtil.extendShape<{
     cheater?: "BAN" | "KICK" | "WARN" | "ROLE" | null | undefined;
     other?: "BAN" | "KICK" | "WARN" | "ROLE" | null | undefined;
 }, {
-    id: string;
+    guildId: string;
     createdBy?: string | null | undefined;
     updatedBy?: string | null | undefined;
     createdAt?: Date | null | undefined;
@@ -582,7 +582,7 @@ export declare const zPunishmentUpdateSchema: z.ZodObject<z.objectUtil.extendSha
     updatedBy: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     createdAt: z.ZodOptional<z.ZodNullable<z.ZodDate>>;
     updatedAt: z.ZodOptional<z.ZodNullable<z.ZodDate>>;
-    id: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    guildId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     enabled: z.ZodOptional<z.ZodNullable<z.ZodBoolean>>;
     roleId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     unban: z.ZodObject<{
@@ -621,11 +621,11 @@ export declare const zPunishmentUpdateSchema: z.ZodObject<z.objectUtil.extendSha
         cheater: boolean;
         other: boolean;
     };
-    id?: string | null | undefined;
     createdBy?: string | null | undefined;
     updatedBy?: string | null | undefined;
     createdAt?: Date | null | undefined;
     updatedAt?: Date | null | undefined;
+    guildId?: string | null | undefined;
     enabled?: boolean | null | undefined;
     roleId?: string | null | undefined;
     owner?: "BAN" | "KICK" | "WARN" | "ROLE" | null | undefined;
@@ -642,11 +642,11 @@ export declare const zPunishmentUpdateSchema: z.ZodObject<z.objectUtil.extendSha
         cheater: boolean;
         other: boolean;
     };
-    id?: string | null | undefined;
     createdBy?: string | null | undefined;
     updatedBy?: string | null | undefined;
     createdAt?: Date | null | undefined;
     updatedAt?: Date | null | undefined;
+    guildId?: string | null | undefined;
     enabled?: boolean | null | undefined;
     roleId?: string | null | undefined;
     owner?: "BAN" | "KICK" | "WARN" | "ROLE" | null | undefined;
@@ -660,7 +660,7 @@ export declare const zPunishmentSelectSchema: z.ZodObject<z.objectUtil.extendSha
     updatedBy: z.ZodNullable<z.ZodString>;
     createdAt: z.ZodNullable<z.ZodDate>;
     updatedAt: z.ZodNullable<z.ZodDate>;
-    id: z.ZodNullable<z.ZodString>;
+    guildId: z.ZodNullable<z.ZodString>;
     enabled: z.ZodNullable<z.ZodBoolean>;
     roleId: z.ZodNullable<z.ZodString>;
     unban: z.ZodObject<{
@@ -691,11 +691,11 @@ export declare const zPunishmentSelectSchema: z.ZodObject<z.objectUtil.extendSha
     cheater: z.ZodNullable<z.ZodEnum<["BAN", "KICK", "WARN", "ROLE"]>>;
     other: z.ZodNullable<z.ZodEnum<["BAN", "KICK", "WARN", "ROLE"]>>;
 }, {}>, "strip", z.ZodTypeAny, {
-    id: string | null;
     createdBy: string | null;
     updatedBy: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
+    guildId: string | null;
     enabled: boolean | null;
     roleId: string | null;
     unban: {
@@ -712,11 +712,11 @@ export declare const zPunishmentSelectSchema: z.ZodObject<z.objectUtil.extendSha
     cheater: "BAN" | "KICK" | "WARN" | "ROLE" | null;
     other: "BAN" | "KICK" | "WARN" | "ROLE" | null;
 }, {
-    id: string | null;
     createdBy: string | null;
     updatedBy: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
+    guildId: string | null;
     enabled: boolean | null;
     roleId: string | null;
     unban: {

@@ -1,16 +1,30 @@
 import { type BadServerInsert, type BadServerUpdate } from "../schemas/bad-servers.js";
 /**
- * User Functions
- * Functions for user operations
+ *
+ * @param limit - The number of bad servers to find
+ * @param offset - The number of bad servers to skip
+ * @returns The bad server object
  */
+export declare function findBadServers(limit: number, offset: number): Promise<{
+    name: string;
+    id: string;
+    type: "OTHER" | "CHEATING" | "LEAKING" | "RESELLING" | "ADVERTISING";
+    createdBy: string | null;
+    updatedBy: string | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+    oldNames: string[] | null;
+    invite: string | null;
+    reason: string | null;
+}[]>;
 /**
  * Find a user by their ID
  * @param id - The ID of the user to find
  * @returns The user object
  */
 export declare function findBadServerById(id: string): Promise<{
-    id: string;
     name: string;
+    id: string;
     type: "OTHER" | "CHEATING" | "LEAKING" | "RESELLING" | "ADVERTISING";
     createdBy: string | null;
     updatedBy: string | null;
@@ -26,8 +40,8 @@ export declare function findBadServerById(id: string): Promise<{
  * @returns The created user
  */
 export declare function createBadServer(input: BadServerInsert): Promise<{
-    id: string;
     name: string;
+    id: string;
     type: "OTHER" | "CHEATING" | "LEAKING" | "RESELLING" | "ADVERTISING";
     createdBy: string | null;
     updatedBy: string | null;

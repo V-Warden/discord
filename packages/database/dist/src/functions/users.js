@@ -8,10 +8,6 @@ const expressions_1 = require("drizzle-orm/pg-core/expressions");
 const index_js_1 = require("../index.js");
 const users_js_1 = require("../schemas/users.js");
 /**
- * User Functions
- * Functions for user operations
- */
-/**
  * Find a user by their ID
  * @param id - The ID of the user to find
  * @returns The user object
