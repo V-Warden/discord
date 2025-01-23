@@ -8,7 +8,7 @@ const Privacy = () => {
 				title='Our Privacy Policy'
 				content='You can download our privacy policy by clicking the button below.'
 				buttonTitle='Download'
-				buttonLink='/'
+				buttonLink='/Warden_Privacy_Policy.pdf'
 			/>
 		</Section>
 	)
