@@ -16,11 +16,18 @@ export default function Navbar() {
 				<NavbarComponent>
 					<NavbarLeft>
 						<Link href='/' className='flex items-center gap-2 text-xl font-bold'>
-							<FontAwesomeIcon icon={faShield} className='text-primary text-xl' />{' '}
+							<FontAwesomeIcon
+								icon={faShield}
+								width={20}
+								className='text-primary text-xl'
+							/>{' '}
 							Warden
 						</Link>
 					</NavbarLeft>
 					<NavbarRight>
+						<Button variant='outline' size='lg' asChild>
+							<a href='https://discord.gg/MVNZR73Ghf'>Join Warden</a>
+						</Button>
 						<Button variant='default' size='lg' asChild>
 							<a href='/'>Sign in</a>
 						</Button>

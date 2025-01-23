@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils'
 import { type VariantProps, cva } from 'class-variance-authority'
 import React from 'react'
 
-const glowVariants = cva('absolute w-full', {
+const glowVariants = cva('absolute w-full h-full z-20', {
 	variants: {
 		variant: {
 			top: 'top-0',

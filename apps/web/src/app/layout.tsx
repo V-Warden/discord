@@ -32,16 +32,18 @@ export default function RootLayout({
 			<body
 				className={`${fontRoboto.variable} dark overflow-x-hidden font-roboto`}
 			>
-				<div className='fixed w-full h-dvh top-0 left-0 noise-overlay animate-appear opacity-0 delay-00'>
-					<div className='noise absolute top-0 left-0 w-full h-full opacity-30' />
-				</div>
-				<Glow
-					variant='top'
-					className='animate-appear-zoom opacity-0 delay-00'
-					aria-hidden={true}
-				/>
 				<Navbar />
-				<main className='z-50'>{children}</main>
+				<div className='noise-overlay absolute top-0 left-0 w-full h-full z-10 animate-appear opacity-0'>
+					<div className='noise w-full h-full opacity-50' />
+				</div>
+				<main className='relative bg-transparent z-40'>
+					<Glow
+						variant='top'
+						className='animate-appear-zoom opacity-0 delay-00'
+						aria-hidden={true}
+					/>
+					<div className='relative z-30'>{children}</div>
+				</main>
 				<Footer />
 			</body>
 		</html>
