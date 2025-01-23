@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { Footer, FooterBottom } from '../../ui/footer'
-import { ModeToggle } from '../../ui/mode-toggle'
 
 export default function FooterSection() {
 	return (

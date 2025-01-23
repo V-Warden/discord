@@ -3,8 +3,14 @@
 import Hero from '@/components/sections/hero/default'
 import Items from '@/components/sections/items/default'
 import { Section } from '@/components/ui/section'
+import scrollToTop from '@/lib/scrollToTop'
+import { useEffect } from 'react'
 
 export default function Home() {
+	useEffect(() => {
+		scrollToTop()
+	}, [])
+
 	return (
 		<Section className='md:py-0 sm:py-0 px-0'>
 			<Hero

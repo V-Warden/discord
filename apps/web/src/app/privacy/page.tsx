@@ -1,7 +1,15 @@
+'use client'
+
 import Hero from '@/components/sections/hero/default'
 import { Section } from '@/components/ui/section'
+import scrollToTop from '@/lib/scrollToTop'
+import { useEffect } from 'react'
 
 const Privacy = () => {
+	useEffect(() => {
+		scrollToTop()
+	}, [])
+
 	return (
 		<Section className='md:py-0 sm:py-0 px-0'>
 			<Hero
