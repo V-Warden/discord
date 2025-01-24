@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Section } from '@/components/ui/section'
+import Link from 'next/link'
 import type React from 'react'
 
 interface HeroProps {
@@ -25,7 +26,7 @@ const Hero = ({ title, content, buttonTitle, buttonLink }: HeroProps) => {
 					<div className='relative z-10 flex animate-appear justify-center gap-4 opacity-0 delay-300'>
 						<div className='relative z-10 flex animate-appear justify-center gap-4 opacity-0 delay-300'>
 							<Button variant='default' size='lg' asChild>
-								<a href={buttonLink}>{buttonTitle}</a>
+								<Link href={buttonLink}>{buttonTitle}</Link>
 							</Button>
 						</div>
 					</div>

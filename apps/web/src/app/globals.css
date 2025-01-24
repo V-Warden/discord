@@ -127,8 +127,8 @@
     mask-image: linear-gradient(to left, transparent 15%, black 100%);
   }
 
-  .min-h-dvh-minus-191 {
-    min-height: calc(100vh - 191px);
+  .min-h-dvh-minus-211 {
+    min-height: calc(100vh - 211px);
   }
 }
 

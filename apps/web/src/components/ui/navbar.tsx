@@ -4,7 +4,10 @@ import * as React from 'react'
 const Navbar = React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(
 	({ className, ...props }, ref) => (
 		<nav
-			className={cn('flex items-center justify-between py-4', className)}
+			className={cn(
+				'flex flex-col md:flex-row gap-5 items-center justify-between py-4',
+				className
+			)}
 			{...props}
 			ref={ref}
 		/>
@@ -41,7 +44,10 @@ const NavbarCenter = React.forwardRef<
 	React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
 	<nav
-		className={cn('flex items-center gap-4 justify-center', className)}
+		className={cn(
+			'flex flex-col md:flex-row items-center gap-4 justify-center',
+			className
+		)}
 		{...props}
 		ref={ref}
 	/>
