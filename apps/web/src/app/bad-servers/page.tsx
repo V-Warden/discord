@@ -132,8 +132,8 @@ const BadServersTable = () => {
 					<PaginationLink
 						href='#'
 						onClick={(e) => {
-							if (i === currentPage) return
 							e.preventDefault()
+							if (i === currentPage) return
 							const newOffset = (i - 1) * limit
 							setOffset(newOffset)
 							fetchServers.current(search, newOffset)
