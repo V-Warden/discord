@@ -2,8 +2,8 @@
 	"$schema": "https://json.schemastore.org/tsconfig",
 	"extends": "@tsconfig/node23/tsconfig.json",
 	"compilerOptions": {
-		"module": "esnext",
-		"moduleResolution": "bundler",
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
 		"composite": false,
 		"declaration": false,
 		"declarationMap": false,

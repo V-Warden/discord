@@ -16,7 +16,7 @@
 		"dev:bot": "node --watch --watch-preserve-output dist/bot/index.js",
 		"dev:rest": "node --watch --watch-preserve-output dist/rest/index.js",
 		"dev:gateway": "node --watch --watch-preserve-output dist/gateway/index.js",
-		"test": "mocha --loader=ts-node/esm"
+		"test": "mocha"
 	},
 	"dependencies": {
 		"@discordeno/bot": "catalog:",

@@ -11,10 +11,9 @@
 	"watch-files": ["src/**/*.ts", "test/**/*.ts"],
 	"watch-ignore": ["src/vendor"],
 	"env": "dotenv_config_path=./test/.env.test",
-	"require": [
-		"dotenv/config",
-		"chai/register-expect.js",
-		"./test/hooks.ts",
-		"ts-node/register"
-	]
+	"node-option": [
+		"loader=ts-node/esm",
+		"experimental-specifier-resolution=node"
+	],
+	"require": ["dotenv/config", "chai/register-expect.js", "./test/hooks.ts"]
 }
