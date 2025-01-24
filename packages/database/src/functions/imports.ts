@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm/pg-core/expressions";
 
-import { db } from "../index.js";
+import { db } from "../database.js";
 import {
 	type ImportInsert,
 	type ImportUpdate,

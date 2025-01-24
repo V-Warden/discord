@@ -1,6 +1,5 @@
 import { eq } from "drizzle-orm/pg-core/expressions";
-
-import { db } from "../index.js";
+import { db } from "../database.js";
 import {
 	type GuildInsert,
 	type GuildUpdate,
@@ -27,13 +26,15 @@ export async function findGuildById(id: string) {
  * @returns The created guild
  */
 export async function createGuild(input: GuildInsert) {
-	console.log(input);
-	await db.insert(guilds).values(zGuildCreate.parse(input));
-	await db.insert(punishments).values(
-		zPunishmentCreate.parse({
-			id: input.id,
-		}),
-	);
+	const validatedGuild = zGuildCreate.parse(input);
+	const validatedPunishment = zPunishmentCreate.parse({
+		guildId: validatedGuild.id,
+	});
+
+	await db.transaction(async (tx) => {
+		await tx.insert(guilds).values(validatedGuild);
+		await tx.insert(punishments).values(validatedPunishment);
+	});
 
 	const created = await findGuildById(input.id);
 	if (!created) throw new Error(`Failed to create Guild with id ${input.id}`);

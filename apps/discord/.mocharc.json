@@ -1,0 +1,20 @@
+{
+	"diff": true,
+	"extension": ["ts"],
+	"package": "./package.json",
+
+	"spec": "src/**/*.test.ts",
+	"reporter": "spec",
+	"slow": "75",
+	"timeout": "10000",
+	"ui": "bdd",
+	"watch-files": ["src/**/*.ts", "test/**/*.ts"],
+	"watch-ignore": ["src/vendor"],
+	"env": "dotenv_config_path=./test/.env.test",
+	"require": [
+		"dotenv/config",
+		"chai/register-expect.js",
+		"./test/hooks.ts",
+		"ts-node/register"
+	]
+}

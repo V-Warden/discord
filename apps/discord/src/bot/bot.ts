@@ -33,13 +33,19 @@ const rawBot = createBot({
 			guildId: true,
 		},
 	},
-	rest: {
-		token: DISCORD_TOKEN,
-		proxy: {
-			baseUrl: REST_URL,
-			authorization: REST_AUTHORIZATION,
-		},
-	},
+	// Only include rest if not in test environment (integration tests)
+	// so that the rest proxy is not used
+	...(process.env.NODE_ENV !== "test"
+		? {
+				rest: {
+					token: DISCORD_TOKEN,
+					proxy: {
+						baseUrl: REST_URL,
+						authorization: REST_AUTHORIZATION,
+					},
+				},
+			}
+		: {}),
 });
 
 export const bot = rawBot as CustomBot;
@@ -50,7 +56,11 @@ export const bot = rawBot as CustomBot;
 
 bot.commands = new Collection();
 
-overrideGatewayImplementations(bot);
+// Required for testing environment (integration tests)
+// so that the gateway proxy is not used
+if (process.env.NODE_ENV !== "test") {
+	overrideGatewayImplementations(bot);
+}
 
 export type CustomBot = typeof rawBot & {
 	commands: Collection<string, Command>;
@@ -91,6 +101,14 @@ function overrideGatewayImplementations(bot: CustomBot): void {
 export async function getShardInfoFromGuild(
 	guildId?: bigint,
 ): Promise<Omit<ShardInfo, "nonce">> {
+	// Required for testing environment (integration tests)
+	if (process.env.NODE_ENV === "test") {
+		return {
+			shardId: 0,
+			rtt: 0,
+		};
+	}
+
 	const req = await fetch(GATEWAY_URL, {
 		method: "POST",
 		body: JSON.stringify({
@@ -105,7 +123,10 @@ export async function getShardInfoFromGuild(
 
 	const res = await req.json();
 
-	if (req.ok) return res;
+	if (!req.ok) {
+		const error = (res as { error: string }).error;
+		throw new Error(`There was an issue getting the shard info: ${error}`);
+	}
 
-	throw new Error(`There was an issue getting the shard info: ${res.error}`);
+	return res as Omit<ShardInfo, "nonce">;
 }

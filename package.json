@@ -15,7 +15,8 @@
 		"db:generate": "turbo run db:generate",
 		"db:migrate": "turbo run db:migrate",
 		"db:wipe": "turbo run db:wipe",
-		"cm": "cz"
+		"cm": "cz",
+		"test": "jest"
 	},
 	"engines": {
 		"node": ">=23.5.0"
@@ -25,6 +26,7 @@
 		"@biomejs/biome": "catalog:",
 		"@commitlint/cli": "catalog:",
 		"@commitlint/config-conventional": "catalog:",
+		"@tsconfig/node23": "^23.0.0",
 		"cz-conventional-changelog": "catalog:",
 		"dotenv": "^16.4.7",
 		"dotenv-cli": "^7.4.1",
@@ -32,7 +34,9 @@
 		"typescript": "catalog:"
 	},
 	"commitlint": {
-		"extends": ["@commitlint/config-conventional"]
+		"extends": [
+			"@commitlint/config-conventional"
+		]
 	},
 	"config": {
 		"commitizen": {

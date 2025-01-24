@@ -1,14 +1,9 @@
 {
+	"extends": "../../tsconfig.json",
+	"include": ["src", "../../reset.d.ts"],
 	"compilerOptions": {
-		"target": "es2022",
-		"module": "Node16",
-		"esModuleInterop": true,
-		"forceConsistentCasingInFileNames": true,
-		"isolatedModules": true,
-		"moduleResolution": "Node16",
-		"skipDefaultLibCheck": true,
-		"skipLibCheck": true,
-		"strict": true,
-		"incremental": true
+		"outDir": "./dist",
+		"rootDir": "./src",
+		"noEmit": false
 	}
 }

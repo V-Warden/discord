@@ -15,25 +15,33 @@
 		"build:watch": "swc src --strip-leading-paths --delete-dir-on-start --watch --out-dir dist",
 		"dev:bot": "node --watch --watch-preserve-output dist/bot/index.js",
 		"dev:rest": "node --watch --watch-preserve-output dist/rest/index.js",
-		"dev:gateway": "node --watch --watch-preserve-output dist/gateway/index.js"
+		"dev:gateway": "node --watch --watch-preserve-output dist/gateway/index.js",
+		"test": "mocha --loader=ts-node/esm"
 	},
 	"dependencies": {
-		"@warden/database": "workspace:*",
 		"@discordeno/bot": "catalog:",
 		"@fastify/multipart": "catalog:",
 		"@influxdata/influxdb-client": "catalog:",
+		"@warden/database": "workspace:*",
 		"amqplib": "catalog:",
 		"chalk": "catalog:",
 		"dotenv": "^16.4.7",
 		"fastify": "catalog:"
 	},
 	"devDependencies": {
-		"@jest/globals": "catalog:",
 		"@swc/cli": "catalog:",
 		"@swc/core": "catalog:",
 		"@types/amqplib": "catalog:",
+		"@types/chai": "^5.0.1",
+		"@types/mocha": "^10.0.10",
 		"@types/node": "catalog:",
+		"@types/sinon": "^17.0.3",
+		"chai": "^5.1.2",
 		"chokidar": "catalog:",
+		"mocha": "^11.1.0",
+		"sinon": "^19.0.2",
+		"ts-node": "^10.9.2",
+		"tsconfig-paths": "^4.2.0",
 		"typescript": "catalog:"
 	}
 }
