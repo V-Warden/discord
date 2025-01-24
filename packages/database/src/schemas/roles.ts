@@ -5,8 +5,8 @@ import {
 	createUpdateSchema,
 } from "drizzle-zod";
 import { z } from "zod";
-import { auditColumns, updatedAndCreatedAt } from "./common-columns.js";
-import { snowflake } from "./custom-types.js";
+import { auditColumns, updatedAndCreatedAt } from "./common-columns";
+import { snowflake } from "./custom-types";
 
 /**
  * Database Schema Definition

@@ -23,6 +23,9 @@
 		},
 		"db:wipe": {
 			"cache": false
+		},
+		"test": {
+			"cache": false
 		}
 	}
 }

@@ -1,13 +1,13 @@
 import "dotenv/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { drizzle } from "drizzle-orm/node-postgres";
-import { badServers } from "./schemas/bad-servers.js";
-import { guilds } from "./schemas/guilds.js";
-import { imports } from "./schemas/imports.js";
-import { notes } from "./schemas/notes.js";
-import { punishments } from "./schemas/punishments.js";
-import { rolesArchive } from "./schemas/roles.js";
-import { users } from "./schemas/users.js";
+import { badServers } from "./schemas/bad-servers";
+import { guilds } from "./schemas/guilds";
+import { imports } from "./schemas/imports";
+import { notes } from "./schemas/notes";
+import { punishments } from "./schemas/punishments";
+import { rolesArchive } from "./schemas/roles";
+import { users } from "./schemas/users";
 
 const getEnvVariable = (name: string) => {
 	const value = process.env[name];

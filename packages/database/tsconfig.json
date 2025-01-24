@@ -1,4 +1,8 @@
 {
 	"extends": "../../tsconfig.json",
-	"include": ["src", "../../reset.d.ts", "drizzle.config.ts"]
+	"include": ["src", "../../reset.d.ts", "drizzle.config.ts"],
+	"ts-node": {
+		"esm": true,
+		"experimentalSpecifierResolution": "node"
+	}
 }

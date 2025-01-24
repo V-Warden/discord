@@ -1,5 +1,5 @@
 import { timestamp } from "drizzle-orm/pg-core";
-import { snowflake } from "./custom-types.js";
+import { snowflake } from "./custom-types";
 
 /**
  * Common Columns

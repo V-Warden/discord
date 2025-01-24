@@ -10,7 +10,7 @@ async function reset() {
 	console.log("🗑️  Emptying the entire database");
 	const queries = Object.values(tableSchema).map((table) => {
 		console.log(`🧨 Preparing delete query for table: ${table.dbName}`);
-		return sql.raw(`TRUNCATE TABLE ${table.dbName};`);
+		return sql.raw(`TRUNCATE TABLE ${table.dbName} CASCADE;`);
 	});
 
 	console.log("📨 Sending delete queries...");

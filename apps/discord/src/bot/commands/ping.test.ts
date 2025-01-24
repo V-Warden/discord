@@ -1,3 +1,4 @@
+import { findGuildById } from "@warden/database/functions";
 import { equal } from "node:assert";
 import sinon from "sinon";
 import { bot } from "../bot.js";
@@ -32,8 +33,11 @@ describe("TypeScript usage suite", () => {
 
 		try {
 			const result = await execute(context);
+
+			const guild = await findGuildById(context.guildId?.toString() ?? "12");
+
 			console.log("Result:", result); // Let's see what we're getting back
-			equal(result.id, context.guildId?.toString());
+			equal(guild?.id, context.guildId?.toString());
 		} finally {
 			sinon.restore();
 		}

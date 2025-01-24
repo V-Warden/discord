@@ -6,10 +6,10 @@ import {
 	createUpdateSchema,
 } from "drizzle-zod";
 import { z } from "zod";
-import { badServers } from "./bad-servers.js";
-import { auditColumns, updatedAndCreatedAt } from "./common-columns.js";
-import { snowflake, userType } from "./custom-types.js";
-import { users } from "./users.js";
+import { badServers } from "./bad-servers";
+import { auditColumns, updatedAndCreatedAt } from "./common-columns";
+import { snowflake, userType } from "./custom-types";
+import { users } from "./users";
 
 /**
  * Database Schema Definition

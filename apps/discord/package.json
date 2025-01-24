@@ -25,23 +25,23 @@
 		"@warden/database": "workspace:*",
 		"amqplib": "catalog:",
 		"chalk": "catalog:",
-		"dotenv": "^16.4.7",
+		"dotenv": "catalog:",
 		"fastify": "catalog:"
 	},
 	"devDependencies": {
-		"@swc/cli": "catalog:",
-		"@swc/core": "catalog:",
-		"@types/amqplib": "catalog:",
-		"@types/chai": "^5.0.1",
-		"@types/mocha": "^10.0.10",
-		"@types/node": "catalog:",
-		"@types/sinon": "^17.0.3",
-		"chai": "^5.1.2",
+		"@swc/cli": "catalog:dev",
+		"@swc/core": "catalog:dev",
+		"@types/amqplib": "catalog:types",
+		"@types/chai": "catalog:types",
+		"@types/mocha": "catalog:types",
+		"@types/node": "catalog:types",
+		"@types/sinon": "catalog:types",
+		"chai": "catalog:test",
 		"chokidar": "catalog:",
-		"mocha": "^11.1.0",
-		"sinon": "^19.0.2",
-		"ts-node": "^10.9.2",
-		"tsconfig-paths": "^4.2.0",
-		"typescript": "catalog:"
+		"mocha": "catalog:test",
+		"sinon": "catalog:test",
+		"ts-node": "catalog:test",
+		"tsconfig-paths": "catalog:test",
+		"typescript": "catalog:dev"
 	}
 }
