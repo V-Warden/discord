@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findBadServers = findBadServers;
+exports.getBadServers = getBadServers;
 exports.findBadServerById = findBadServerById;
 exports.createBadServer = createBadServer;
 exports.updateBadServer = updateBadServer;
@@ -12,13 +12,19 @@ const bad_servers_js_1 = require("../schemas/bad-servers.js");
  *
  * @param limit - The number of bad servers to find
  * @param offset - The number of bad servers to skip
- * @returns The bad server object
+ * @returns The bad servers object
  */
-async function findBadServers(limit, offset) {
-    return index_js_1.db.query.badServers.findMany({
-        limit: limit,
-        offset: offset,
+async function getBadServers(limit, offset) {
+    const result = await index_js_1.db.transaction(async (tx) => {
+        const countResult = await tx.execute('SELECT COUNT(*) FROM bad_servers');
+        const count = countResult.rows[0] ? Number.parseInt(String(countResult.rows[0].count), 10) : 0;
+        const badServers = await tx.query.badServers.findMany({
+            limit: limit,
+            offset: offset,
+        });
+        return { count, badServers };
     });
+    return result;
 }
 /**
  * Find a user by their ID

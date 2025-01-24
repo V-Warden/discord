@@ -5,8 +5,8 @@ import { type GuildInsert, type GuildUpdate } from "../schemas/guilds.js";
  * @returns The guild object
  */
 export declare function findGuildById(id: string): Promise<{
-    name: string | null;
     id: string | null;
+    name: string | null;
     createdBy: string | null;
     updatedBy: string | null;
     createdAt: Date | null;
@@ -19,8 +19,8 @@ export declare function findGuildById(id: string): Promise<{
  * @returns The created guild
  */
 export declare function createGuild(input: GuildInsert): Promise<{
-    name: string | null;
     id: string | null;
+    name: string | null;
     createdBy: string | null;
     updatedBy: string | null;
     createdAt: Date | null;

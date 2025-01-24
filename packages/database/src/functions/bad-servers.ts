@@ -15,11 +15,20 @@ import {
  * @param offset - The number of bad servers to skip
  * @returns The bad servers object
  */
-export async function findBadServers(limit: number, offset: number) {
-	return db.query.badServers.findMany({
-		limit: limit,
-		offset: offset,
+export async function getBadServers(limit: number, offset: number) {
+	const result = await db.transaction(async (tx) => {
+		const countResult = await tx.execute('SELECT COUNT(*) FROM bad_servers')
+		const count = countResult.rows[0] ? Number.parseInt(String(countResult.rows[0].count), 10) : 0
+
+		const badServers = await tx.query.badServers.findMany({
+			limit: limit,
+			offset: offset,
+		})
+
+		return { count, badServers }
 	})
+
+	return result
 }
 
 /**
