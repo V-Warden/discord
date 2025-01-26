@@ -1,12 +1,12 @@
 {
 	"$schema": "https://turborepo.org/schema.json",
 	"globalDependencies": [".env.local"],
-	"ui": "tui",
+	"ui": "stream",
 	"globalEnv": ["DISCORD_TOKEN", "OWNERS", "DATABASE_URL"],
 	"tasks": {
 		"build": {
-			"dependsOn": ["^build"],
-			"outputs": ["build/**"]
+			"dependsOn": [],
+			"cache": false
 		},
 		"dev": {
 			"dependsOn": [],
