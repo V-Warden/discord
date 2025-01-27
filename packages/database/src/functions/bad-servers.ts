@@ -1,13 +1,13 @@
 import { eq } from "drizzle-orm/pg-core/expressions";
 
-import { db } from "../database.js";
+import { db } from "../database";
 import {
 	type BadServerInsert,
 	type BadServerUpdate,
 	badServers,
 	zBadServerCreate,
 	zBadServerUpdateSchema,
-} from "../schemas/bad-servers.js";
+} from "../schemas/bad-servers";
 
 /**
  *

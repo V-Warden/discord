@@ -1,13 +1,13 @@
 import { and, eq } from "drizzle-orm/pg-core/expressions";
 
-import { db } from "../database.js";
+import { db } from "../database";
 import {
 	type ImportInsert,
 	type ImportUpdate,
 	imports,
 	zImportCreate,
 	zImportUpdateSchema,
-} from "../schemas/imports.js";
+} from "../schemas/imports";
 
 /**
  * Import Functions

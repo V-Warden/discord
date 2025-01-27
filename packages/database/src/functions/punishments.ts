@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm/pg-core/expressions";
 
-import { db } from "../database.js";
+import { db } from "../database";
 import {
 	type PunishmentInsert,
 	type PunishmentUpdate,
@@ -8,7 +8,7 @@ import {
 	zPunishmentCreate,
 	zPunishmentSelectSchema,
 	zPunishmentUpdateSchema,
-} from "../schemas/punishments.js";
+} from "../schemas/punishments";
 
 /**
  * Find punishment settings by guild id

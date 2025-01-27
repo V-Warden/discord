@@ -1,13 +1,13 @@
 import { and, eq } from "drizzle-orm/pg-core/expressions";
 
-import { db } from "../database.js";
+import { db } from "../database";
 import {
 	type RoleArchiveInsert,
 	type RoleArchiveUpdate,
 	rolesArchive,
 	zRoleArchiveCreate,
 	zRoleArchiveMutable,
-} from "../schemas/roles.js";
+} from "../schemas/roles";
 
 /**
  * Find a users roles in the archive by their ID and guild ID

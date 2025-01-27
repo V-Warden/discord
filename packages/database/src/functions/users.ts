@@ -1,13 +1,13 @@
 import { eq } from "drizzle-orm/pg-core/expressions";
 
-import { db } from "../database.js";
+import { db } from "../database";
 import {
 	type UserInsert,
 	type UserUpdate,
 	users,
 	zUserCreate,
 	zUserUpdateSchema,
-} from "../schemas/users.js";
+} from "../schemas/users";
 
 /**
  * Find a user by their ID

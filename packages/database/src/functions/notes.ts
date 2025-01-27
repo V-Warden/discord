@@ -1,13 +1,13 @@
 import { eq } from "drizzle-orm/pg-core/expressions";
 
-import { db } from "../database.js";
+import { db } from "../database";
 import {
 	type NoteInsert,
 	type NoteUpdate,
 	notes,
 	zNoteCreate,
 	zNoteUpdateSchema,
-} from "../schemas/notes.js";
+} from "../schemas/notes";
 
 /**
  * Find a note by its ID

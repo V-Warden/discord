@@ -1,13 +1,13 @@
 import { eq } from "drizzle-orm/pg-core/expressions";
-import { db } from "../database.js";
+import { db } from "../database";
 import {
 	type GuildInsert,
 	type GuildUpdate,
 	guilds,
 	zGuildCreate,
 	zGuildUpdateSchema,
-} from "../schemas/guilds.js";
-import { punishments, zPunishmentCreate } from "../schemas/punishments.js";
+} from "../schemas/guilds";
+import { punishments, zPunishmentCreate } from "../schemas/punishments";
 
 /**
  * Find a guild by the ID
