@@ -160,136 +160,138 @@ const BadServersTable = () => {
 	return (
 		<Section className='md:py-0 sm:py-0 px-0 py-0 animate-appear opacity-0'>
 			<div className='mx-auto flex max-w-container flex-col py-8 px-3 md:py-12'>
-				<div className='flex flex-col items-center bg-background/70 rounded-md p-5 md:p-8'>
-					{isLoading ? (
-						<>
-							<div className='flex ml-auto w-96 mb-5'>
-								<Skeleton className='w-[100%] h-[36px] bg-white/50 opacity-20' />
-								<Skeleton className='w-[50%] h-[36px] bg-white/50 opacity-20 ml-2' />
-							</div>
-							<Table>
-								<TableHeader>
-									<TableRow>
-										<TableHead>
-											<Skeleton className='w-[100%] h-[30px] bg-white/50 opacity-20' />
-										</TableHead>
-										<TableHead>
-											<Skeleton className='w-[100%] h-[30px] bg-white/50 opacity-20' />
-										</TableHead>
-										<TableHead>
-											<Skeleton className='w-[100%] h-[30px] bg-white/50 opacity-20' />
-										</TableHead>
-										<TableHead>
-											<Skeleton className='w-[100%] h-[30px] bg-white/50 opacity-20' />
-										</TableHead>
-										<TableHead>
-											<Skeleton className='w-[100%] h-[30px] bg-white/50 opacity-20' />
-										</TableHead>
-									</TableRow>
-								</TableHeader>
-								<TableBody>
-									{Array.from({ length: 10 }).map(() => (
-										<TableRow key={crypto.randomUUID()}>
-											<TableCell>
-												<Skeleton className='w-[100%] h-[20px] bg-white/50 opacity-20' />
-											</TableCell>
-											<TableCell>
-												<Skeleton className='w-[100%] h-[20px] bg-white/50 opacity-20' />
-											</TableCell>
-											<TableCell>
-												<Skeleton className='w-[100%] h-[20px] bg-white/50 opacity-20' />
-											</TableCell>
-											<TableCell>
-												<Skeleton className='w-[100%] h-[20px] bg-white/50 opacity-20' />
-											</TableCell>
-											<TableCell>
-												<Skeleton className='w-[100%] h-[20px] bg-white/50 opacity-20' />
-											</TableCell>
+				<div className='flex flex-col items-center bg-white/5 rounded-md p-5'>
+					<div className='bg-background/60 w-full p-5 md:p-8 rounded-md'>
+						{isLoading ? (
+							<>
+								<div className='flex ml-auto w-96 mb-5'>
+									<Skeleton className='w-[100%] h-[36px] bg-white/50 opacity-20' />
+									<Skeleton className='w-[50%] h-[36px] bg-white/50 opacity-20 ml-2' />
+								</div>
+								<Table>
+									<TableHeader>
+										<TableRow>
+											<TableHead>
+												<Skeleton className='w-[100%] h-[30px] bg-white/50 opacity-20' />
+											</TableHead>
+											<TableHead>
+												<Skeleton className='w-[100%] h-[30px] bg-white/50 opacity-20' />
+											</TableHead>
+											<TableHead>
+												<Skeleton className='w-[100%] h-[30px] bg-white/50 opacity-20' />
+											</TableHead>
+											<TableHead>
+												<Skeleton className='w-[100%] h-[30px] bg-white/50 opacity-20' />
+											</TableHead>
+											<TableHead>
+												<Skeleton className='w-[100%] h-[30px] bg-white/50 opacity-20' />
+											</TableHead>
 										</TableRow>
-									))}
-								</TableBody>
-							</Table>
-						</>
-					) : (
-						<>
-							<div className='flex flex-wrap w-full mb-5 items-center gap-3'>
-								<p className='w-auto mr-auto'>
-									Total servers: <strong>{data?.count}</strong>
-								</p>
-								<form className='w-auto flex gap-3' onSubmit={searchAction}>
-									{submitSearch ? (
-										<Button variant={'outline'} onClick={resetSearch}>
-											Reset
-										</Button>
-									) : null}
-									<Input
-										className='border-white/50 bg-background/50 ml-auto w-48'
-										placeholder='Discord ID'
-										value={search}
-										onChange={(e) => setSearch(e.target.value)}
-									/>
-									<Button type='submit'>Search</Button>
-								</form>
-							</div>
-							<Table>
-								<TableHeader>
-									<TableRow>
-										<TableHead>ID</TableHead>
-										<TableHead>Name</TableHead>
-										<TableHead>Type</TableHead>
-										<TableHead>Reason</TableHead>
-										<TableHead>Added at</TableHead>
-									</TableRow>
-								</TableHeader>
-								<TableBody>
-									{data?.servers?.map(
-										(server: {
-											id: string
-											name: string
-											type: string
-											reason: string
-											createdAt: string
-										}) => (
-											<TableRow key={server.id}>
-												<TableCell>{server.id}</TableCell>
-												<TableCell>{server.name}</TableCell>
-												<TableCell>{server.type}</TableCell>
-												<TableCell>{server.reason}</TableCell>
-												<TableCell>{formatDate(server.createdAt)}</TableCell>
+									</TableHeader>
+									<TableBody>
+										{Array.from({ length: 10 }).map(() => (
+											<TableRow key={crypto.randomUUID()}>
+												<TableCell>
+													<Skeleton className='w-[100%] h-[20px] bg-white/50 opacity-20' />
+												</TableCell>
+												<TableCell>
+													<Skeleton className='w-[100%] h-[20px] bg-white/50 opacity-20' />
+												</TableCell>
+												<TableCell>
+													<Skeleton className='w-[100%] h-[20px] bg-white/50 opacity-20' />
+												</TableCell>
+												<TableCell>
+													<Skeleton className='w-[100%] h-[20px] bg-white/50 opacity-20' />
+												</TableCell>
+												<TableCell>
+													<Skeleton className='w-[100%] h-[20px] bg-white/50 opacity-20' />
+												</TableCell>
 											</TableRow>
-										)
-									)}
-								</TableBody>
-							</Table>
-							<Pagination className='mt-8'>
-								<PaginationContent>
-									<PaginationItem>
-										<PaginationPrevious
-											href='#'
-											onClick={handlePrevious}
-											className={
-												isPreviousDisabled
-													? 'cursor-not-allowed text-white/50 hover:bg-transparent hover:text-white/50'
-													: ''
-											}
+										))}
+									</TableBody>
+								</Table>
+							</>
+						) : (
+							<>
+								<div className='flex flex-wrap w-full mb-5 items-center gap-3'>
+									<p className='w-auto mr-auto'>
+										Total servers: <strong>{data?.count}</strong>
+									</p>
+									<form className='w-auto flex gap-3' onSubmit={searchAction}>
+										{submitSearch ? (
+											<Button variant={'outline'} onClick={resetSearch}>
+												Reset
+											</Button>
+										) : null}
+										<Input
+											className='border-white/50 bg-background/50 ml-auto w-48'
+											placeholder='Discord ID'
+											value={search}
+											onChange={(e) => setSearch(e.target.value)}
 										/>
-									</PaginationItem>
-									{generatePaginationItems()}
-									<PaginationItem>
-										<PaginationNext
-											href='#'
-											onClick={handleNext}
-											className={
-												isNextDisabled
-													? 'cursor-not-allowed text-white/50 hover:bg-transparent hover:text-white/50'
-													: ''
-											}
-										/>
-									</PaginationItem>
-								</PaginationContent>
-							</Pagination>
-						</>
-					)}
+										<Button type='submit'>Search</Button>
+									</form>
+								</div>
+								<Table>
+									<TableHeader>
+										<TableRow>
+											<TableHead>ID</TableHead>
+											<TableHead>Name</TableHead>
+											<TableHead>Type</TableHead>
+											<TableHead>Reason</TableHead>
+											<TableHead>Added at</TableHead>
+										</TableRow>
+									</TableHeader>
+									<TableBody>
+										{data?.servers?.map(
+											(server: {
+												id: string
+												name: string
+												type: string
+												reason: string
+												createdAt: string
+											}) => (
+												<TableRow key={server.id}>
+													<TableCell>{server.id}</TableCell>
+													<TableCell>{server.name}</TableCell>
+													<TableCell>{server.type}</TableCell>
+													<TableCell>{server.reason}</TableCell>
+													<TableCell>{formatDate(server.createdAt)}</TableCell>
+												</TableRow>
+											)
+										)}
+									</TableBody>
+								</Table>
+								<Pagination className='mt-8'>
+									<PaginationContent>
+										<PaginationItem>
+											<PaginationPrevious
+												href='#'
+												onClick={handlePrevious}
+												className={
+													isPreviousDisabled
+														? 'cursor-not-allowed text-white/50 hover:bg-transparent hover:text-white/50'
+														: ''
+												}
+											/>
+										</PaginationItem>
+										{generatePaginationItems()}
+										<PaginationItem>
+											<PaginationNext
+												href='#'
+												onClick={handleNext}
+												className={
+													isNextDisabled
+														? 'cursor-not-allowed text-white/50 hover:bg-transparent hover:text-white/50'
+														: ''
+												}
+											/>
+										</PaginationItem>
+									</PaginationContent>
+								</Pagination>
+							</>
+						)}
+					</div>
 				</div>
 			</div>
 		</Section>

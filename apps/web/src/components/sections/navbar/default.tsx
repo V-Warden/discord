@@ -4,8 +4,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { faShield } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { SessionProvider, signIn, signOut, useSession } from 'next-auth/react'
+import { AnimatePresence, motion } from 'motion/react'
+import { signIn, signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import {
 	Navbar as NavbarComponent,
 	NavbarLeft,
@@ -14,6 +16,7 @@ import {
 
 const NavbarContent = () => {
 	const { data: session } = useSession()
+	const pathname = usePathname()
 
 	return (
 		<header className='top-0 z-50 p-0 m-0 sticky border-b-2 bg-black/50 border-solid border-slate-700 overflow-hidden'>
@@ -30,39 +33,67 @@ const NavbarContent = () => {
 							Warden
 						</Link>
 						<Link
-							className='text-muted-foreground hover:text-foreground'
+							className={`text-muted-foreground hover:text-foreground transition-colors ${
+								pathname === '/bad-servers'
+									? 'underline text-white/80 transition-colors'
+									: ''
+							}`}
 							href='/bad-servers'
 						>
 							Bad servers
 						</Link>
 						{session ? (
-							<Link
-								className='text-muted-foreground hover:text-foreground'
-								href='/dashboard'
+							<motion.div
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								transition={{ duration: 0.5 }}
 							>
-								Dashboard
-							</Link>
+								<Link
+									className={`text-color/50 text-muted-foreground hover:text-foreground transition-colors ${
+										pathname === '/dashboard' ? 'underline text-white/80' : ''
+									}`}
+									href='/dashboard'
+								>
+									Dashboard
+								</Link>
+							</motion.div>
 						) : null}
 					</NavbarLeft>
 					<NavbarRight>
 						{session?.user?.image ? (
-							<Avatar>
-								<AvatarImage src={session.user.image} />
-								<AvatarFallback>CN</AvatarFallback>
-							</Avatar>
+							<motion.div
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								transition={{ duration: 0.5 }}
+							>
+								<Avatar>
+									<AvatarImage src={session.user.image} />
+									<AvatarFallback>CN</AvatarFallback>
+								</Avatar>
+							</motion.div>
 						) : null}
 						<Button variant='outline' size='lg' asChild>
 							<a href='https://discord.gg/MVNZR73Ghf'>Join Warden</a>
 						</Button>
-						{session ? (
-							<Button variant='default' size='lg' onClick={() => signOut()}>
-								Logout
-							</Button>
-						) : (
-							<Button variant='default' size='lg' onClick={() => signIn('discord')}>
-								Login with Discord
-							</Button>
-						)}
+						<AnimatePresence mode='wait'>
+							{session ? (
+								<motion.div
+									key='logout'
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									exit={{ opacity: 0 }}
+									transition={{ duration: 0.5 }}
+								>
+									<Button variant='default' size='lg' onClick={() => signOut()}>
+										Logout
+									</Button>
+								</motion.div>
+							) : (
+								<Button variant='default' size='lg' onClick={() => signIn('discord')}>
+									Login with Discord
+								</Button>
+							)}
+						</AnimatePresence>
 					</NavbarRight>
 				</NavbarComponent>
 			</div>
@@ -70,12 +101,4 @@ const NavbarContent = () => {
 	)
 }
 
-const Navbar = () => {
-	return (
-		<SessionProvider>
-			<NavbarContent />
-		</SessionProvider>
-	)
-}
-
-export default Navbar
+export default NavbarContent

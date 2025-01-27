@@ -1,4 +1,4 @@
-import { findBadServerById, getBadServers } from '@warden/database'
+import { findBadServerById, getBadServers } from '@warden/database/functions'
 import { type NextRequest, NextResponse } from 'next/server'
 
 const mapServerType = (type: string) => {
