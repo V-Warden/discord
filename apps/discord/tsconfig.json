@@ -3,7 +3,7 @@
 	"include": ["src", "../../reset.d.ts"],
 	"compilerOptions": {
 		"outDir": "./dist",
-		"rootDir": "./src",
+		"rootDir": ".",
 		"noEmit": false
 	}
 }
