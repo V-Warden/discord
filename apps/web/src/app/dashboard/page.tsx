@@ -42,7 +42,7 @@ const DashboardContent = () => {
 	const [selectedServer, setSelectedServer] = useState('')
 	const [submittedEnableStatus, setSubmittedEnableStatus] = useState(false)
 
-	console.log(session)
+	console.log('session:', session)
 
 	const form = useForm<z.infer<typeof FormSchema>>({
 		resolver: zodResolver(FormSchema),
@@ -58,8 +58,8 @@ const DashboardContent = () => {
 	})
 
 	useEffect(() => {
-		if (session?.adminGuilds && session.adminGuilds.length > 0) {
-			setSelectedServer(session.adminGuilds[0].id)
+		if (session?.guilds && session.guilds.length > 0) {
+			setSelectedServer(session.guilds[0].id)
 		}
 	}, [session])
 
@@ -133,7 +133,7 @@ const DashboardContent = () => {
 												<SelectValue />
 											</SelectTrigger>
 											<SelectContent>
-												{session.adminGuilds.map((guild) => (
+												{session.guilds.map((guild) => (
 													<SelectItem key={guild?.id} value={guild?.id}>
 														{guild?.name}
 													</SelectItem>
@@ -333,7 +333,7 @@ const DashboardContent = () => {
 																		<SelectValue />
 																	</SelectTrigger>
 																	<SelectContent>
-																		{session.adminGuilds
+																		{session.guilds
 																			.find((guild) => guild.id === selectedServer)
 																			?.roles.map((role) => (
 																				<SelectItem key={role.id} value={role.id}>

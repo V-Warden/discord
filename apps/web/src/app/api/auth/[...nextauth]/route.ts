@@ -3,9 +3,18 @@ import NextAuth from 'next-auth'
 import DiscordProvider from 'next-auth/providers/discord'
 
 declare module 'next-auth' {
+	interface User {
+		name: string
+		email: string
+		image: string
+		id: string
+	}
+
 	interface Session {
-		adminGuilds: GuildWithRoles[]
-		accessToken?: string
+		user: User
+		expires: string
+		accessToken: string
+		guilds: Guilds[]
 	}
 }
 
@@ -22,13 +31,34 @@ interface Role {
 	permissions: number
 }
 
-interface GuildWithRoles extends Guild {
+interface Guilds extends Guild {
+	id: string
+	name: string
+	icon: string | null
+	banner: string | null
+	owner: boolean
+	permissions: number
+	permissions_new: string
+	features: string[]
 	roles: Role[]
 }
 
 const ADMINISTRATOR_PERMISSION = 0x8
 
-async function fetchWithRetry(url: string, options: RequestInit, retries = 3, backoff = 3000): Promise<Response> {
+class FetchError extends Error {
+	constructor(message: string, public status: number) {
+		super(message)
+		this.name = 'FetchError'
+	}
+}
+
+const getAuthHeaders = (token: string, isBot = false): HeadersInit => {
+	return {
+		Authorization: `${isBot ? 'Bot' : 'Bearer'} ${token}`,
+	}
+}
+
+const fetchWithRetry = async (url: string, options: RequestInit, retries = 3, backoff = 3000): Promise<Response> => {
 	for (let i = 0; i < retries; i++) {
 		const response = await fetch(url, options)
 		if (response.ok) {
@@ -38,21 +68,16 @@ async function fetchWithRetry(url: string, options: RequestInit, retries = 3, ba
 			await new Promise(resolve => setTimeout(resolve, backoff * (i + 1)))
 			continue
 		}
-		throw new Error(`Failed to fetch: ${response.statusText}`)
+		throw new FetchError(`Failed to fetch: ${response.statusText}`, response.status)
 	}
-	throw new Error('Max retries reached')
+	throw new FetchError('Max retries reached', 500)
 }
 
-async function fetchGuilds(accessToken: string): Promise<Guild[]> {
+const fetchGuilds = async (accessToken: string): Promise<Guild[]> => {
 	try {
 		const response = await fetchWithRetry('https://discord.com/api/users/@me/guilds', {
-			headers: {
-				Authorization: `Bearer ${accessToken}`,
-			},
+			headers: getAuthHeaders(accessToken),
 		})
-		if (!response.ok) {
-			throw new Error(`Failed to fetch guilds: ${response.statusText}`)
-		}
 		return response.json()
 	} catch (error) {
 		console.error('Error fetching guilds:', (error as Error).message)
@@ -60,16 +85,11 @@ async function fetchGuilds(accessToken: string): Promise<Guild[]> {
 	}
 }
 
-async function fetchGuildRoles(guildId: string): Promise<Role[]> {
+const fetchGuildRoles = async (guildId: string): Promise<Role[]> => {
 	try {
 		const response = await fetchWithRetry(`https://discord.com/api/guilds/${guildId}/roles`, {
-			headers: {
-				Authorization: `Bot ${process.env.DISCORD_TOKEN}`,
-			},
+			headers: getAuthHeaders(process.env.DISCORD_TOKEN ?? '', true),
 		})
-		if (!response.ok) {
-			throw new Error(`Failed to fetch roles for guild ${guildId}: ${response.statusText}`)
-		}
 		return response.json()
 	} catch (error) {
 		console.error('Error fetching roles:', (error as Error).message)
@@ -77,17 +97,27 @@ async function fetchGuildRoles(guildId: string): Promise<Role[]> {
 	}
 }
 
-async function isBotInGuild(guildId: string): Promise<boolean> {
+const isBotInGuild = async (guildId: string): Promise<boolean> => {
 	try {
 		const response = await fetchWithRetry(`https://discord.com/api/guilds/${guildId}`, {
-			headers: {
-				Authorization: `Bot ${process.env.DISCORD_TOKEN}`,
-			},
+			headers: getAuthHeaders(process.env.DISCORD_TOKEN ?? '', true),
 		})
 		return response.ok
 	} catch (error) {
 		console.error('Error checking bot in guild:', (error as Error).message)
 		return false
+	}
+}
+
+const fetchUserProfile = async (accessToken: string): Promise<{ id: string }> => {
+	try {
+		const response = await fetchWithRetry('https://discord.com/api/users/@me', {
+			headers: getAuthHeaders(accessToken),
+		})
+		return response.json()
+	} catch (error) {
+		console.error('Error fetching user profile:', (error as Error).message)
+		throw error
 	}
 }
 
@@ -127,18 +157,25 @@ const handler = NextAuth({
 						})
 					)
 
-					session.adminGuilds = adminGuilds.filter((guild): guild is GuildWithRoles => guild !== null)
+					session.guilds = adminGuilds.filter((guild): guild is Guilds => guild !== null)
 				}
 			} catch (error) {
 				console.error('Failed to fetch guilds:', (error as Error).message)
-				session.adminGuilds = []
+				session.guilds = []
 			}
 
-			console.log('Session:', session)
+			try {
+				const userProfile = await fetchUserProfile(token.accessToken as string)
+				if (session.user) {
+					session.user.id = userProfile.id
+				}
+			} catch (error) {
+				console.error('Failed to fetch user profile:', (error as Error).message)
+			}
 
 			return session
 		},
-		async redirect({ url, baseUrl }) {
+		async redirect({ baseUrl }) {
 			return `${baseUrl}/dashboard`
 		},
 	},
