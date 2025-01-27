@@ -3,3 +3,14 @@ node_modules
 .DS_Store
 .env
 .env.test
+**/node_modules
+**/dist
+**/build
+**/out
+**/.cache
+**/.turbo
+**/.DS_Store
+**/.env
+**/.env.test
+**/temp
+**/tmp
