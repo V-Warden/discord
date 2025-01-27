@@ -124,6 +124,14 @@ export default {
 						opacity: "1",
 						transform: "translateY(0)",
 					},
+					"fade-in": {
+						"0%": {
+							opacity: "0",
+						},
+						"100%": {
+							opacity: "1",
+						},
+					},
 				},
 				hover: {
 					"0%": {
@@ -165,6 +173,7 @@ export default {
 				appear: "appear 0.6s forwards ease-out",
 				"appear-zoom": "appear-zoom 0.6s forwards ease-out",
 				"pulse-hover": "pulse-hover 6s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+				"fade-in": "fade-in 0.2s forwards ease-out",
 			},
 			spacing: {
 				container: "1280px",

@@ -189,8 +189,8 @@ const BadServersTable = () => {
 										</TableRow>
 									</TableHeader>
 									<TableBody>
-										{Array.from({ length: 10 }).map(() => (
-											<TableRow key={crypto.randomUUID()}>
+										{Array.from({ length: 10 }).map((_, index) => (
+											<TableRow key={`skeleton-${index + 1}`}>
 												<TableCell>
 													<Skeleton className='w-[100%] h-[20px] bg-white/50 opacity-20' />
 												</TableCell>

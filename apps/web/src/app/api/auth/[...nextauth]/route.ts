@@ -1,6 +1,7 @@
 import { findGuildById } from '@warden/database/functions'
 import NextAuth from 'next-auth'
 import DiscordProvider from 'next-auth/providers/discord'
+import { unstable_cacheLife as cacheLife, revalidateTag } from 'next/cache'
 
 declare module 'next-auth' {
 	interface User {
@@ -74,7 +75,9 @@ const fetchWithRetry = async (url: string, options: RequestInit, retries = 3, ba
 }
 
 const fetchGuilds = async (accessToken: string): Promise<Guild[]> => {
+	'use cache'
 	try {
+		cacheLife('hours')
 		const response = await fetchWithRetry('https://discord.com/api/users/@me/guilds', {
 			headers: getAuthHeaders(accessToken),
 		})
@@ -86,7 +89,9 @@ const fetchGuilds = async (accessToken: string): Promise<Guild[]> => {
 }
 
 const fetchGuildRoles = async (guildId: string): Promise<Role[]> => {
+	'use cache'
 	try {
+		cacheLife('hours')
 		const response = await fetchWithRetry(`https://discord.com/api/guilds/${guildId}/roles`, {
 			headers: getAuthHeaders(process.env.DISCORD_TOKEN ?? '', true),
 		})
@@ -98,7 +103,9 @@ const fetchGuildRoles = async (guildId: string): Promise<Role[]> => {
 }
 
 const isBotInGuild = async (guildId: string): Promise<boolean> => {
+	'use cache'
 	try {
+		cacheLife('hours')
 		const response = await fetchWithRetry(`https://discord.com/api/guilds/${guildId}`, {
 			headers: getAuthHeaders(process.env.DISCORD_TOKEN ?? '', true),
 		})
@@ -110,7 +117,9 @@ const isBotInGuild = async (guildId: string): Promise<boolean> => {
 }
 
 const fetchUserProfile = async (accessToken: string): Promise<{ id: string }> => {
+	'use cache'
 	try {
+		cacheLife('hours')
 		const response = await fetchWithRetry('https://discord.com/api/users/@me', {
 			headers: getAuthHeaders(accessToken),
 		})
@@ -138,6 +147,8 @@ const handler = NextAuth({
 		},
 		async session({ session, token }) {
 			session.accessToken = token.accessToken as string
+
+			revalidateTag(session.accessToken)
 
 			try {
 				const guilds = await fetchGuilds(token.accessToken as string)
