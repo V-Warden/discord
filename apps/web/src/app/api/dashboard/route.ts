@@ -163,7 +163,6 @@ export const PATCH = async (req: NextRequest) => {
 		const isAdmin = await fetchIfAdmin(guildId, userId)
 		if (isAdmin) {
 			try {
-				console.log(data.roleid)
 				await updatePunishment(guildId, {
 					enabled: data.enabled,
 					roleId: data.roleid === 'none' ? null : data.roleid,
