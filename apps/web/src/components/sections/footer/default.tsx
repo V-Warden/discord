@@ -8,7 +8,7 @@ const FooterSection = () => {
 	const pathname = usePathname()
 
 	return (
-		<footer className='w-full px-4 relative z-50 fade-top bg-black/30'>
+		<footer className='w-full px-4 relative fade-top bg-black/30 z-10'>
 			<div className='mx-auto max-w-container'>
 				<Footer>
 					<FooterBottom>

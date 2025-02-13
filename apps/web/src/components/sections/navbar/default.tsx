@@ -41,7 +41,7 @@ const NavbarContent = () => {
 						>
 							Bad servers
 						</Link>
-						{session ? (
+						{(session?.guilds?.length ?? 0) > 0 ? (
 							<Link
 								className={`text-color/50 text-muted-foreground hover:text-foreground transition-colors animate-fade-in delay-100 opacity-0 ${
 									pathname === '/dashboard' ? 'underline text-white/80' : ''

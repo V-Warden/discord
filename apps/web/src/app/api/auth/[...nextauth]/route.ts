@@ -25,13 +25,6 @@ interface Guild {
 	permissions: number
 	owner: boolean
 }
-
-interface Role {
-	id: string
-	name: string
-	permissions: number
-}
-
 interface Guilds extends Guild {
 	id: string
 	name: string
@@ -41,7 +34,6 @@ interface Guilds extends Guild {
 	permissions: number
 	permissions_new: string
 	features: string[]
-	roles: Role[]
 }
 
 const ADMINISTRATOR_PERMISSION = 0x8
@@ -84,20 +76,6 @@ const fetchGuilds = async (accessToken: string): Promise<Guild[]> => {
 		return response.json()
 	} catch (error) {
 		console.error('Error fetching guilds:', (error as Error).message)
-		return []
-	}
-}
-
-const fetchGuildRoles = async (guildId: string): Promise<Role[]> => {
-	'use cache'
-	try {
-		cacheLife('hours')
-		const response = await fetchWithRetry(`https://discord.com/api/guilds/${guildId}/roles`, {
-			headers: getAuthHeaders(process.env.DISCORD_TOKEN ?? '', true),
-		})
-		return response.json()
-	} catch (error) {
-		console.error('Error fetching roles:', (error as Error).message)
 		return []
 	}
 }
@@ -160,8 +138,7 @@ const handler = NextAuth({
 							if (dbGuild) {
 								const botInGuild = await isBotInGuild(guild.id)
 								if (botInGuild && ((guild.permissions & ADMINISTRATOR_PERMISSION) === ADMINISTRATOR_PERMISSION || guild.owner)) {
-									const roles = await fetchGuildRoles(guild.id)
-									return { ...guild, roles }
+									return guild
 								}
 							}
 							return null
@@ -183,6 +160,9 @@ const handler = NextAuth({
 			} catch (error) {
 				console.error('Failed to fetch user profile:', (error as Error).message)
 			}
+
+			const sessionAge = 24 * 60 * 60 * 1000
+			session.expires = new Date(Date.now() + sessionAge).toISOString()
 
 			return session
 		},
