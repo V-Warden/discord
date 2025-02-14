@@ -151,6 +151,12 @@ export const GET = async (req: NextRequest) => {
 }
 
 export const PATCH = async (req: NextRequest) => {
+	const token = await getToken({ req })
+
+	if (!token || !token.accessToken) {
+		return NextResponse.json({ status: 'error', message: 'Unauthorized' }, { status: 401 })
+	}
+
 	const body = await req.json()
 	if (!body) {
 		return NextResponse.json({ status: 'error', message: 'Invalid request body' }, { status: 400 })
