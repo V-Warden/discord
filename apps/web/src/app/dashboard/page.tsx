@@ -248,6 +248,10 @@ const DashboardContent = () => {
 											>
 												<div>
 													<h2 className='mb-4 text-2xl font-medium'>Warden configuration</h2>
+													<p className='mb-4'>
+														If a server is missing from the "Select a server" dropdown, try
+														logging out and logging back in.
+													</p>
 													<h3 className='mb-4 pt-2 text-lg font-medium'>Enable Warden</h3>
 													<div className='space-y-4'>
 														<FormField
@@ -590,7 +594,10 @@ const DashboardContent = () => {
 								)}
 							</div>
 						) : (
-							'No servers found'
+							<p>
+								No servers found. If you think this is an error, try logging out and
+								logging in again.
+							</p>
 						)
 					) : (
 						'You need to sign in'

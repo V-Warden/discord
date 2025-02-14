@@ -66,12 +66,12 @@ const fetchWithRetry = async (url: string, options: RequestInit, retries = 3, ba
 	throw new FetchError('Max retries reached', 500)
 }
 
-const fetchGuilds = async (accessToken: string): Promise<Guild[]> => {
+const fetchGuilds = async (userId: string, accessToken: string): Promise<Guild[]> => {
 	'use cache'
 	try {
-		cacheLife('hours')
 		const response = await fetchWithRetry('https://discord.com/api/users/@me/guilds', {
 			headers: getAuthHeaders(accessToken),
+			next: { tags: [userId] },
 		})
 		return response.json()
 	} catch (error) {
@@ -80,31 +80,17 @@ const fetchGuilds = async (accessToken: string): Promise<Guild[]> => {
 	}
 }
 
-const isBotInGuild = async (guildId: string): Promise<boolean> => {
+const isBotInGuild = async (userId: string, guildId: string): Promise<boolean> => {
 	'use cache'
 	try {
-		cacheLife('hours')
 		const response = await fetchWithRetry(`https://discord.com/api/guilds/${guildId}`, {
 			headers: getAuthHeaders(process.env.DISCORD_TOKEN ?? '', true),
+			next: { tags: [userId] },
 		})
 		return response.ok
 	} catch (error) {
 		console.error('Error checking bot in guild:', (error as Error).message)
 		return false
-	}
-}
-
-const fetchUserProfile = async (accessToken: string): Promise<{ id: string }> => {
-	'use cache'
-	try {
-		cacheLife('hours')
-		const response = await fetchWithRetry('https://discord.com/api/users/@me', {
-			headers: getAuthHeaders(accessToken),
-		})
-		return response.json()
-	} catch (error) {
-		console.error('Error fetching user profile:', (error as Error).message)
-		throw error
 	}
 }
 
@@ -120,23 +106,24 @@ const handler = NextAuth({
 		async jwt({ token, account }) {
 			if (account) {
 				token.accessToken = account.access_token
+				token.providerAccountId = account.providerAccountId
+				revalidateTag(account.providerAccountId)
 			}
 			return token
 		},
 		async session({ session, token }) {
 			session.accessToken = token.accessToken as string
-
-			revalidateTag(session.accessToken)
+			session.user.id = token.providerAccountId as string
 
 			try {
-				const guilds = await fetchGuilds(token.accessToken as string)
+				const guilds = await fetchGuilds(session.user.id, session.accessToken)
 
 				if (Array.isArray(guilds)) {
 					const adminGuilds = await Promise.all(
 						guilds.map(async (guild) => {
 							const dbGuild = await findGuildById(guild.id)
 							if (dbGuild) {
-								const botInGuild = await isBotInGuild(guild.id)
+								const botInGuild = await isBotInGuild(session.user.id, guild.id)
 								if (botInGuild && ((guild.permissions & ADMINISTRATOR_PERMISSION) === ADMINISTRATOR_PERMISSION || guild.owner)) {
 									return guild
 								}
@@ -150,15 +137,6 @@ const handler = NextAuth({
 			} catch (error) {
 				console.error('Failed to fetch guilds:', (error as Error).message)
 				session.guilds = []
-			}
-
-			try {
-				const userProfile = await fetchUserProfile(token.accessToken as string)
-				if (session.user) {
-					session.user.id = userProfile.id
-				}
-			} catch (error) {
-				console.error('Failed to fetch user profile:', (error as Error).message)
 			}
 
 			const sessionAge = 24 * 60 * 60 * 1000
