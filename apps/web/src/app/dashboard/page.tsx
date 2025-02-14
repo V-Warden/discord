@@ -96,6 +96,16 @@ const DashboardContent = () => {
 					)
 					const data = await res.json()
 					setServerData(data)
+
+					if (data.status === 'error') {
+						toast({
+							variant: 'destructive',
+							title: 'Error',
+							description: data.message,
+						})
+						return
+					}
+
 					form.reset({
 						enabled: data.settings.enabled,
 						punishmentother: data.settings.other,

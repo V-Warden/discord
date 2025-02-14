@@ -136,7 +136,7 @@ export const GET = async (req: NextRequest) => {
 		if (isAdmin) {
 			try {
 				const roles = await fetchGuildRoles(guildId)
-				const settings = await fetchGuildSettings('1258775623929692322')
+				const settings = await fetchGuildSettings(guildId)
 
 				return NextResponse.json({ status: 'success', roles, settings })
 			} catch (error) {
