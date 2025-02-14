@@ -209,7 +209,7 @@ const DashboardContent = () => {
 									<Skeleton className='w-[104px] h-[36px] bg-white/50 opacity-20' />
 									<Skeleton className='w-[180px] h-[36px] bg-white/50 opacity-20' />
 								</div>
-								<div className='flex flex-wrap w-full gap-8 mt-8'>
+								<div className='flex flex-wrap w-full gap-8 mt-6'>
 									<div className='w-full space-y-6 bg-background/60 p-6 rounded-md'>
 										<Skeleton className='w-[100%] h-[120px] bg-white/50 opacity-20' />
 										<Skeleton className='w-[100%] h-[120px] bg-white/50 opacity-20' />
