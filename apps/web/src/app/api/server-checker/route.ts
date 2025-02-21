@@ -16,7 +16,7 @@ interface Guild {
 	features: string[]
 }
 
-const createImage = async (userId: string, randomHash: string, timestamp: number) => {
+const createImage = async (userId: string, randomHash: string, timestamp: number, username: string) => {
 	const width = 800
 	const height = 480
 	const canvas = createCanvas(width, height)
@@ -39,7 +39,7 @@ const createImage = async (userId: string, randomHash: string, timestamp: number
 
 	context.fillStyle = '#ffffff'
 	context.font = 'bold 20pt Arial'
-	context.fillText('User volumed', 50, 60)
+	context.fillText(`User ${username}`, 50, 60)
 
 	context.font = '18pt Arial'
 	context.fillText(`Random hash: ${randomHash}`, 50, 200)
@@ -64,7 +64,32 @@ const createImage = async (userId: string, randomHash: string, timestamp: number
 	return buffer
 }
 
-const createRandomHash = async (userId: string) => {
+const sendWebhook = async (userId: string, randomHash: string, timestamp: number, amount: number, username: string) => {
+	const webhookUrl = process.env.SERVER_CHECKER_WEBHOOK
+	if (!webhookUrl) {
+		throw new Error('Webhook URL is not defined')
+	}
+	const embed = {
+		title: `User ${username}`,
+		color: 0x3498db,
+		fields: [
+			{ name: 'User ID', value: userId, inline: false },
+			{ name: 'Random Hash', value: randomHash, inline: false },
+			{ name: 'Timestamp', value: new Date(timestamp * 1000).toUTCString(), inline: false },
+			{ name: 'Amount of bad servers', value: amount, inline: false },
+		],
+	}
+
+	const payload = JSON.stringify({ embeds: [embed] })
+
+	await fetch(webhookUrl, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: payload,
+	})
+}
+
+const createRandomHash = async (userId: string, amount: number, username: string) => {
 	'use cache'
 	cacheTag(`hash-${userId}`)
 	const hash = () => {
@@ -72,6 +97,8 @@ const createRandomHash = async (userId: string) => {
 	}
 	const timestamp = Math.floor(Date.now() / 1000)
 	const randomHash = hash()
+
+	await sendWebhook(userId, randomHash, timestamp, amount, username)
 
 	return { randomHash, timestamp }
 }
@@ -113,7 +140,7 @@ export const GET = async (req: NextRequest) => {
 
 		const badServers = await checkGuilds(guilds, userId)
 
-		const { randomHash, timestamp } = await createRandomHash(userId)
+		const { randomHash, timestamp } = await createRandomHash(userId, badServers.length, token.name as string)
 
 		return NextResponse.json({ status: 'success', guilds: badServers, randomHash: randomHash, timestamp: timestamp })
 	}
@@ -137,8 +164,8 @@ export const POST = async (req: NextRequest) => {
 	if (userId !== token.providerAccountId) return NextResponse.json({ status: 'error', message: 'Unauthorized' }, { status: 401 })
 
 	if (userId) {
-		const { randomHash, timestamp } = await createRandomHash(userId)
-		const buffer = await createImage(userId, randomHash, timestamp)
+		const { randomHash, timestamp } = await createRandomHash(userId, 0, token.name as string)
+		const buffer = await createImage(userId, randomHash, timestamp, token.name as string)
 
 		return new NextResponse(buffer, {
 			headers: {
