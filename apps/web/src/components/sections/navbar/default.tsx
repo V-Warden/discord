@@ -21,7 +21,7 @@ const NavbarContent = () => {
 	return (
 		<header className='top-0 z-50 p-0 m-0 sticky border-b-2 bg-black/50 border-solid border-slate-700 overflow-hidden'>
 			<div className='absolute left-0 h-full w-full bg-background/15 backdrop-blur-lg' />
-			<div className='relative mx-auto max-w-container pb-1 pt-1 px-5'>
+			<div className='relative mx-auto max-w-container pb-1 pt-1 px-3'>
 				<NavbarComponent>
 					<NavbarLeft className='gap-5'>
 						<Link
