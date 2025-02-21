@@ -2,9 +2,8 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { faShield } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { signIn, signOut, useSession } from 'next-auth/react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
@@ -12,6 +11,8 @@ import {
 	NavbarLeft,
 	NavbarRight,
 } from '../../ui/navbar'
+
+import logo from '@/assets/warden.png'
 
 const NavbarContent = () => {
 	const { data: session } = useSession()
@@ -23,12 +24,17 @@ const NavbarContent = () => {
 			<div className='relative mx-auto max-w-container pb-1 pt-1 px-5'>
 				<NavbarComponent>
 					<NavbarLeft className='gap-5'>
-						<Link href='/' className='flex items-center gap-2 text-xl font-bold mr-3'>
-							<FontAwesomeIcon
-								icon={faShield}
-								width={20}
-								className='text-primary text-xl'
-							/>{' '}
+						<Link
+							href='/'
+							className='flex items-center gap-3 text-xl font-bold mr-3 group'
+						>
+							<Image
+								src={logo}
+								alt='Warden'
+								width={32}
+								height={32}
+								className='rounded-full group-hover:animate-spin'
+							/>
 							Warden
 						</Link>
 						<Link
