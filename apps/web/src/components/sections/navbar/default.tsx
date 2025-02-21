@@ -41,6 +41,14 @@ const NavbarContent = () => {
 						>
 							Bad servers
 						</Link>
+						<Link
+							className={`text-muted-foreground hover:text-foreground transition-colors ${
+								pathname === '/server-checker' ? 'underline text-white/80' : ''
+							}`}
+							href='/server-checker'
+						>
+							Server checker
+						</Link>
 						{(session?.guilds?.length ?? 0) > 0 ? (
 							<Link
 								className={`text-color/50 text-muted-foreground hover:text-foreground transition-colors animate-fade-in delay-100 opacity-0 ${

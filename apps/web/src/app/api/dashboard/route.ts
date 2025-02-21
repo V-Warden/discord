@@ -1,3 +1,4 @@
+import { fetchWithRetry, getAuthHeaders } from '@/lib/discordApiUtils'
 import { findPunishmentById, updatePunishment } from '@warden/database/functions'
 import { getToken } from "next-auth/jwt"
 import { type NextRequest, NextResponse } from 'next/server'
@@ -34,27 +35,6 @@ interface GuildSettings {
 }
 
 const ADMINISTRATOR_PERMISSION = 0x8
-
-const getAuthHeaders = (token: string, isBot = false): HeadersInit => {
-	return {
-		Authorization: `${isBot ? 'Bot' : 'Bearer'} ${token}`,
-	}
-}
-
-const fetchWithRetry = async (url: string, options: RequestInit, retries = 3, backoff = 3000): Promise<Response> => {
-	for (let i = 0; i < retries; i++) {
-		const response = await fetch(url, options)
-		if (response.ok) {
-			return response
-		}
-		if (response.status === 429 && i < retries - 1) {
-			await new Promise(resolve => setTimeout(resolve, backoff * (i + 1)))
-			continue
-		}
-		throw new FetchError(`Failed to fetch: ${response.statusText}`, response.status)
-	}
-	throw new FetchError('Max retries reached', 500)
-}
 
 const fetchIfAdmin = async (guildId: string, userId: string): Promise<boolean> => {
 	try {

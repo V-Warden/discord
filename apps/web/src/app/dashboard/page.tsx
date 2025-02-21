@@ -1,14 +1,6 @@
 'use client'
 
-import { Section } from '@/components/ui/section'
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select'
-import { Skeleton } from '@/components/ui/skeleton'
+import { toast } from '@/hooks/use-toast'
 import scrollToTop from '@/lib/scrollToTop'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useSession } from 'next-auth/react'
@@ -25,8 +17,16 @@ import {
 	FormItem,
 	FormLabel,
 } from '@/components/ui/form'
+import { Section } from '@/components/ui/section'
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Switch } from '@/components/ui/switch'
-import { toast } from '@/hooks/use-toast'
 
 interface Role {
 	id: string
