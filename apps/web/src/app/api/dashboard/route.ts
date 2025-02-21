@@ -77,10 +77,12 @@ const fetchIfAdmin = async (guildId: string, userId: string): Promise<boolean> =
 	}
 }
 
-const fetchGuildRoles = async (guildId: string): Promise<Role[]> => {
+const fetchGuildRoles = async (guildId: string, userId: string): Promise<Role[]> => {
+	'use cache'
 	try {
 		const response = await fetchWithRetry(`https://discord.com/api/guilds/${guildId}/roles`, {
 			headers: getAuthHeaders(process.env.DISCORD_TOKEN ?? '', true),
+			next: { tags: [`roles-${userId}`] },
 		})
 		return response.json()
 	} catch (error) {
@@ -115,7 +117,7 @@ export const GET = async (req: NextRequest) => {
 		const isAdmin = await fetchIfAdmin(guildId, userId)
 		if (isAdmin) {
 			try {
-				const roles = await fetchGuildRoles(guildId)
+				const roles = await fetchGuildRoles(guildId, userId)
 				const settings = await fetchGuildSettings(guildId)
 
 				return NextResponse.json({ status: 'success', roles, settings })

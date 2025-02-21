@@ -62,6 +62,9 @@ const handler = NextAuth({
 				token.providerAccountId = account.providerAccountId
 				revalidateTag(`guilds-${account.providerAccountId}`)
 				revalidateTag(`bot-${account.providerAccountId}`)
+				revalidateTag(`roles-${account.providerAccountId}`)
+				revalidateTag(`hash-${account.providerAccountId}`)
+				revalidateTag(`badservers-${account.providerAccountId}`)
 			}
 			return token
 		},

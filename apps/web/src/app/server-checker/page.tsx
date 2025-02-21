@@ -71,11 +71,14 @@ const ServerCheckerContent = () => {
 	}, [session?.user?.id])
 
 	const reFetchData = async () => {
-		const res = await fetch(`/api/revalidate?userid=${session?.user?.id}`, {
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		})
+		const res = await fetch(
+			`/api/revalidate?userid=${session?.user?.id}&type=check`,
+			{
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			}
+		)
 		const data = await res.json()
 
 		if (data.status !== 'success')

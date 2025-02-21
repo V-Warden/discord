@@ -2,9 +2,11 @@
 
 import { toast } from '@/hooks/use-toast'
 import scrollToTop from '@/lib/scrollToTop'
+import { faRefresh } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useSession } from 'next-auth/react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -80,57 +82,46 @@ const DashboardContent = () => {
 		},
 	})
 
-	useEffect(() => {
-		if (session?.guilds && session.guilds.length > 0) {
-			setSelectedServer(session.guilds[0].id)
-		}
-	}, [session])
-
-	useEffect(() => {
+	const fetchData = useCallback(async () => {
 		setLoading(true)
-		if (selectedServer && session?.user?.id) {
-			const fetchData = async () => {
-				try {
-					const res = await fetch(
-						`/api/dashboard?guildid=${selectedServer}&userid=${session?.user?.id}`
-					)
-					const data = await res.json()
-					setServerData(data)
+		try {
+			const res = await fetch(
+				`/api/dashboard?guildid=${selectedServer}&userid=${session?.user?.id}`
+			)
+			const data = await res.json()
+			setServerData(data)
 
-					if (data.status === 'error') {
-						toast({
-							variant: 'destructive',
-							title: 'Error',
-							description: data.message,
-						})
-						return
-					}
-
-					form.reset({
-						enabled: data.settings.enabled,
-						punishmentother: data.settings.other,
-						punishmentleaker: data.settings.leaker,
-						punishmentcheater: data.settings.cheater,
-						punishmentsupporter: data.settings.supporter,
-						punishmentowner: data.settings.owner,
-						roleid: data.settings.roleId || 'none',
-						unbanenabled: data.settings.unban.enabled,
-						unbanother: data.settings.unban.other,
-						unbanleaker: data.settings.unban.leaker,
-						unbancheater: data.settings.unban.cheater,
-						unbansupporter: data.settings.unban.supporter,
-						unbanowner: data.settings.unban.owner,
-					})
-					setUnbanUser(data.settings.unban.enabled)
-					setSubmittedEnableStatus(data.settings.enabled)
-				} catch (error) {
-					console.error(error)
-				} finally {
-					setLoading(false)
-				}
+			if (data.status === 'error') {
+				toast({
+					variant: 'destructive',
+					title: 'Error',
+					description: data.message,
+				})
+				return
 			}
-			fetchData()
-		} else {
+
+			form.reset({
+				enabled: data.settings.enabled,
+				punishmentother: data.settings.other,
+				punishmentleaker: data.settings.leaker,
+				punishmentcheater: data.settings.cheater,
+				punishmentsupporter: data.settings.supporter,
+				punishmentowner: data.settings.owner,
+				roleid: data.settings.roleId || 'none',
+				unbanenabled: data.settings.unban.enabled,
+				unbanother: data.settings.unban.other,
+				unbanleaker: data.settings.unban.leaker,
+				unbancheater: data.settings.unban.cheater,
+				unbansupporter: data.settings.unban.supporter,
+				unbanowner: data.settings.unban.owner,
+			})
+			setUnbanUser(data.settings.unban.enabled)
+			setSubmittedEnableStatus(data.settings.enabled)
+
+			setLoading(false)
+		} catch (error) {
+			console.error(error)
+		} finally {
 			setLoading(false)
 		}
 	}, [selectedServer, session?.user?.id, form.reset])
@@ -197,6 +188,49 @@ const DashboardContent = () => {
 		}
 		setSubmittedEnableStatus(data.enabled)
 	}
+
+	const refreshRoles = async (e: React.MouseEvent<HTMLButtonElement>) => {
+		e.preventDefault()
+		if (session?.user?.id) {
+			setLoading(true)
+			scrollToTop()
+			const res = await fetch(
+				`/api/revalidate?userid=${session?.user?.id}&type=roles`,
+				{
+					headers: {
+						'Content-Type': 'application/json',
+					},
+				}
+			)
+			const data = await res.json()
+
+			if (data.status !== 'success')
+				return toast({
+					variant: 'destructive',
+					title: 'Error',
+					description:
+						'An error occurred while fetching your guilds. Try logging out and logging back in.',
+				})
+
+			setLoading(false)
+
+			if (selectedServer && session?.user?.id) {
+				fetchData()
+			}
+		}
+	}
+
+	useEffect(() => {
+		if (session?.guilds && session.guilds.length > 0) {
+			setSelectedServer(session.guilds[0].id)
+		}
+	}, [session])
+
+	useEffect(() => {
+		if (selectedServer && session?.user?.id) {
+			fetchData()
+		}
+	}, [selectedServer, session?.user?.id, fetchData])
 
 	return (
 		<Section className='md:py-0 sm:py-0 px-0 py-0 animate-appear opacity-0'>
@@ -456,6 +490,11 @@ const DashboardContent = () => {
 																</FormItem>
 															)}
 														/>
+														<div className='flex w-full justify-end'>
+															<Button className='gap-2' onClick={(e) => refreshRoles(e)}>
+																<FontAwesomeIcon icon={faRefresh} /> Refresh roles
+															</Button>
+														</div>
 														<h3 className='pt-2 text-lg font-medium'>Unban users</h3>
 														<FormField
 															control={form.control}
