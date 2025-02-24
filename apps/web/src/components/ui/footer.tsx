@@ -1,5 +1,5 @@
-import { cn } from '@/lib/utils'
-import * as React from 'react'
+import { cn } from "@/lib/utils";
+import * as React from "react";
 
 const Footer = React.forwardRef<
 	HTMLDivElement,
@@ -7,11 +7,11 @@ const Footer = React.forwardRef<
 >(({ className, ...props }, ref) => (
 	<div
 		ref={ref}
-		className={cn('pb-4 pt-12 text-foreground', className)}
+		className={cn("pb-4 pt-12 text-foreground", className)}
 		{...props}
 	/>
-))
-Footer.displayName = 'Footer'
+));
+Footer.displayName = "Footer";
 
 const FooterContent = React.forwardRef<
 	HTMLDivElement,
@@ -20,21 +20,21 @@ const FooterContent = React.forwardRef<
 	<div
 		ref={ref}
 		className={cn(
-			'grid grid-cols-2 gap-8 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5',
-			className
+			"grid grid-cols-2 gap-8 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5",
+			className,
 		)}
 		{...props}
 	/>
-))
-FooterContent.displayName = 'FooterContent'
+));
+FooterContent.displayName = "FooterContent";
 
 const FooterColumn = React.forwardRef<
 	HTMLDivElement,
 	React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-	<div ref={ref} className={cn('flex flex-col gap-4', className)} {...props} />
-))
-FooterColumn.displayName = 'FooterColumn'
+	<div ref={ref} className={cn("flex flex-col gap-4", className)} {...props} />
+));
+FooterColumn.displayName = "FooterColumn";
 
 const FooterBottom = React.forwardRef<
 	HTMLDivElement,
@@ -43,12 +43,12 @@ const FooterBottom = React.forwardRef<
 	<div
 		ref={ref}
 		className={cn(
-			'mt-8 flex flex-col items-center justify-between gap-4 border-t pt-4 text-xs text-muted-foreground sm:flex-row',
-			className
+			"mt-8 flex flex-col items-center justify-between gap-4 border-t pt-4 text-xs text-muted-foreground sm:flex-row",
+			className,
 		)}
 		{...props}
 	/>
-))
-FooterBottom.displayName = 'FooterBottom'
+));
+FooterBottom.displayName = "FooterBottom";
 
-export { Footer, FooterColumn, FooterBottom, FooterContent }
+export { Footer, FooterColumn, FooterBottom, FooterContent };
