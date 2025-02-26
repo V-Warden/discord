@@ -1,9 +1,34 @@
 {
-	"extends": "../../tsconfig.json",
-	"include": ["src", "../../reset.d.ts"],
-	"compilerOptions": {
-		"outDir": "./dist",
-		"rootDir": ".",
-		"noEmit": false
-	}
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "isolatedModules": true,
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "target": "ES2022",
+    "strict": true,
+    "strictNullChecks": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "allowJs": true,
+    "incremental": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "lib": [
+      "esnext"
+    ],
+    "baseUrl": ".",
+    "outDir": "./dist",
+    "paths": {
+      "#*": [
+        "*"
+      ]
+    }
+  },
+  "include": [
+    "./src/**/*.ts"
+  ],
+  "exclude": [
+    "**/node_modules"
+  ]
 }

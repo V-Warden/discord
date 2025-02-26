@@ -1,9 +1,9 @@
-import { join as joinPath } from "node:path";
 import type {
 	DiscordGatewayPayload,
 	GatewayDispatchEventNames,
 } from "@discordeno/bot";
 import { connect as connectAmqp } from "amqplib";
+import { join as joinPath } from "node:path";
 import {
 	EVENT_HANDLER_HOST,
 	EVENT_HANDLER_PORT,
@@ -11,11 +11,11 @@ import {
 	MESSAGEQUEUE_PASSWORD,
 	MESSAGEQUEUE_URL,
 	MESSAGEQUEUE_USERNAME,
-} from "../config.js";
-import { getDirnameFromFileUrl } from "../util.js";
-import { bot } from "./bot.js";
-import { buildFastifyApp } from "./fastify.js";
-import importDirectory from "./utils/loader.js";
+} from "../config";
+import { getDirnameFromFileUrl } from "../util";
+import { bot } from "./bot";
+import { buildFastifyApp } from "./fastify";
+import importDirectory from "./utils/loader";
 
 // The importDirectory function uses 'readdir' that requires either a relative path compared to the process CWD or an absolute one, so to get one relative we need to use import.meta.url
 const currentDirectory = getDirnameFromFileUrl(import.meta.url);

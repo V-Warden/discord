@@ -1,4 +1,4 @@
-import { findGuildById } from "@warden/database/functions";
+import { findGuildById } from "@warden/database";
 import { equal } from "node:assert";
 import sinon from "sinon";
 import { bot } from "../bot.js";

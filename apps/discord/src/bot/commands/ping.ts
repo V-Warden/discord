@@ -1,5 +1,5 @@
 import { snowflakeToTimestamp } from "@discordeno/bot";
-import { createGuild } from "@warden/database/functions";
+import { createGuild } from "@warden/database";
 import { getShardInfoFromGuild } from "../bot.js";
 import createCommand from "../commands.js";
 import type { CommandInteraction } from "../types/command.js";

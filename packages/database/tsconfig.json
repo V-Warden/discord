@@ -1,13 +1,37 @@
 {
-	"extends": "../../tsconfig.json",
-	"include": ["src", "drizzle.config.ts"],
-	"compilerOptions": {
-		"outDir": "dist",
-		"rootDir": ".",
-		"noEmit": false
-	},
-	"ts-node": {
-		"esm": true,
-		"experimentalSpecifierResolution": "node"
-	}
+  "compilerOptions": {
+    "target": "es2019",
+    "module": "esnext",
+    "lib": [
+      "esnext"
+    ],
+    "sourceMap": true,
+    "moduleResolution": "bundler",
+    "skipLibCheck": true,
+    "strict": true,
+    "isolatedModules": true,
+    "noFallthroughCasesInSwitch": true,
+    "suppressImplicitAnyIndexErrors": false,
+    "noImplicitAny": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "downlevelIteration": true,
+    "incremental": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "customConditions": [
+      "source"
+    ]
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "**/node_modules"
+  ]
 }

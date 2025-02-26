@@ -1,38 +1,33 @@
 {
-	"name": "@warden/database",
-	"version": "0.0.0",
-	"sideEffects": false,
-	"type": "module",
-	"exports": {
-		"./*": ["./src/index.ts"],
-		"./functions/*": ["./src/functions/*.ts"],
-		"./schemas/*": ["./src/schemas/*.ts"],
-		"./mock": "./mock.ts"
-	},
-	"scripts": {
-		"dev": "tsc --watch",
-		"build": "tsc",
-		"db:seed": "tsx scripts/seed.ts",
-		"db:migrate": "drizzle-kit migrate",
-		"db:studio": "drizzle-kit studio",
-		"db:check": "drizzle-kit check",
-		"db:wipe": "tsx scripts/wipe.ts",
-		"db:generate": "drizzle-kit generate"
-	},
-	"devDependencies": {
-		"@swc/cli": "catalog:dev",
-		"@swc/core": "catalog:dev",
-		"@types/node": "catalog:types",
-		"drizzle-kit": "catalog:database",
-		"tsx": "catalog:dev",
-		"typescript": "catalog:dev"
-	},
-	"dependencies": {
-		"dotenv": "catalog:",
-		"drizzle-orm": "catalog:database",
-		"drizzle-zod": "catalog:database",
-		"postgres": "catalog:database",
-		"typescript": "catalog:dev",
-		"zod": "catalog:database"
-	}
+  "name": "@warden/database",
+  "version": "0.0.0",
+  "sideEffects": false,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "db:seed": "tsx scripts/seed.ts",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "db:check": "drizzle-kit check",
+    "db:wipe": "tsx scripts/wipe.ts",
+    "db:generate": "drizzle-kit generate",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:types",
+    "drizzle-kit": "catalog:database",
+    "typescript": "catalog:dev"
+  },
+  "dependencies": {
+    "dotenv": "catalog:",
+    "drizzle-orm": "catalog:database",
+    "drizzle-zod": "catalog:database",
+    "postgres": "catalog:database",
+    "typescript": "catalog:dev",
+    "zod": "catalog:database"
+  }
 }
