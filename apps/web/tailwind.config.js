@@ -42,6 +42,10 @@ export default {
 					DEFAULT: "hsl(var(--destructive))",
 					foreground: "hsl(var(--destructive-foreground))",
 				},
+				success: {
+					DEFAULT: "hsl(var(--success))",
+					foreground: "hsl(var(--success-foreground))",
+				},
 				border: "hsl(var(--border) / 0.1)",
 				input: "hsl(var(--input))",
 				ring: "hsl(var(--ring))",
@@ -124,6 +128,14 @@ export default {
 						opacity: "1",
 						transform: "translateY(0)",
 					},
+					"fade-in": {
+						"0%": {
+							opacity: "0",
+						},
+						"100%": {
+							opacity: "1",
+						},
+					},
 				},
 				hover: {
 					"0%": {
@@ -165,6 +177,7 @@ export default {
 				appear: "appear 0.6s forwards ease-out",
 				"appear-zoom": "appear-zoom 0.6s forwards ease-out",
 				"pulse-hover": "pulse-hover 6s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+				"fade-in": "fade-in 0.2s forwards ease-out",
 			},
 			spacing: {
 				container: "1280px",
