@@ -3,7 +3,7 @@ import {
 	fetchWithRetry,
 	getAuthHeaders,
 } from "@/lib/discordApiUtils";
-import { findGuildById } from "@warden/database/functions";
+import { findGuildById } from "@warden/database";
 import NextAuth from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import { revalidateTag } from "next/cache";

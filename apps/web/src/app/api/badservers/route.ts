@@ -1,4 +1,4 @@
-import { findBadServerById, getBadServers } from "@warden/database/functions";
+import { findBadServerById, getBadServers } from "@warden/database";
 import { unstable_cacheLife as cacheLife } from "next/cache";
 import { type NextRequest, NextResponse } from "next/server";
 

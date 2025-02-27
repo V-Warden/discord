@@ -1,8 +1,5 @@
 import { fetchWithRetry, getAuthHeaders } from "@/lib/discordApiUtils";
-import {
-	findPunishmentById,
-	updatePunishment,
-} from "@warden/database/functions";
+import { findPunishmentById, updatePunishment } from "@warden/database";
 import { getToken } from "next-auth/jwt";
 import { type NextRequest, NextResponse } from "next/server";
 

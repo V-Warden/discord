@@ -1,5 +1,5 @@
 import { fetchGuilds } from "@/lib/discordApiUtils";
-import { findBadServerById } from "@warden/database/functions";
+import { findBadServerById } from "@warden/database";
 import { createCanvas, loadImage } from "canvas";
 import { getToken } from "next-auth/jwt";
 import { unstable_cacheTag as cacheTag } from "next/cache";
