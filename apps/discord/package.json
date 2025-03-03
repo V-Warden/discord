@@ -13,9 +13,9 @@
 		"start:gateway": "ts-node src/gateway/index.js",
 		"build": "tsc",
 		"build:watch": "tsc --watch",
-		"dev:bot": "tsx src/bot/index.ts",
-		"dev:rest": "tsx src/rest/index.ts",
-		"dev:gateway": "tsx src/gateway/index.ts",
+		"dev:bot": "tsx watch src/bot/index.ts",
+		"dev:rest": "tsx watch src/rest/index.ts",
+		"dev:gateway": "tsx watch src/gateway/index.ts",
 		"test": "mocha"
 	},
 	"dependencies": {
