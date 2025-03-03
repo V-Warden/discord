@@ -39,7 +39,7 @@
 		"mocha": "catalog:test",
 		"sinon": "catalog:test",
 		"ts-node": "catalog:dev",
-		"tsx": "^4.19.3",
+		"tsx": "catalog:dev",
 		"typescript": "catalog:dev"
 	}
 }
