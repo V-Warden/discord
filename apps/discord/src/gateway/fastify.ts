@@ -1,5 +1,5 @@
 import fastify, { type FastifyInstance } from "fastify";
-import { GATEWAY_AUTHORIZATION } from "../config.js";
+import { GATEWAY_AUTHORIZATION } from "../config.ts";
 
 export function buildFastifyApp(): FastifyInstance {
 	const app = fastify();

@@ -1,8 +1,9 @@
 import { snowflakeToTimestamp } from "@discordeno/bot";
 import { createGuild } from "@warden/database";
-import { getShardInfoFromGuild } from "../bot.js";
-import createCommand from "../commands.js";
-import type { CommandInteraction } from "../types/command.js";
+import { bot } from "../bot";
+import { getShardInfoFromGuild } from "../bot.ts";
+import createCommand from "../commands.ts";
+import type { CommandInteraction } from "../types/command.ts";
 
 export const execute = async (interaction: CommandInteraction) => {
 	const ping = Date.now() - snowflakeToTimestamp(BigInt(interaction.id));
@@ -15,8 +16,6 @@ export const execute = async (interaction: CommandInteraction) => {
 		id: interaction.guildId?.toString() ?? "12",
 		name: "test",
 	});
-
-	return guild;
 
 	// console.log("guild", guild);
 
@@ -41,9 +40,11 @@ export const execute = async (interaction: CommandInteraction) => {
 
 	// console.log("p", p);
 
-	// await interaction.respond(
-	// 	`🏓 Pong! Gateway Latency: ${shardPing}, Roundtrip Latency: ${ping}ms. I am online and responsive! 🕙`,
-	// );
+	bot.logger.info(guild);
+
+	await interaction.respond(
+		`🏓 Pong! Gateway Latency: ${shardPing}, Roundtrip Latency: ${ping}ms. I am online and responsive! 🕙`,
+	);
 };
 
 export default createCommand({

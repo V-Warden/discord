@@ -1,8 +1,8 @@
 import { inspect } from "node:util";
 import { createEmbeds } from "@discordeno/bot";
-import { BUGS_ERRORS_REPORT_WEBHOOK } from "../../config.js";
-import { bot } from "../bot.js";
-import { webhookURLToIDAndToken } from "../utils/webhook.js";
+import { BUGS_ERRORS_REPORT_WEBHOOK } from "../../config.ts";
+import { bot } from "../bot.ts";
+import { webhookURLToIDAndToken } from "../utils/webhook.ts";
 
 process.on("unhandledRejection", async (error) => {
 	bot.logger.error("An unhandled rejection occurred", error);

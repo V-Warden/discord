@@ -6,7 +6,7 @@ import {
 	INFLUX_ORG,
 	INFLUX_TOKEN,
 	INFLUX_URL,
-} from "../config.js";
+} from "../config.ts";
 
 export const influxDB = INFLUX_ENABLED
 	? // biome-ignore lint/style/noNonNullAssertion: <explanation>

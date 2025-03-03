@@ -1,7 +1,7 @@
 import type { RequestMethods } from "@discordeno/bot";
-import { REST_HOST, REST_PORT } from "../config.js";
-import { buildFastifyApp, parseMultiformBody } from "./fastify.js";
-import restManager, { logger } from "./restManager.js";
+import { REST_HOST, REST_PORT } from "../config.ts";
+import { buildFastifyApp, parseMultiformBody } from "./fastify.ts";
+import restManager, { logger } from "./restManager.ts";
 
 const app = buildFastifyApp();
 

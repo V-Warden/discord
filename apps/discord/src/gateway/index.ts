@@ -1,15 +1,15 @@
-import { GATEWAY_HOST, GATEWAY_PORT } from "../config.js";
-import { promiseWithResolvers } from "../util.js";
-import { buildFastifyApp } from "./fastify.js";
-import gatewayManager, { logger, workers } from "./gatewayManager.js";
-import { shardInfoRequests } from "./worker/createWorker.js";
+import { GATEWAY_HOST, GATEWAY_PORT } from "../config.ts";
+import { promiseWithResolvers } from "../util.ts";
+import { buildFastifyApp } from "./fastify.ts";
+import gatewayManager, { logger, workers } from "./gatewayManager.ts";
+import { shardInfoRequests } from "./worker/createWorker.ts";
 import type {
 	ManagerGetShardInfoFromGuildId,
 	ShardInfo,
 	WorkerMessage,
 	WorkerPresencesUpdate,
 	WorkerShardPayload,
-} from "./worker/types.js";
+} from "./worker/types.ts";
 
 const app = buildFastifyApp();
 

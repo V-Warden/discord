@@ -6,7 +6,7 @@ import type {
 	DiscordApplicationCommandOption,
 	ParsedInteractionOption,
 } from "@discordeno/bot";
-import { bot } from "./bot.js";
+import { bot } from "./bot.ts";
 
 export default function createCommand<const TOptions extends CommandOptions>(
 	command: Command<TOptions>,

@@ -1,6 +1,6 @@
 import assert from "node:assert";
-import { DEVELOPMENT, DEV_SERVER_ID } from "../../config.js";
-import { bot } from "../bot.js";
+import { DEVELOPMENT, DEV_SERVER_ID } from "../../config.ts";
+import { bot } from "../bot.ts";
 
 export async function updateCommands(): Promise<void> {
 	bot.logger.info("Updating commands");

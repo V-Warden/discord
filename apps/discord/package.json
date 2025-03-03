@@ -1,44 +1,45 @@
 {
-  "name": "@warden/discord",
-  "version": "1.0.0",
-  "description": "A scalable bot.",
-  "main": "dist/index.js",
-  "type": "module",
-  "license": "ISC",
-  "private": true,
-  "packageManager": "pnpm@9.15.4",
-  "scripts": {
-    "start:bot": "ts-node src/bot/index.js",
-    "start:rest": "ts-node src/rest/index.js",
-    "start:gateway": "ts-node src/gateway/index.js",
-    "build": "tsc",
-    "build:watch": "tsc --watch",
-    "dev:bot": "tsx src/bot/index.ts",
-    "dev:rest": "tsx src/rest/index.ts",
-    "dev:gateway": "tsx src/gateway/index.ts",
-    "test": "mocha"
-  },
-  "dependencies": {
-    "@discordeno/bot": "catalog:",
-    "@fastify/multipart": "catalog:",
-    "@influxdata/influxdb-client": "catalog:",
-    "@warden/database": "workspace:*",
-    "amqplib": "catalog:",
-    "chalk": "catalog:",
-    "dotenv": "catalog:",
-    "fastify": "catalog:"
-  },
-  "devDependencies": {
-    "@types/amqplib": "catalog:types",
-    "@types/chai": "catalog:types",
-    "@types/mocha": "catalog:types",
-    "@types/node": "catalog:types",
-    "@types/sinon": "catalog:types",
-    "chai": "catalog:test",
-    "chokidar": "catalog:",
-    "mocha": "catalog:test",
-    "sinon": "catalog:test",
-    "tsx": "^4.19.3",
-    "typescript": "catalog:dev"
-  }
+	"name": "@warden/discord",
+	"version": "1.0.0",
+	"description": "A scalable bot.",
+	"main": "dist/index.js",
+	"type": "module",
+	"license": "ISC",
+	"private": true,
+	"packageManager": "pnpm@9.15.4",
+	"scripts": {
+		"start:bot": "ts-node src/bot/index.js",
+		"start:rest": "ts-node src/rest/index.js",
+		"start:gateway": "ts-node src/gateway/index.js",
+		"build": "tsc",
+		"build:watch": "tsc --watch",
+		"dev:bot": "tsx src/bot/index.ts",
+		"dev:rest": "tsx src/rest/index.ts",
+		"dev:gateway": "tsx src/gateway/index.ts",
+		"test": "mocha"
+	},
+	"dependencies": {
+		"@discordeno/bot": "catalog:",
+		"@fastify/multipart": "catalog:",
+		"@influxdata/influxdb-client": "catalog:",
+		"@warden/database": "workspace:*",
+		"amqplib": "catalog:",
+		"chalk": "catalog:",
+		"dotenv": "catalog:",
+		"fastify": "catalog:"
+	},
+	"devDependencies": {
+		"@types/amqplib": "catalog:types",
+		"@types/chai": "catalog:types",
+		"@types/mocha": "catalog:types",
+		"@types/node": "catalog:types",
+		"@types/sinon": "catalog:types",
+		"chai": "catalog:test",
+		"chokidar": "catalog:",
+		"mocha": "catalog:test",
+		"sinon": "catalog:test",
+		"ts-node": "catalog:",
+		"tsx": "^4.19.3",
+		"typescript": "catalog:dev"
+	}
 }

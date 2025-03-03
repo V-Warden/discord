@@ -3,7 +3,7 @@ import fastifyMultipart, {
 	type MultipartValue,
 } from "@fastify/multipart";
 import fastify, { type FastifyInstance } from "fastify";
-import { REST_AUTHORIZATION } from "../config.js";
+import { REST_AUTHORIZATION } from "../config.ts";
 
 export function buildFastifyApp(): FastifyInstance {
 	const app = fastify();

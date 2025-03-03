@@ -5,7 +5,7 @@ import {
 	type logger,
 } from "@discordeno/bot";
 import chalk from "chalk";
-import { bot } from "../../bot.js";
+import { bot } from "../../bot.ts";
 
 bot.events.interactionCreate = async (interaction) => {
 	const isAutocomplete =

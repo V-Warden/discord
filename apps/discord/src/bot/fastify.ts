@@ -1,5 +1,5 @@
 import fastify, { type FastifyInstance } from "fastify";
-import { EVENT_HANDLER_AUTHORIZATION } from "../config.js";
+import { EVENT_HANDLER_AUTHORIZATION } from "../config.ts";
 
 export function buildFastifyApp(): FastifyInstance {
 	const app = fastify();

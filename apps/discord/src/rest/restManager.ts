@@ -1,6 +1,6 @@
 import { LogDepth, createLogger, createRestManager } from "@discordeno/bot";
-import { DISCORD_TOKEN } from "../config.js";
-import { setupRestAnalyticsHooks } from "./influx.js";
+import { DISCORD_TOKEN } from "../config.ts";
+import { setupRestAnalyticsHooks } from "./influx.ts";
 
 const manager = createRestManager({
 	token: DISCORD_TOKEN,

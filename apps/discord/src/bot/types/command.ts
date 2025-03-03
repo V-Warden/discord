@@ -1,4 +1,4 @@
-import type { bot } from "../bot.js";
+import type { bot } from "../bot.ts";
 
 export type CommandInteraction =
 	typeof bot.transformers.$inferredTypes.interaction;

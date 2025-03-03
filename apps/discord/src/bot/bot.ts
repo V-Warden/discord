@@ -6,14 +6,14 @@ import {
 	GATEWAY_URL,
 	REST_AUTHORIZATION,
 	REST_URL,
-} from "../config.js";
+} from "../config.ts";
 import type {
 	ManagerGetShardInfoFromGuildId,
 	ShardInfo,
 	WorkerPresencesUpdate,
 	WorkerShardPayload,
-} from "../gateway/worker/types.js";
-import type { Command } from "./commands.js";
+} from "../gateway/worker/types.ts";
+import type { Command } from "./commands.ts";
 
 const rawBot = createBot({
 	token: DISCORD_TOKEN,

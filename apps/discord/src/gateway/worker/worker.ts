@@ -1,3 +1,6 @@
+import assert from "node:assert";
+import { createHash } from "node:crypto";
+import { workerData as _workerData, parentPort } from "node:worker_threads";
 import {
 	DiscordenoShard,
 	GatewayOpcodes,
@@ -5,15 +8,12 @@ import {
 	createLogger,
 } from "@discordeno/bot";
 import { type Channel as amqpChannel, connect as connectAmqp } from "amqplib";
-import assert from "node:assert";
-import { createHash } from "node:crypto";
-import { workerData as _workerData, parentPort } from "node:worker_threads";
-import { promiseWithResolvers } from "../../util.js";
+import { promiseWithResolvers } from "../../util.ts";
 import type {
 	ManagerMessage,
 	WorkerCreateData,
 	WorkerMessage,
-} from "./types.js";
+} from "./types.ts";
 
 assert(parentPort);
 

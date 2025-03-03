@@ -13,9 +13,9 @@ import {
 	SHARDS_PER_WORKER,
 	TOTAL_SHARDS,
 	TOTAL_WORKERS,
-} from "../config.js";
-import { createWorker } from "./worker/createWorker.js";
-import type { WorkerMessage } from "./worker/types.js";
+} from "../config.ts";
+import { createWorker } from "./worker/createWorker.ts";
+import type { WorkerMessage } from "./worker/types.ts";
 
 export const workers = new Map<number, Worker>();
 export const logger = createLogger({ name: "GATEWAY" });

@@ -1,4 +1,5 @@
 import { join as joinPath } from "node:path";
+import { pathToFileURL } from "node:url";
 import { Worker } from "node:worker_threads";
 import {
 	DISCORD_TOKEN,
@@ -9,15 +10,15 @@ import {
 	MESSAGEQUEUE_PASSWORD,
 	MESSAGEQUEUE_URL,
 	MESSAGEQUEUE_USERNAME,
-} from "../../config.js";
-import { getDirnameFromFileUrl } from "../../util.js";
-import gatewayManager, { logger } from "../gatewayManager.js";
+} from "../../config.ts";
+import { getDirnameFromFileUrl } from "../../util.ts";
+import gatewayManager, { logger } from "../gatewayManager.ts";
 import type {
 	ManagerMessage,
 	ShardInfo,
 	WorkerCreateData,
 	WorkerMessage,
-} from "./types.js";
+} from "./types.ts";
 
 // the string is the nonce of the request
 export const shardInfoRequests = new Map<string, (value: ShardInfo) => void>();
@@ -25,9 +26,12 @@ export const shardInfoRequests = new Map<string, (value: ShardInfo) => void>();
 export function createWorker(workerId: number): Worker {
 	// the Worker constructor requires either a relative path compared to the process CWD or an absolute one, so to get one relative we need to use import.meta.url
 	const currentFolder = getDirnameFromFileUrl(import.meta.url);
-	const workerFilePath = joinPath(currentFolder, "./worker.js");
+	const workerFilePath = joinPath(currentFolder, "./worker.ts");
 
-	const worker = new Worker(workerFilePath, {
+	// Convert the worker file path to a file URL and wrap it with new URL
+	const workerFileUrl = new URL(pathToFileURL(workerFilePath).href);
+
+	const worker = new Worker(workerFileUrl, {
 		workerData: {
 			connectionData: {
 				intents: GATEWAY_INTENTS,
