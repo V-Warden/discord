@@ -38,7 +38,7 @@
 		"chokidar": "catalog:",
 		"mocha": "catalog:test",
 		"sinon": "catalog:test",
-		"ts-node": "catalog:",
+		"ts-node": "catalog:dev",
 		"tsx": "^4.19.3",
 		"typescript": "catalog:dev"
 	}
