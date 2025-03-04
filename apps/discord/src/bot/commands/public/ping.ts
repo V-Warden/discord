@@ -1,9 +1,9 @@
 import { snowflakeToTimestamp } from "@discordeno/bot";
 import { createGuild } from "@warden/database";
-import { bot } from "../bot";
-import { getShardInfoFromGuild } from "../bot.ts";
-import createCommand from "../commands.ts";
-import type { CommandInteraction } from "../types/command.ts";
+import { bot } from "../../bot.ts";
+import { getShardInfoFromGuild } from "../../bot.ts";
+import createCommand from "../../commands.ts";
+import type { CommandInteraction } from "../../types/command.ts";
 
 export const execute = async (interaction: CommandInteraction) => {
 	const ping = Date.now() - snowflakeToTimestamp(BigInt(interaction.id));

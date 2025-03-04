@@ -14,6 +14,3 @@ await importDirectory(joinPath(currentDirectory, "./commands"));
 await updateCommands();
 
 bot.logger.info("Done!");
-
-// We need to manually exit as the REST Manager has timeouts that will keep NodeJS alive
-process.exit();

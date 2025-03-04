@@ -22,6 +22,7 @@ const rawBot = createBot({
 	desiredProperties: {
 		user: {
 			id: true,
+			toggles: true,
 			username: true,
 		},
 		interaction: {

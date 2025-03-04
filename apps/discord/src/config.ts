@@ -76,7 +76,8 @@ export const REST_URL = `http://${REST_HOST}:${REST_PORT}`;
 export const GATEWAY_URL = `http://${GATEWAY_HOST}:${GATEWAY_PORT}`;
 
 // TEMPLATE-SETUP: Add/Remove the intents you need/don't need
-export const GATEWAY_INTENTS = Intents.Guilds | Intents.GuildMessages;
+export const GATEWAY_INTENTS =
+	Intents.Guilds | Intents.GuildMessages | Intents.GuildMembers;
 
 // Helper functions
 
