@@ -1,10 +1,10 @@
 import type { User } from "@discordeno/bot";
+import userCheck from "../../actions/userCheck.ts";
 import { bot } from "../../bot.ts";
 import createCommand from "../../commands.ts";
 import type { CommandInteraction } from "../../types/command.ts";
 import type { UserCheck } from "../../types/userCheck.ts";
-import userCheck from "../../utils/action/userCheck.ts";
-import { embedError, embedSuccess, embedWarning } from "../../utils/embed.ts";
+import embedBuilder from "../../utils/embed.ts";
 import { formatStatus, formatType, getAllTypes } from "../../utils/misc.ts";
 
 export const execute = async (interaction: CommandInteraction) => {
@@ -25,7 +25,8 @@ export const execute = async (interaction: CommandInteraction) => {
 	const userId = String(userOption.value);
 	const userData = (await bot.helpers.getUser(userId).catch((error) => {
 		bot.logger.error("Error fetching user data", error);
-		return embedError(
+		return embedBuilder(
+			"error",
 			"Check User",
 			`❌ An error occurred while fetching <@${userId}>.\n > Please try again later.`,
 		);
@@ -34,7 +35,8 @@ export const execute = async (interaction: CommandInteraction) => {
 	if (!userData) {
 		await interaction.respond({
 			embeds: [
-				embedError(
+				embedBuilder(
+					"error",
 					"Check User",
 					`❌ <@${userId}> not found.\n > Please provide a valid user ID.`,
 				),
@@ -46,7 +48,8 @@ export const execute = async (interaction: CommandInteraction) => {
 	if (userData.toggles && userData.toggles.bitfield === 1) {
 		await interaction.respond({
 			embeds: [
-				embedWarning(
+				embedBuilder(
+					"warning",
 					"Check User",
 					`🤖 <@${userId}> is identified as a bot.\n > User checks cannot be performed on bots.`,
 				),
@@ -57,7 +60,8 @@ export const execute = async (interaction: CommandInteraction) => {
 
 	const userDetails = (await userCheck(userId).catch((error) => {
 		bot.logger.error("Error checking user", error);
-		return embedError(
+		return embedBuilder(
+			"error",
 			"Check User",
 			`❌ An error occurred while checking <@${userId}>.\n > Please try again later.`,
 		);
@@ -70,7 +74,8 @@ export const execute = async (interaction: CommandInteraction) => {
 	) {
 		await interaction.respond({
 			embeds: [
-				embedSuccess(
+				embedBuilder(
+					"success",
 					"Check User",
 					`✅ <@${userId}> is not blacklisted.\n > They are either fine or not yet listed.`,
 				),
@@ -140,7 +145,8 @@ export const execute = async (interaction: CommandInteraction) => {
 
 	await interaction.respond({
 		embeds: [
-			embedWarning(
+			embedBuilder(
+				"warning",
 				"Check User",
 				`⚠️ <@${userId}> is blacklisted. And has been seen in ${userDetails.imports.length} server${userDetails.imports.length > 1 ? "s" : ""}.`,
 				fields,

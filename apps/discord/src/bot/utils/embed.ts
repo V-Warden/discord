@@ -12,12 +12,14 @@ const colors = {
 
 /**
  * Create an embed with the info color
+ * @param type The type of the embed
  * @param title The title of the embed
  * @param description The description of the embed
  * @param fields The fields of the embed
  * @returns The embed
  */
-const embedInfo = (
+const embedBuilder = (
+	type: string,
 	title: string,
 	description?: string,
 	fields?: EmbedField[],
@@ -25,7 +27,14 @@ const embedInfo = (
 	return {
 		title: title,
 		description: description,
-		color: colors.blue,
+		color:
+			type === "info"
+				? colors.blue
+				: type === "success"
+					? colors.green
+					: type === "warning"
+						? colors.orange
+						: colors.red,
 		fields: fields,
 		timestamp: new Date().toISOString(),
 		footer: {
@@ -35,79 +44,4 @@ const embedInfo = (
 	};
 };
 
-/**
- * Create an embed with the error color
- * @param title The title of the embed
- * @param description The description of the embed
- * @param fields The fields of the embed
- * @returns The embed
- */
-const embedError = (
-	title: string,
-	description?: string,
-	fields?: EmbedField[],
-) => {
-	return {
-		title: title,
-		description: description,
-		color: colors.red,
-		fields: fields,
-		timestamp: new Date().toISOString(),
-		footer: {
-			text: "Warden",
-			iconUrl: icon,
-		},
-	};
-};
-
-/**
- * Create an embed with the success color
- * @param title The title of the embed
- * @param description The description of the embed
- * @param fields The fields of the embed
- * @returns The embed
- */
-const embedSuccess = (
-	title: string,
-	description?: string,
-	fields?: EmbedField[],
-) => {
-	return {
-		title: title,
-		description: description,
-		color: colors.green,
-		fields: fields,
-		timestamp: new Date().toISOString(),
-		footer: {
-			text: "Warden",
-			iconUrl: icon,
-		},
-	};
-};
-
-/**
- * Create an embed with the warning color
- * @param title The title of the embed
- * @param description The description of the embed
- * @param fields The fields of the embed
- * @returns The embed
- */
-const embedWarning = (
-	title: string,
-	description?: string,
-	fields?: EmbedField[],
-) => {
-	return {
-		title: title,
-		description: description,
-		color: colors.orange,
-		fields: fields,
-		timestamp: new Date().toISOString(),
-		footer: {
-			text: "Warden",
-			iconUrl: icon,
-		},
-	};
-};
-
-export { embedInfo, embedError, embedSuccess, embedWarning };
+export default embedBuilder;
