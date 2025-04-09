@@ -776,7 +776,7 @@ export default new Command({
                     .setDescription(
                         `**Other:** \`${currentSettings.other}\`\n> The punishment for other type.\n
                         **Leaker:** \`${currentSettings.leaker}\`\n> The punishment for leaking type.\n
-                        **Cheater:** \`${currentSettings.cheater}\`\n> The punishment for cheating yupe.\n
+                        **Cheater:** \`${currentSettings.cheater}\`\n> The punishment for cheating type.\n
                         **Supporter:** \`${currentSettings.supporter}\`\n> The punishment for supporting type.\n
                         **Owner:** \`${currentSettings.owner}\`\n> The punishment for owner type.\n
                         **The select menus below correspond to the settings above.**`
