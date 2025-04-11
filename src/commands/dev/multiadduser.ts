@@ -1,13 +1,13 @@
-import { ApplicationCommandOptionType, APIEmbed } from 'discord.js';
-import { chunk } from 'lodash';
-import { Colours } from '../../@types/Colours';
-import { Command } from '../../structures/Command';
-import { mapAnyType } from '../../utils/misc';
-import { sendError } from '../../utils/messages';
-import { UserType, UserStatus } from '@prisma/client';
-import db from '../../utils/database';
-import logger from '../../utils/logger';
-import sendPagination from '../../utils/messages/sendPagination';
+import { ApplicationCommandOptionType, APIEmbed } from 'discord.js'
+import { chunk } from 'lodash'
+import { Colours } from '../../@types/Colours'
+import { Command } from '../../structures/Command'
+import { mapAnyType } from '../../utils/misc'
+import { sendError } from '../../utils/messages'
+import { UserType, UserStatus } from '@prisma/client'
+import db from '../../utils/database'
+import logger from '../../utils/logger'
+import sendPagination from '../../utils/messages/sendPagination'
 
 export default new Command({
     name: 'multiadduser',
@@ -49,38 +49,38 @@ export default new Command({
         },
     ],
     run: async ({ interaction, client }) => {
-        const idsString = interaction.options.getString('users');
-        if (!idsString) return sendError(interaction, 'Invalid user IDs provided');
-        const status = interaction.options.get('status')?.value as UserStatus;
-        const type = interaction.options.get('type')?.value as UserType;
-        const server = interaction.options.get('server')?.value as string;
-        const reason = interaction.options.get('reason')?.value as string;
+        const idsString = interaction.options.getString('users')
+        if (!idsString) return sendError(interaction, 'Invalid user IDs provided')
+        const status = interaction.options.get('status')?.value as UserStatus
+        const type = interaction.options.get('type')?.value as UserType
+        const server = interaction.options.get('server')?.value as string
+        const reason = interaction.options.get('reason')?.value as string
 
-        const ids = idsString.split(',').map(id => id.trim());
-        if (ids.length === 0) return sendError(interaction, 'No valid user IDs provided');
+        const ids = idsString.split(',').map(id => id.trim())
+        if (ids.length === 0) return sendError(interaction, 'No valid user IDs provided')
 
-        const isBadServer = await db.getBadServer({ id: server });
-        if (!isBadServer) return sendError(interaction, 'Server is not blacklisted');
+        const isBadServer = await db.getBadServer({ id: server })
+        if (!isBadServer) return sendError(interaction, 'Server is not blacklisted')
 
-        const fields: APIEmbed['fields'] = [];
+        const fields: APIEmbed['fields'] = []
 
         for (const id of ids) {
             try {
-                const user = await client.users.fetch(id);
+                const user = await client.users.fetch(id)
                 if (!user) {
                     fields.push({
                         name: `ID: ${id}`,
                         value: `**User:** <@${id}> **Status:** Invalid ID provided`,
-                    });
-                    continue;
+                    })
+                    continue
                 }
 
-                const count = await db.userExist(id);
+                const count = await db.userExist(id)
 
                 if (count) {
-                    const createPromise = db.createImport(id, server, type);
-                    const updatePromise = db.updateUser(id, { status, type, reason });
-                    await Promise.all([createPromise, updatePromise]);
+                    const createPromise = db.createImport(id, server, type)
+                    const updatePromise = db.updateUser(id, { status, type, reason })
+                    await Promise.all([createPromise, updatePromise])
                 } else {
                     await db.createUser({
                         id,
@@ -110,34 +110,34 @@ export default new Command({
                                 },
                             },
                         },
-                    });
+                    })
                 }
 
                 fields.push({
                     name: `ID: ${id}`,
                     value: `**User:** <@${id}> **Status:** Successfully upserted`,
-                });
+                })
             } catch (error) {
                 fields.push({
                     name: `ID: ${id}`,
                     value: `**User:** <@${id}> **Status:** Error processing user`,
-                });
+                })
             }
         }
 
-        const chunkedFields = chunk(fields, 10);
+        const chunkedFields = chunk(fields, 10)
         const pages: APIEmbed[] = chunkedFields.map(chunk => ({
             title: ':shield: Multi Add User',
             color: Colours.GREEN,
             fields: chunk,
-        }));
+        }))
 
         logger.info({
             labels: { command: 'multiadduser', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
             message: `${interaction?.user?.tag} (${interaction?.user?.id}) added ${ids.length} users to the database`,
-        });
+        })
 
-        sendPagination(interaction, pages, 180000);
-        return;
+        sendPagination(interaction, pages, 180000)
+        return
     },
-});
+})

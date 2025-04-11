@@ -1,3 +1,3 @@
-export * from './sendEmbed';
-export * from './sendInfo';
-export * from './sendPagination';
+export * from './sendEmbed'
+export * from './sendInfo'
+export * from './sendPagination'

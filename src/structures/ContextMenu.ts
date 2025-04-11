@@ -1,7 +1,7 @@
-import { MenuType } from '../@types';
+import { MenuType } from '../@types'
 
 export class ContextMenu {
     constructor(menuOptions: MenuType) {
-        Object.assign(this, menuOptions);
+        Object.assign(this, menuOptions)
     }
 }

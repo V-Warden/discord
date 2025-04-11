@@ -1,6 +1,6 @@
-import { Command } from '../../structures/Command';
+import { Command } from '../../structures/Command'
 // import actionGlobal from '../../utils/actioning/actionGlobal';
-import { sendSuccess } from '../../utils/messages';
+import { sendSuccess } from '../../utils/messages'
 
 export default new Command({
     name: 'globalscan',
@@ -8,6 +8,6 @@ export default new Command({
     main: true,
     defaultMemberPermissions: 'Administrator',
     run: async ({ interaction }) => {
-        sendSuccess(interaction, 'Global scan is disabled');
+        sendSuccess(interaction, 'Global scan is disabled')
     },
-});
+})

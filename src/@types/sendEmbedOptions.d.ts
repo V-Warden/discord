@@ -5,14 +5,14 @@ import {
     CommandInteraction,
     TextBasedChannel,
     User,
-} from 'discord.js';
+} from 'discord.js'
 
 // sendEmbed() options
 export interface sendEmbedOptions {
-    interaction?: CommandInteraction;
-    channel?: TextBasedChannel | User;
-    content?: string;
-    embed: APIEmbed;
-    ephemeral?: boolean;
-    components?: (ActionRowComponent | ActionRowComponentOptions)[] | undefined;
+    interaction?: CommandInteraction
+    channel?: TextBasedChannel | User
+    content?: string
+    embed: APIEmbed
+    ephemeral?: boolean
+    components?: (ActionRowComponent | ActionRowComponentOptions)[] | undefined
 }

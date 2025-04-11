@@ -1,5 +1,5 @@
-import { Database } from '../structures/Database';
+import { Database } from '../structures/Database'
 
-const db: Database = new Database();
+const db: Database = new Database()
 
-export default db;
+export default db
