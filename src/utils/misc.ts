@@ -75,7 +75,7 @@ export async function uploadText(text: string) {
             { headers: { 'Content-Type': 'application/json' } }
           );
             const pasteId = response.data.paste.id;
-            const fullUrl = `https://paste1.iitranq.co.uk/${pasteId}`;
+            const fullUrl = `https://paste.iitranq.co.uk/${pasteId}`;
             return fullUrl;
         } catch (e) {
             logger.error({
