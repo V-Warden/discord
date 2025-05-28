@@ -38,7 +38,7 @@ export default new Command({
 
         let historyResponse
         if (history.length > 0) {
-            historyResponse = await uploadText(JSON.stringify(history, null, 4), '1h').catch(e => {
+            historyResponse = await uploadText(JSON.stringify(history, null, 4)).catch(e => {
                 logger.error({
                     labels: { command: 'checkuseradmin', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
                     message: e instanceof Error ? e.message : JSON.stringify(e),
@@ -115,7 +115,7 @@ export default new Command({
                 const roles = parsed['roles'].split(';')
                 const newData = [{ names, roles }]
 
-                const response = await uploadText(JSON.stringify(newData, null, 4), '1h').catch(e => {
+                const response = await uploadText(JSON.stringify(newData, null, 4)).catch(e => {
                     logger.error({
                         labels: { command: 'checkuseradmin', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
                         message: e instanceof Error ? e.message : JSON.stringify(e),
@@ -136,7 +136,7 @@ export default new Command({
                 const lastSeen = dateFirst.toLocaleDateString() !== dateLast.toLocaleDateString() ? `\n> Last seen: <t:${dateLastTimestamp}:D>` : ''
 
                 if (x.roles.length > 200) {
-                    const response = await uploadText(JSON.stringify(formattedRoles, null, 4), '1h').catch(e => {
+                    const response = await uploadText(JSON.stringify(formattedRoles, null, 4)).catch(e => {
                         logger.error({
                             labels: { command: 'checkuseradmin', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
                             message: e instanceof Error ? e.message : JSON.stringify(e),
