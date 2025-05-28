@@ -1,5 +1,4 @@
 import axios from 'axios'
-import FormData from 'form-data'
 import logger from './logger'
 
 export function generateErrorID(): string {
@@ -57,30 +56,32 @@ export function mapAnyType(enumeration: any) {
     return choices
 }
 
-export async function uploadText(text: string, time: string) {
+export async function uploadText(text: string) {
     try {
-        const formData = new FormData()
-
-        formData.append('lang', 'json')
-        formData.append('expire', time)
-        formData.append('password', '')
-        formData.append('title', '')
-        formData.append('text', text)
-
-        const response = await axios.request({
-            url: 'https://paste.iitranq.co.uk/paste/new',
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            data: formData,
-        })
-
-        return response.request.res.responseUrl
-    } catch (e) {
-        //console.log(e);
-        logger.error({
-            labels: { event: 'uploadText' },
-            message: e,
-        })
-        return
+        const oneHourFromNow = new Date(Date.now() + 60 * 60 * 1000);
+        const formattedDate = oneHourFromNow.toISOString().replace('T', ' ').slice(0, 19);
+        const payload = {
+            type: 'PASTE',
+            title: 'uinfo.json',
+            content: text,
+            visibility: 'UNLISTED',
+            encrypted: false,
+            expire_at: formattedDate,
+          };
+          
+          const response = await axios.post(
+            'https://paste.iitranq.co.uk/api/v2/paste',
+            payload,
+            { headers: { 'Content-Type': 'application/json' } }
+          );
+            const pasteId = response.data.paste.id;
+            const fullUrl = `https://paste.iitranq.co.uk/${pasteId}`;
+            return fullUrl;
+        } catch (e) {
+            logger.error({
+                labels: { event: 'uploadText' },
+                message: e,
+            })
+            return
+        }
     }
-}
