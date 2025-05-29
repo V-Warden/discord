@@ -6,6 +6,8 @@ import logger from '../../utils/logger'
 import { sendError, sendSuccess } from '../../utils/messages'
 import sendEmbed from '../../utils/messages/sendEmbed'
 import db from '../../utils/database'
+import { chunkArray } from '../../utils/misc'
+import { Users } from '@prisma/client'
 
 const cooldowns = new Map<string, number>()
 const COOLDOWN_TIME = 30 * 60 * 1000
@@ -47,10 +49,25 @@ export default new Command({
 
         await guild.members.fetch().then(async members => {
             const memberMap = members.filter(x => !x.user.bot).map(x => x.id)
-            const users = await db.getManyUsers({
-                id: { in: memberMap },
-                status: { in: settings?.punishments?.banAppeal ? ['APPEALED', 'BLACKLISTED', 'PERM_BLACKLISTED'] : ['BLACKLISTED', 'PERM_BLACKLISTED'] },
-            })
+
+            // Instead of querying all IDs at once, we'll chunk them into 20,000
+            const chunkedMemberMap = chunkArray(memberMap, 20000)
+            let users: Users[] = []
+
+            for (const chunk of chunkedMemberMap) {
+                try {
+                    const chunkUsers = await db.getManyUsers({
+                        id: { in: chunk },
+                        status: { in: settings?.punishments?.banAppeal ? ['APPEALED', 'BLACKLISTED', 'PERM_BLACKLISTED'] : ['BLACKLISTED', 'PERM_BLACKLISTED'] },
+                    })
+                    users = [...users, ...chunkUsers]
+                } catch (e) {
+                    logger.error({
+                        labels: { command: 'scanusers', userId: interaction?.user?.id, guildId: interaction?.guild?.id },
+                        message: `Error fetching users batch: ${e instanceof Error ? e.message : JSON.stringify(e)}`,
+                    })
+                }
+            }
 
             if (users.length === 0)
                 return sendSuccess(interaction, 'Scanning has complete, no users blacklisted')
