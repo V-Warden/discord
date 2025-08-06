@@ -187,23 +187,16 @@ export default async function actionUser(
     } else if (toDo === 'ROLE') {
         try {
             if (!punishments.roleId) throw new Error('Invalid role id set')
-            const oldRoles = member.roles.cache.map(x => x.id).join(',')
 
             const hasBlacklistedAlready = member.roles.cache.find(x => x.id === punishments.roleId)
             if (hasBlacklistedAlready) return false
 
-            // Get managed roles (linked roles)
-            const managedRoles = member.roles.cache.filter(role => role.managed).map(role => role.id)
-
-            // Combine the new role with the managed roles
-            const newRoles = [...managedRoles, punishments.roleId]
-
-            // Set the new roles
-            await member.roles.set(newRoles)
+            // Set blacklist role
+            await member.roles.add(punishments.roleId)
 
             await db.createArchiveRole({
                 id: member.id,
-                roles: oldRoles,
+                roles: '',
                 Guild: { connect: { id: punishments.id } },
             })
 
