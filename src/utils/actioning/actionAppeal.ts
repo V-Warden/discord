@@ -32,6 +32,11 @@ export default async function (c: Client, id: string): Promise<boolean> {
         return { guild: ban.guild, settings }
     }))
 
+    const serversRoles = await Promise.all(roles.map(async (role) => {
+        const settings = await db.getGuild({ id: role.guild }, { punishments: true })
+        return { guild: role.guild, settings }
+    }))
+
     let allUserTypes = [] as string[]
     for (let index = 0; index < servers.length; index++) {
         const element = servers[index]
@@ -62,7 +67,7 @@ export default async function (c: Client, id: string): Promise<boolean> {
     }
 
     const result = await c.shard.broadcastEval(
-        async (client, { id, bans, roles, servers, allUserTypes }) => {
+        async (client, { id, bans, roles, servers, serversRoles, allUserTypes }) => {
             const output = []
 
             await client.guilds.fetch().catch(e => {
@@ -157,16 +162,24 @@ export default async function (c: Client, id: string): Promise<boolean> {
                     const element = guildRoles[index]
                     try {
                         const guild: Guild = await client.guilds.fetch(element.guild)
-                        const member: GuildMember = await guild.members.fetch(element.id)
-                        const managedRoles = member.roles.cache.filter(role => role.managed).map(role => role.id)
-                        const returnRoles = element.roles.split(',')
-                        const uniqueRoles = new Set([...returnRoles, ...managedRoles])
+                        const settings = serversRoles.find(x => x.guild === element.guild)?.settings
+                        const punishmentRoleId = settings?.punishments?.roleId
 
-                        await member.roles.set([...uniqueRoles])
+                        if (!punishmentRoleId) {
+                            output.push({
+                                labels: { action: 'actionAppeal', userId: id, guildId: guild.id },
+                                message: `No punishment role set for ${guild.name} (${guild.id})`,
+                            })
+                            continue
+                        }
+
+                        const member: GuildMember = await guild.members.fetch(element.id)
+
+                        await member.roles.remove(punishmentRoleId)
 
                         output.push({
                             labels: { action: 'actionAppeal', userId: id, guildId: guild.id },
-                            message: `Give roles back to ${id} in ${guild.name} (${guild.id})`,
+                            message: `Remove punishment role from ${id} in ${guild.name} (${guild.id})`,
                         })
                     } catch (e) {
                         output.push({
@@ -184,7 +197,7 @@ export default async function (c: Client, id: string): Promise<boolean> {
 
             return output
         },
-        { context: { id: id, bans: bans, roles: roles, servers: servers, allUserTypes: allUserTypes } }
+        { context: { id: id, bans: bans, roles: roles, servers: servers, serversRoles: serversRoles, allUserTypes: allUserTypes } }
     )
 
     if (result.length > 0) {
