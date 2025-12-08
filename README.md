@@ -1,8 +1,15 @@
 # Warden Discord Bot
 
-Extra information here is To-Do
+Hello, my name is VVarden!
+You can call me Warden or 5 Warden (V Warden).
 
-## Contribution Guide
+The bot was originally created by Vampire in an effort to combat the prevalence of pirated code and cheating within the FiveM community.
+
+The bot is the frontend for a database of users in Leaking and Cheating Discord servers, with settings to prevent those users from entering your discord server.
+
+You can join the Official Discord for more information: https://discord.com/invite/MVNZR73Ghf
+
+## Installation/Run Guide
 
 1. Make sure you have [pnpm](https://pnpm.io/installation#using-npm) installed.
 2. Go to the [Discord Developer Portal](https://discord.com/developers/applications), make an application if you haven't and create a bot there if you haven't either.
