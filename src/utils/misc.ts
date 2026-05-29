@@ -70,12 +70,12 @@ export async function uploadText(text: string) {
           };
           
           const response = await axios.post(
-            'https://paste.iitranq.co.uk/api/v2/paste',
+            'https://paste.vvarden.org/api/v2/paste',
             payload,
             { headers: { 'Content-Type': 'application/json' } }
           );
             const pasteId = response.data.paste.id;
-            const fullUrl = `https://paste.iitranq.co.uk/${pasteId}`;
+            const fullUrl = `https://paste.vvarden.org/${pasteId}`;
             return fullUrl;
         } catch (e) {
             logger.error({
